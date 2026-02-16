@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 519 470.28">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-2 {
+        fill: #ffc300;
+      }
+
+      .cls-3 {
+        fill: #42d2fe;
+      }
+
+      .cls-4 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="159.55" y1="409.52" x2="159.55" y2="148.53" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f61e6"/>
+      <stop offset=".28" stop-color="#1b7ceb"/>
+      <stop offset=".87" stop-color="#3ac1fa"/>
+      <stop offset="1" stop-color="#42d2fe"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="344.34" y1="442.98" x2="344.34" y2="121.07" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a79eb"/>
+      <stop offset="1" stop-color="#42d2fe"/>
+    </linearGradient>
+  </defs>
+  <g id="Layer_2-2" data-name="Layer 2">
+    <g>
+      <g>
+        <polygon class="cls-2" points="259.5 14.28 349.64 55.24 355.18 43.48 259.5 0 164.31 43.26 169.85 55.02 259.5 14.28"/>
+        <polygon class="cls-3" points="355.18 43.48 349.64 55.24 506 126.29 506 343.99 341.27 418.84 346.81 430.6 515.19 354.09 519 352.36 519 117.92 355.18 43.48"/>
+        <polygon class="cls-3" points="13 343.99 13 126.29 169.85 55.02 164.31 43.26 0 117.92 0 352.36 172.68 430.83 178.22 419.07 13 343.99"/>
+        <polygon class="cls-2" points="259.5 456 178.22 419.07 172.68 430.83 259.5 470.28 346.81 430.6 341.27 418.84 259.5 456"/>
+      </g>
+      <path class="cls-4" d="M63.31,130.78v40.6h66.6v175.91h49.02v-175.91h48.6s.11-.15.32-.42c3.4-16.94,13.75-31.36,27.95-40.18H63.31Z"/>
+      <g>
+        <path class="cls-1" d="M447.25,273.65c-4.38-27.63-26.32-49.65-54.07-53.68l-.88-.12-1.85-.25-31.08-4.23-52.12-7.1-2.18-.3c-8.51-1.73-14.92-9.25-14.92-18.27s6.59-16.74,15.28-18.33h75.25c1.95-4.18,16.8-36.05,18.96-40.6h-91.91c-1.81-.16-3.63-.26-5.47-.26-34.04,0-61.64,27.6-61.64,61.64,0,28.22,18.97,51.99,44.85,59.3.36.1.71.23,1.08.31,5.26,1.1,8.99,1.43,14.71,2l24.19,3.29,51.66,7.03,3.96.54c9.35,2.2,16.32,10.58,16.32,20.61,0,11.47-9.12,20.79-20.5,21.16h-95.82l-19.18,41.6h122.84v-.02c35.05-.48,63.32-29.03,63.32-64.19,0-3.45-.28-6.83-.8-10.14Z"/>
+        <path class="cls-2" d="M233.32,306.4s-19.44,41.6-19.44,41.6h48.01l19.18-41.6h-47.75Z"/>
+        <path class="cls-2" d="M447.52,130.78h-47.86l-18.97,40.6h47.83s19-40.6,19-40.6Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
