@@ -1,0 +1,36 @@
+:root {
+  --bg-primary: rgba(3, 4, 12, 0.6);
+  --backdrop: rgba(3, 4, 12, 0.8);
+  --backdrop-color: rgba(10, 11, 9, 0.54);
+  --bg-tertiary: #79B8E1;
+  --bg-quaternary: #92959b;
+
+  --bg-progress-bar: #f09f08;
+
+  --text-color-primary: #FFC300;
+  --text-active-primary: #f09f08;
+  --text-color-secondary: #ffffff;
+  --text-color-tertiary: #79B8E1;
+  --text-shadow: 4px 8px 8px rgba(0, 0, 0, 1);
+
+  --icon-color-primary: #FFC300;
+  --icon-color-secondary: #3ECBFC;
+  --icon-color-tertiary: #ffffff;
+
+  --border-color: #FFC300;
+  --border-hover-color: #E0B011;
+
+  --icon-hover-primary: #E0B011;
+  --icon-hover-secondary: #fcc743;
+
+  --btn-bg-color-primary: #fcc743;
+
+  --todo-checked: #afedf8;
+  --success: #16a34a;
+  --error: #dc2626;
+  --info: #2563eb;
+  --active-primary: #79B8E1;
+  --hover: #79B8E1;
+  --btn-shadow: 0 0 10px var(--todo-checked), 0 0 20px var(--todo-checked),
+    0 0 30px var(--todo-checked);
+}

@@ -1,0 +1,26 @@
+@use 'sass:map';
+$breakpoints: (
+  'xxs': 320px,
+  'xs': 480px,
+  'sm': 600px,
+  'mobile': 768px,
+  'tablet': 1024px,
+  'desktop': 1280px,
+  'large-desktop': 1920px,
+  'extra-large-desktop': 2580px,
+  'ultra-wide': 3200px,
+);
+
+@mixin media-query($breakpoint) {
+  $value: map.get($breakpoints, $breakpoint);
+
+  @if $value {
+    @media screen and (min-width: $value) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Breakpoint '#{$breakpoint}' not found in breakpoints map!";
+  }
+}

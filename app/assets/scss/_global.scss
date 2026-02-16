@@ -1,0 +1,88 @@
+@use './typography' as *;
+@use './vars' as *;
+@use './fonts' as *;
+@use './media' as *;
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+html {
+  font-size: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-tertiary) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bg-tertiary);
+  }
+
+  @include media-query('xs') {
+    font-size: 13px;
+  }
+
+  @include media-query('sm') {
+    font-size: 14px;
+  }
+
+  @include media-query('mobile') {
+    font-size: 15px;
+  }
+
+  @include media-query('tablet') {
+    font-size: 16px;
+  }
+
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a,
+p,
+span {
+  color: var(--text-color-secondary);
+}
+
+@each $name, $props in $typography {
+  #{$name} {
+    @include typography($name);
+  }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 15px;
+  height: inherit;
+}
+
+.backdrop {
+  background: var(--backdrop-color);
+  backdrop-filter: blur($blur-filter);
+  -webkit-backdrop-filter: blur($blur-filter);
+}
