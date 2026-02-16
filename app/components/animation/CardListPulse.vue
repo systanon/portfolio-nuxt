@@ -1,0 +1,47 @@
+<template>
+  <div class="card-list">
+    <Card ref="items" v-for="(tech, index) in techList" :key="index" class="pulse-item" :icon-name="tech.icon"
+      :isHover="isLast(index)" :width="tech.width" :height="tech.height">
+      <h2>
+        {{ tech.text }}
+      </h2>
+    </Card>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, ref, type ComponentPublicInstance } from 'vue'
+import { createPulse } from '~/utils/animations'
+
+export type Tech = {
+  icon: string
+  text: string
+  width: number
+  height: number
+  hasIcon?: boolean
+}
+
+const props = defineProps<{
+  techList: Tech[]
+}>()
+
+// const router = useRouter()
+const items = ref<ComponentPublicInstance[]>([])
+
+const isLast = (index: number) => {
+  return index === props.techList.length - 1
+}
+
+onMounted(() => {
+  createPulse(items.value)
+})
+</script>
+
+<style scoped lang="scss">
+.card-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: rem(15);
+}
+</style>
