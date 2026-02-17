@@ -1,11 +1,12 @@
 <template>
-  <section class="default-layout" :style="{
-    '--x': `${offsetX * 10}px`,
-    '--y': `${offsetY * 10}px`,
-  }">
-    <ClientOnly>
-      <Comets />
-    </ClientOnly>
+  <section
+    class="default-layout"
+    :style="{
+      '--x': `${offsetX * 10}px`,
+      '--y': `${offsetY * 10}px`,
+    }"
+  >
+    <Comets />
     <AppHeader />
 
     <main class="default-layout__main">
