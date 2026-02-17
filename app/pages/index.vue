@@ -15,16 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  type Tech,
-} from '~/components/animation/CardListPulse.vue'
-
-
-definePageMeta({
-
-  name: 'Home'
-
-})
+import { type Tech } from '~/components/animation/CardListPulse.vue'
 
 const techList: Tech[] = [
   {

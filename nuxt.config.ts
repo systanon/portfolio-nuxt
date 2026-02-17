@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  modules: ['nuxt-svg-sprite-icon'],
+  svgSprite: {
+    input: '~/assets/icons',
+  },
   vite: {
     css: {
       preprocessorOptions: {
@@ -11,7 +15,5 @@ export default defineNuxtConfig({
       },
     },
   },
-  components: [
-    { path: '~/components', pathPrefix: false },
-  ],
+  components: [{ path: '~/components', pathPrefix: false }],
 })

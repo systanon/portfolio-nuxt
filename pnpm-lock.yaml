@@ -24,6 +24,9 @@ importers:
       '@types/node':
         specifier: ^25.2.3
         version: 25.2.3
+      nuxt-svg-sprite-icon:
+        specifier: ^2.0.4
+        version: 2.0.4
       sass:
         specifier: ^1.97.3
         version: 1.97.3
@@ -2308,6 +2311,9 @@ packages:
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
+
+  nuxt-svg-sprite-icon@2.0.4:
+    resolution: {integrity: sha512-0qKIbtnjcTv56cvf6Zc0iDfJVmPZYiAQLJ9Me5FU++K4fAkQ9+foQnDJwoyzrFqurFVC9rHYps4l1YtsADBFIA==}
 
   nuxt@4.3.1:
     resolution: {integrity: sha512-bl+0rFcT5Ax16aiWFBFPyWcsTob19NTZaDL5P6t0MQdK63AtgS6fN6fwvwdbXtnTk6/YdCzlmuLzXhSM22h0OA==}
@@ -5589,6 +5595,8 @@ snapshots:
   nth-check@2.1.1:
     dependencies:
       boolbase: 1.0.0
+
+  nuxt-svg-sprite-icon@2.0.4: {}
 
   nuxt@4.3.1(@parcel/watcher@2.5.6)(@types/node@25.2.3)(@vue/compiler-sfc@3.5.28)(cac@6.7.14)(db0@0.3.4)(ioredis@5.9.3)(magicast@0.5.2)(rollup@4.57.1)(sass@1.97.3)(terser@5.46.0)(vite@7.3.1(@types/node@25.2.3)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(yaml@2.8.2))(yaml@2.8.2):
     dependencies:
