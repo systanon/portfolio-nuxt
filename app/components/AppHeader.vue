@@ -2,11 +2,19 @@
   <header class="app-header">
     <div class="container">
       <div class="app-header__wrapper">
-        header
+        <template v-if="isMobile || isTablet">
+          <Logo />
+          <!-- <NavigationMenuMobile /> -->
+        </template>
+        <NavigationMenu v-else />
       </div>
     </div>
   </header>
 </template>
+
+<script lang="ts" setup>
+const { isTablet, isMobile } = useWindowResize()
+</script>
 
 <style scoped lang="scss">
 .app-header {
@@ -18,7 +26,6 @@
     align-items: center;
   }
 }
-
 @include media-query('tablet') {
   .app-header {
     padding: rem(32);
