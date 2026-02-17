@@ -1,9 +1,24 @@
 <template>
   <div class="card-list">
-    <Card ref="items" v-for="(tech, index) in techList" :key="index" class="pulse-item" :icon-name="tech.icon"
-      :isHover="isLast(index)" :width="tech.width" :height="tech.height">
+    <Card
+      ref="items"
+      v-for="(tech, index) in techList"
+      :key="index"
+      class="pulse-item"
+      :icon-name="tech.icon"
+      :isHover="isLast(index)"
+      :width="tech.width"
+      :height="tech.height"
+      @click="isLast(index) && router.push('/about-me')"
+    >
       <h2>
         {{ tech.text }}
+        <UiIcon
+          v-if="tech.hasIcon"
+          name="arrow"
+          color="tertiary"
+          size="medium"
+        />
       </h2>
     </Card>
   </div>
@@ -25,7 +40,7 @@ const props = defineProps<{
   techList: Tech[]
 }>()
 
-// const router = useRouter()
+const router = useRouter()
 const items = ref<ComponentPublicInstance[]>([])
 
 const isLast = (index: number) => {
