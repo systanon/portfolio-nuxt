@@ -11,7 +11,12 @@
       </template>
     </UiButtonIcon>
     <section class="page-todo__todos">
-      <TodoItem v-for="todo of rows" :key="todo.id" :todo="todo" />
+      <TodoItem
+        v-for="todo of rows"
+        :key="todo.id"
+        :todo="todo"
+        @toggle="toggle"
+      />
     </section>
   </section>
 </template>
@@ -22,6 +27,16 @@ import type { Todo } from '~/types/todo'
 const todoStore = useTodoStore()
 const { pages, rows } = storeToRefs(todoStore)
 const { getAll, update, create, remove } = todoStore
+
+const toggle = ({
+  id,
+  payload,
+}: {
+  id: number
+  payload: { completed: boolean }
+}) => {
+  update(id, payload)
+}
 
 onMounted(() => {
   getAll()

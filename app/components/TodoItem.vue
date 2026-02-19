@@ -1,7 +1,7 @@
 <template>
   <div :class="['todo-item', { _checked: todo.completed }]">
     <div class="todo-item__checked">
-      <!-- <UiCheckbox :modelValue="todo.completed" @change="onToggleComplete" /> -->
+      <UiCheckbox :modelValue="todo.completed" @change="onToggleComplete" />
     </div>
     <div class="todo-item__info">
       <h2 class="todo-item__title">
