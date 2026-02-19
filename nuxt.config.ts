@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['nuxt-svg-sprite-icon'],
+  modules: ['nuxt-svg-sprite-icon', '@pinia/nuxt'],
   svgSprite: {
     input: '~/assets/icons',
   },
@@ -19,6 +19,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: '/api',
+      wsURL: process.env.WS_API,
     },
   },
 
