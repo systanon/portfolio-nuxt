@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['nuxt-svg-sprite-icon', '@pinia/nuxt'],
+  modules: ['nuxt-svg-sprite-icon', '@pinia/nuxt', '@vueuse/nuxt'],
   svgSprite: {
     input: '~/assets/icons',
   },
