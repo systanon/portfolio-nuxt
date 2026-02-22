@@ -12,6 +12,10 @@ export type CreateTodoDTO = {
   completed?: boolean
 }
 
+export interface CreateTodoResponse {
+  id: number
+}
+
 export type UpdateTodoDTO = Partial<CreateTodoDTO>
 export type ReplaceTodoDTO = Required<CreateTodoDTO>
 
