@@ -2,24 +2,12 @@ type ErrorOptions = {
   cause?: unknown
 }
 
-export function isHttpError(
-  error: any,
-): error is { status: number; data: any } {
-  return error && typeof error.status === 'number'
-}
-
-export type APIError = {
-  _type: string
-  status: number
-  data: string | object
-}
-
-export class AppBase extends Error {
+export class AppBaseError extends Error {
   public override cause?: unknown
-  public readonly type: 'error' | 'info' | 'success' | 'silent'
+  public readonly type: 'error' | 'silent'
   constructor(
     message?: string,
-    type: 'error' | 'info' | 'success' | 'silent' = 'silent',
+    type: 'error' | 'silent' = 'silent',
     options?: ErrorOptions,
   ) {
     super(message)
@@ -28,32 +16,20 @@ export class AppBase extends Error {
     this.cause = options?.cause
   }
 }
-export class AppError extends AppBase {
+
+export class AppError extends AppBaseError {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, 'error', options)
   }
 }
 
-export class AppInfo extends AppBase {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, 'info', options)
-  }
-}
-
-export class AppSuccess<T = unknown> extends AppBase {
-  public data?: T
-  constructor(message?: string, data?: T) {
-    super(message, 'success')
-    this.data = data
-  }
-}
-
-export class AppSilentError extends AppBase {
+export class AppSilentError extends AppBaseError {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, 'silent', options)
   }
 }
-export class AppRateLimitError extends AppBase {
+
+export class AppRateLimitError extends AppBaseError {
   public readonly retryAfter: number
   constructor(message: string, retryAfter: number, options?: ErrorOptions) {
     super(message, 'error', options)
