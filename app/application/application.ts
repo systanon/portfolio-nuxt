@@ -67,15 +67,11 @@ export class Application<
 
   public async getAllTodos(
     params?: GetAllParams,
-  ): Promise<PaginateResult<Todo>> {
-    try {
-      this.#loading.value = true
-      return await this.#todoService.getAll(params)
-    } catch (error) {
-      return Promise.reject(error)
-    } finally {
-      this.#loading.value = false
-    }
+  ): Promise<PaginateResult<Todo> | AppError> {
+    this.#loading.value = true
+    const res = await this.#todoService.getAll(params)
+    this.#loading.value = false
+    return res
   }
 
   public async getOneTodo(id: ID): Promise<Todo | AppError> {
@@ -89,7 +85,7 @@ export class Application<
   public async replaceTodo(
     id: ID,
     dto: ReplaceTodoDTO,
-  ): Promise<Todo | AppError> {
+  ): Promise<void | AppError> {
     const res = await this.#todoService.replace(id, dto)
     return res
   }
@@ -97,12 +93,12 @@ export class Application<
   public async updateTodo(
     id: ID,
     dto: UpdateTodoDTO,
-  ): Promise<Todo | AppError> {
+  ): Promise<void | AppError> {
     const res = await this.#todoService.update(id, dto)
     return res
   }
 
-  public async deleteTodo(id: ID): Promise<Todo | AppError> {
+  public async deleteTodo(id: ID): Promise<void | AppError> {
     const res = await this.#todoService.delete(id)
     return res
   }
