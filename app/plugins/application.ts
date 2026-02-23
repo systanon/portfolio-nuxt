@@ -1,6 +1,7 @@
 import type { $Fetch } from 'nitropack'
 import { Application } from '~/application/application'
 import { HTTPClient } from '~/lib/http.client'
+import { AuthService } from '~/services/auth.service'
 import { TodoService } from '~/services/todo.service'
 
 export default defineNuxtPlugin({
@@ -38,10 +39,11 @@ export default defineNuxtPlugin({
     const httpClient = new HTTPClient(fetcher)
 
     const todoService = new TodoService(httpClient)
+    const authService = new AuthService(httpClient)
 
-    const application = new Application(todoService)
+    const application = new Application(todoService, authService)
 
-    // await application.getProfile()
+    await application.getProfile()
 
     return {
       provide: {

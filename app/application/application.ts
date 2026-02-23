@@ -8,9 +8,14 @@ import type {
 } from '~/types/todo'
 import type { TodoService } from '~/services/todo.service'
 import type { ID } from '~/types/general'
-import { AppError } from '~/types/app-errors'
+import { AppError, AppSilentError } from '~/types/app-errors'
 
-import type { GetAllParams, PaginateResult } from '~/types/app.types'
+import {
+  AppSuccess,
+  type GetAllParams,
+  type PaginateResult,
+} from '~/types/app.types'
+import type { AuthService } from '~/services/auth.service'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -18,13 +23,15 @@ export class Application<
 > {
   #ee: EventEmitter = new EventEmitter()
   #todoService: TodoService
+  #authService: AuthService
   #loading: Ref<boolean> = ref(false)
   private _pageTitle: Ref<string | null> = ref(null)
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
-  constructor(todoService: TodoService) {
+  constructor(todoService: TodoService, authService: AuthService) {
     this.#todoService = todoService
+    this.#authService = authService
   }
 
   public get loading(): boolean {
@@ -58,6 +65,25 @@ export class Application<
     once?: boolean,
   ): EventEmitter {
     return this.#ee.off(event, fn, context, once)
+  }
+
+  public async getProfile(): Promise<void> {
+    this.profileLoading = new Promise((resolve) => {
+      this.resolveProfileLoading = resolve
+    })
+    const res = await this.#authService.getProfile()
+
+    if (res instanceof AppError) {
+      //TODO: handle error (e.g. show notification)
+    }
+    if (res instanceof AppSilentError) {
+      //TODO: handle silent error (e.g. show notification)
+    }
+    if (res instanceof AppSuccess) {
+      //TODO: handle success (e.g. set user profile in the state)
+    }
+
+    this.resolveProfileLoading?.()
   }
 
   public async createTodo(dto: CreateTodoDTO): Promise<ID | AppError> {
