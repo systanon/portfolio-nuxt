@@ -16,9 +16,11 @@ import { AppSuccess } from '~/types/app.types'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
+  private readonly httpClientRefresh: HTTPClient
 
-  constructor(httpClient: HTTPClient) {
+  constructor(httpClient: HTTPClient, httpClientRefresh: HTTPClient) {
     this.httpClient = httpClient
+    this.httpClientRefresh = httpClientRefresh
   }
 
   async registration(dto: SignUpDto): Promise<AppSuccess | AppError> {
@@ -129,16 +131,14 @@ export class AuthService {
     }
   }
 
-  async refresh(): Promise<void | AppError> {
+  async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
     const url = API_URL.auth.refresh
-    const result = await this.httpClient.do<AuthResponse>(url, {
+    const result = await this.httpClientRefresh.do<AuthResponse>(url, {
       method: 'POST',
       credentials: 'include',
     })
     if (result instanceof AppSuccess) {
-      const access_token = result.data.access_token
-      const token = useCookie('access_token')
-      token.value = access_token
+      return result
     } else {
       return new AppError(result.message)
     }

@@ -16,6 +16,7 @@ import {
   type PaginateResult,
 } from '~/types/app.types'
 import type { AuthService } from '~/services/auth.service'
+import type { AuthResponse, SignInDto } from '~/types/auth'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -84,6 +85,18 @@ export class Application<
     }
 
     this.resolveProfileLoading?.()
+  }
+
+  async signIn(dto: SignInDto): Promise<void | AppError> {
+    const res = await this.#authService.authorization(dto)
+    if (res instanceof AppError) {
+      return res
+    }
+  }
+
+  async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
+    const res = await this.#authService.refresh()
+    return res
   }
 
   public async createTodo(dto: CreateTodoDTO): Promise<ID | AppError> {
