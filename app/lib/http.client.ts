@@ -1,6 +1,6 @@
 import type { $Fetch, NitroFetchOptions } from 'nitropack'
 import type { ErrorResponse, SuccessResponse } from '~/types/api'
-import { AppError, AppRateLimitError } from '~/types/app-errors'
+import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
 import { AppSuccess } from '~/types/app.types'
 
@@ -14,7 +14,7 @@ export class HTTPClient {
   public async do<T>(
     url: string,
     options: NitroFetchOptions<'json'> = {},
-  ): Promise<AppSuccess<T> | AppError | AppRateLimitError> {
+  ): Promise<AppSuccess<T> | AppError | AppRateLimitError | AppSilentError> {
     try {
       const response = await this.fetcher.raw(url, options)
       if (!response.ok) {
@@ -24,6 +24,8 @@ export class HTTPClient {
             data.error.message,
             Number(response.headers.get('Retry-After')),
           )
+        } else if (data.error.code === 'UNAUTHORIZED') {
+          return new AppSilentError(data.error.message, { cause: data.error })
         } else {
           return new AppError(data.error.message)
         }
