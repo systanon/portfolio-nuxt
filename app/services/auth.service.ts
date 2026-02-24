@@ -8,11 +8,10 @@ import type {
   ResetPasswordDto,
   SignInDto,
   SignUpDto,
-  UserProfile,
-  UserProfileUpdateInfo,
 } from '~/types/auth'
 import { API_URL } from '@/constants'
 import { AppSuccess } from '~/types/app.types'
+import type { Profile, ProfileUpdateInfo } from '~/types/user.types'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
@@ -102,20 +101,16 @@ export class AuthService {
     }
   }
 
-  async getProfile(): Promise<UserProfile | AppError | AppSilentError> {
+  async getProfile(): Promise<AppSuccess<Profile> | AppError | AppSilentError> {
     const url = API_URL.auth.profile
-    const result = await this.httpClient.do<UserProfile>(url, {
+    const result = await this.httpClient.do<Profile>(url, {
       method: 'POST',
       credentials: 'include',
     })
-    if (result instanceof AppSuccess) {
-      return result.data
-    } else {
-      return result
-    }
+    return result
   }
 
-  async updateProfile(dto: UserProfileUpdateInfo): Promise<AppError | string> {
+  async updateProfile(dto: ProfileUpdateInfo): Promise<AppError | string> {
     const url = API_URL.auth.profile
     const body = JSON.stringify(dto)
 

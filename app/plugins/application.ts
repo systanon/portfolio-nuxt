@@ -1,8 +1,9 @@
 import type { $Fetch } from 'nitropack'
-import { Application } from '~/application/application'
+import { Application } from '~/services/application.service'
 import { HTTPClient, type RetryableOptions } from '~/lib/http.client'
 import { AuthService } from '~/services/auth.service'
 import { TodoService } from '~/services/todo.service'
+import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
 
 export default defineNuxtPlugin({
@@ -27,6 +28,9 @@ export default defineNuxtPlugin({
     const todoService = new TodoService(httpClient)
     const authService = new AuthService(httpClient, refreshClient)
     const application = new Application(todoService, authService)
+
+    const appStore = useAppStore()
+    appStore.bindApplicationEvents(application)
 
     httpClient.addRequestInterceptor((url, options) => {
       if (options.credentials === 'include') {
@@ -54,7 +58,7 @@ export default defineNuxtPlugin({
       },
     )
 
-    await application.getProfile()
+    application.getProfile()
 
     return {
       provide: {

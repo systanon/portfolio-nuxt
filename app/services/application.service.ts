@@ -1,4 +1,3 @@
-import { ref, type Ref } from 'vue'
 import EventEmitter from 'eventemitter3'
 import type {
   CreateTodoDTO,
@@ -17,7 +16,6 @@ import {
 } from '~/types/app.types'
 import type { AuthService } from '~/services/auth.service'
 import type { AuthResponse, SignInDto, SignUpDto } from '~/types/auth'
-import type { Profile } from '~/types/user.types'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -26,39 +24,12 @@ export class Application<
   #ee: EventEmitter = new EventEmitter()
   #todoService: TodoService
   #authService: AuthService
-  #loading: Ref<boolean> = ref(false)
-  #profile: Ref<Profile | null> = ref(null)
-  private _pageTitle: Ref<string | null> = ref(null)
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
   constructor(todoService: TodoService, authService: AuthService) {
     this.#todoService = todoService
     this.#authService = authService
-  }
-
-  public get loading(): boolean {
-    return this.#loading.value
-  }
-
-  public get pageTitle(): string | null {
-    return this._pageTitle.value
-  }
-
-  public get userProfile(): Profile | null {
-    return this.#profile.value
-  }
-
-  public get isLogged(): boolean {
-    return this.#profile.value !== null
-  }
-
-  public setPageTitle(title: string) {
-    this._pageTitle.value = title
-  }
-
-  public clearPageTitle(): void {
-    this._pageTitle.value = null
   }
 
   public on<T extends EventEmitter.EventNames<EventTypes>>(
@@ -91,7 +62,7 @@ export class Application<
       //TODO: handle silent error (e.g. show notification)
     }
     if (res instanceof AppSuccess) {
-      this.#profile.value = res.data
+      this.#ee.emit('profile:loaded', res.data)
     }
 
     this.resolveProfileLoading?.()
@@ -123,17 +94,13 @@ export class Application<
   public async getAllTodos(
     params?: GetAllParams,
   ): Promise<PaginateResult<Todo> | AppError> {
-    this.#loading.value = true
     const res = await this.#todoService.getAll(params)
-    this.#loading.value = false
+    this.#ee.emit('todo:loaded', res)
     return res
   }
 
   public async getOneTodo(id: ID): Promise<Todo | AppError> {
     const res = await this.#todoService.getOne(id)
-    if (!(res instanceof AppError)) {
-      this.setPageTitle(res.title)
-    }
     return res
   }
 
