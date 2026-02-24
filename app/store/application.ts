@@ -17,7 +17,7 @@ export const useAppStore = defineStore('app', () => {
       profile.value = null
     })
 
-    application.on('auth:login', () => {
+    application.on('auth:logout', () => {
       profile.value = null
     })
   }

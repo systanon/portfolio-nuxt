@@ -63,6 +63,7 @@ export class Application<
     }
     if (res instanceof AppSuccess) {
       this.#ee.emit('profile:loaded', res.data)
+      this.#ee.emit('auth:login')
     }
 
     this.resolveProfileLoading?.()
@@ -73,12 +74,22 @@ export class Application<
     if (res instanceof AppError) {
       return res
     }
+    await this.getProfile()
   }
+
   async signUp(dto: SignUpDto): Promise<void | AppError> {
     const res = await this.#authService.registration(dto)
     if (res instanceof AppError) {
       return res
     }
+  }
+
+  async logout(): Promise<void | AppError> {
+    const res = await this.#authService.logout()
+    if (res instanceof AppError) {
+      return res
+    }
+    this.#ee.emit('auth:logout')
   }
 
   async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
