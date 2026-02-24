@@ -74,7 +74,7 @@ export class Application<
     if (res instanceof AppError) {
       return res
     }
-    await this.getProfile()
+    this.getProfile()
   }
 
   async signUp(dto: SignUpDto): Promise<void | AppError> {
