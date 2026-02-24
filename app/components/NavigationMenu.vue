@@ -29,18 +29,17 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import { byAuthorized, rightSide, leftSide } from '~/config/main-menu'
-// import { useLogged } from '@/composables/useLogged'
+import { useAppStore } from '~/store/application'
 
-// const { isLogged } = useLogged()
+const appStore = useAppStore()
 
 const right = computed(() => {
-  return rightSide.filter(byAuthorized(false))
+  return rightSide.filter(byAuthorized(appStore.isLogged))
 })
 
 const left = computed(() => {
-  return leftSide.filter(byAuthorized(false))
+  return leftSide.filter(byAuthorized(appStore.isLogged))
 })
 
 const onLinkNavigate = (navigate: () => void) => {
