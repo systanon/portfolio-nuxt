@@ -16,7 +16,8 @@ import {
   type PaginateResult,
 } from '~/types/app.types'
 import type { AuthService } from '~/services/auth.service'
-import type { AuthResponse, SignInDto } from '~/types/auth'
+import type { AuthResponse, SignInDto, SignUpDto } from '~/types/auth'
+import type { Profile } from '~/types/user.types'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -26,6 +27,7 @@ export class Application<
   #todoService: TodoService
   #authService: AuthService
   #loading: Ref<boolean> = ref(false)
+  #profile: Ref<Profile | null> = ref(null)
   private _pageTitle: Ref<string | null> = ref(null)
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
@@ -39,15 +41,23 @@ export class Application<
     return this.#loading.value
   }
 
-  public get pageTitle() {
+  public get pageTitle(): string | null {
     return this._pageTitle.value
+  }
+
+  public get userProfile(): Profile | null {
+    return this.#profile.value
+  }
+
+  public get isLogged(): boolean {
+    return this.#profile.value !== null
   }
 
   public setPageTitle(title: string) {
     this._pageTitle.value = title
   }
 
-  public clearPageTitle() {
+  public clearPageTitle(): void {
     this._pageTitle.value = null
   }
 
@@ -81,7 +91,7 @@ export class Application<
       //TODO: handle silent error (e.g. show notification)
     }
     if (res instanceof AppSuccess) {
-      //TODO: handle success (e.g. set user profile in the state)
+      this.#profile.value = res.data
     }
 
     this.resolveProfileLoading?.()
@@ -89,6 +99,12 @@ export class Application<
 
   async signIn(dto: SignInDto): Promise<void | AppError> {
     const res = await this.#authService.authorization(dto)
+    if (res instanceof AppError) {
+      return res
+    }
+  }
+  async signUp(dto: SignUpDto): Promise<void | AppError> {
+    const res = await this.#authService.registration(dto)
     if (res instanceof AppError) {
       return res
     }
