@@ -46,6 +46,10 @@
 <script setup lang="ts">
 import useVuelidate from '@vuelidate/core'
 
+definePageMeta({
+  accessMode: 'only-for-unauthorized',
+})
+
 const app = useApp()
 
 const email = ref<string>('')

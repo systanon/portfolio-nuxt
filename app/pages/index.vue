@@ -17,6 +17,10 @@
 <script setup lang="ts">
 import { type Tech } from '~/components/animation/CardListPulse.vue'
 
+definePageMeta({
+  accessMode: 'public',
+})
+
 const techList: Tech[] = [
   {
     icon: 'vue-logo',
