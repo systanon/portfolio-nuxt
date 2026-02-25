@@ -17,50 +17,46 @@
         architecture. For a detailed overview of my experience and technical
         skills, you can download my CV.
       </p>
-      <!-- <UiButtonIcon @click="openForm" iconName="download">
+      <UiButtonIcon @click="openForm" iconName="download">
         <template #prepend> <span>Download CV</span> </template>
-      </UiButtonIcon> -->
+      </UiButtonIcon>
     </div>
   </section>
 
-  <!-- <UIModal ref="cvModalRef" title="Download CV">
+  <UIModal ref="cvModalRef" title="Download CV">
     <CvForm ref="cvFormRef" />
     <template #actions="{ close }">
       <UiButton @click="close" label="Cancel" />
       <UiButton @click="submitForm" label="Submit" />
     </template>
-  </UIModal> -->
+  </UIModal>
 </template>
 <script setup lang="ts">
-// import { ref } from 'vue'
+import UIModal, { type IModalOpen } from '~/components/ui/modals/UiModal.vue'
+import { AppError } from '~/types/app-errors'
 
-// import UIModal, { type IModalOpen } from '@/components/ui/modals/UiModal.vue'
-// import UiButton from '@/components/ui/buttons/UiButton.vue'
-// import UiButtonIcon from '@/components/ui/buttons/UiButtonIcon.vue'
-// import CvForm from '@/components/forms/CvForm.vue'
-// import { application } from '@/application'
-// import { AppError } from '@/types/app-errors'
+definePageMeta({
+  accessMode: 'public',
+})
 
-// defineOptions({
-//   name: 'AboutView',
-// })
+const application = useApp()
 
-// const cvModalRef = ref<IModalOpen | null>(null)
-// const cvFormRef = ref()
+const cvModalRef = ref<IModalOpen | null>(null)
+const cvFormRef = ref()
 
-// const submitForm = async () => {
-//   const data = await cvFormRef.value?.validateAndGet()
-//   if (!data) return
+const submitForm = async () => {
+  const data = await cvFormRef.value?.validateAndGet()
+  if (!data) return
 
-//   const res = await application.saveStatistic(data)
-//   if (!(res instanceof AppError)) {
-//     cvModalRef.value?.confirm(true)
-//   }
-// }
+  const res = await application.saveStatistic(data)
+  if (!(res instanceof AppError)) {
+    cvModalRef.value?.confirm(true)
+  }
+}
 
-// const openForm = async () => {
-//   await cvModalRef.value?.open()
-// }
+const openForm = async () => {
+  await cvModalRef.value?.open()
+}
 </script>
 
 <style scoped lang="scss">
