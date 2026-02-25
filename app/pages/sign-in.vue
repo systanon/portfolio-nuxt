@@ -18,15 +18,15 @@
         autocomplete="current-password"
       />
       <div class="page-sign-in__redirect">
-        <!-- <AppLink
+        <AppLink
           class="page-sign-in__redirect-link"
           inactive-class="link-secondary"
           active-class="link-secondary--active"
-          :to="{ name: 'ForgotPassword' }"
+          to="forgot-password"
           @navigate="(navigate) => navigate()"
         >
           Forgot password?</AppLink
-        > -->
+        >
       </div>
       <UiButton type="submit" label="Submit" />
     </form>

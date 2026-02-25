@@ -7,7 +7,7 @@ import type {
 } from '~/types/todo'
 import type { TodoService } from '~/services/todo.service'
 import type { ID } from '~/types/general'
-import { AppError, AppSilentError } from '~/types/app-errors'
+import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
 import {
   AppSuccess,
@@ -16,7 +16,13 @@ import {
   type StatisticDTO,
 } from '~/types/app.types'
 import type { AuthService } from '~/services/auth.service'
-import type { AuthResponse, SignInDto, SignUpDto } from '~/types/auth'
+import type {
+  AuthResponse,
+  ForgotPasswordDto,
+  ResendConfirmEmailDto,
+  SignInDto,
+  SignUpDto,
+} from '~/types/auth'
 import type { StatisticService } from './statistic.service'
 
 export class Application<
@@ -88,6 +94,24 @@ export class Application<
   async signUp(dto: SignUpDto): Promise<void | AppError> {
     const res = await this.#authService.registration(dto)
     if (res instanceof AppError) {
+      return res
+    }
+  }
+
+  async forgotPassword(
+    dto: ForgotPasswordDto,
+  ): Promise<void | AppRateLimitError> {
+    const res = await this.#authService.forgotPassword(dto)
+    if (res instanceof AppRateLimitError) {
+      return res
+    }
+  }
+
+  async resendConfirmEmail(
+    dto: ResendConfirmEmailDto,
+  ): Promise<void | AppRateLimitError> {
+    const res = await this.#authService.resendConfirmEmail(dto)
+    if (res instanceof AppRateLimitError) {
       return res
     }
   }
