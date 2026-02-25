@@ -74,6 +74,30 @@ export class HTTPClient {
     return exec()
   }
 
+  async download(
+    url: string,
+    options: NitroFetchOptions<'json'> = {},
+  ): Promise<Blob | AppError> {
+    try {
+      for (const i of this.requestInterceptors) {
+        await i(url, options)
+      }
+
+      const response = await this.fetcher.raw(url, {
+        ...options,
+        responseType: 'blob',
+      })
+
+      for (const i of this.responseInterceptors) {
+        await i(response)
+      }
+
+      return response._data as Blob
+    } catch (error) {
+      return this.handleError(error)
+    }
+  }
+
   private handleError(error: any) {
     if (this.isFetchError(error)) {
       const data = error.response._data as ErrorResponse

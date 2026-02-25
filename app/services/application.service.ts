@@ -13,9 +13,11 @@ import {
   AppSuccess,
   type GetAllParams,
   type PaginateResult,
+  type StatisticDTO,
 } from '~/types/app.types'
 import type { AuthService } from '~/services/auth.service'
 import type { AuthResponse, SignInDto, SignUpDto } from '~/types/auth'
+import type { StatisticService } from './statistic.service'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -24,12 +26,18 @@ export class Application<
   #ee: EventEmitter = new EventEmitter()
   #todoService: TodoService
   #authService: AuthService
+  #statisticService: StatisticService
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
-  constructor(todoService: TodoService, authService: AuthService) {
+  constructor(
+    todoService: TodoService,
+    authService: AuthService,
+    statisticService: StatisticService,
+  ) {
     this.#todoService = todoService
     this.#authService = authService
+    this.#statisticService = statisticService
   }
 
   public on<T extends EventEmitter.EventNames<EventTypes>>(
@@ -133,6 +141,11 @@ export class Application<
 
   public async deleteTodo(id: ID): Promise<void | AppError> {
     const res = await this.#todoService.delete(id)
+    return res
+  }
+
+  async saveStatistic(dto: StatisticDTO): Promise<void | AppError> {
+    const res = await this.#statisticService.save(dto)
     return res
   }
 }

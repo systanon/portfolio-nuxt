@@ -38,3 +38,9 @@ export class AppSuccess<T = unknown> extends AppBase {
     this.headers = headers
   }
 }
+
+export type StatisticDTO = {
+  contact_name: string
+  company_name: string
+  email: string
+}

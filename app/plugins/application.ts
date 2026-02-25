@@ -5,6 +5,7 @@ import { AuthService } from '~/services/auth.service'
 import { TodoService } from '~/services/todo.service'
 import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
+import { StatisticService } from '~/services/statistic.service'
 
 export default defineNuxtPlugin({
   name: 'application-init',
@@ -27,7 +28,12 @@ export default defineNuxtPlugin({
 
     const todoService = new TodoService(httpClient)
     const authService = new AuthService(httpClient, refreshClient)
-    const application = new Application(todoService, authService)
+    const statisticService = new StatisticService(httpClient)
+    const application = new Application(
+      todoService,
+      authService,
+      statisticService,
+    )
 
     const appStore = useAppStore()
     appStore.bindApplicationEvents(application)
