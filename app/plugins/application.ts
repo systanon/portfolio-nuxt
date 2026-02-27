@@ -11,14 +11,6 @@ export default defineNuxtPlugin({
   name: 'application-init',
   async setup() {
     const config = useRuntimeConfig()
-    let accessToken = useCookie('access_token').value
-
-    const getToken = () => accessToken
-
-    const setToken = (token: string) => {
-      accessToken = token
-      useCookie('access_token').value = token
-    }
 
     const fetcher: $Fetch = $fetch.create({
       baseURL: config.public.apiBase,
@@ -40,7 +32,7 @@ export default defineNuxtPlugin({
 
     httpClient.addRequestInterceptor((url, options) => {
       if (options.credentials === 'include') {
-        const token = getToken()
+        const token = useCookie('access_token').value
         const newHeaders = new Headers(options.headers)
 
         if (token) {
@@ -56,8 +48,6 @@ export default defineNuxtPlugin({
           options._retry = true
           const response = await application.refresh()
           if (response instanceof AppSuccess) {
-            const access_token = response.data.access_token
-            setToken(access_token)
             return true
           }
         }

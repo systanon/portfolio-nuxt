@@ -128,14 +128,16 @@ export class AuthService {
 
   async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
     const url = API_URL.auth.refresh
-    const result = await this.httpClientRefresh.do<AuthResponse>(url, {
+    const response = await this.httpClientRefresh.do<AuthResponse>(url, {
       method: 'POST',
       credentials: 'include',
     })
-    if (result instanceof AppSuccess) {
-      return result
+    if (response instanceof AppSuccess) {
+      const access_token = response.data.access_token
+      useCookie('access_token').value = access_token
+      return response
     } else {
-      return new AppError(result.message)
+      return new AppError(response.message)
     }
   }
 
