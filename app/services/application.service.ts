@@ -24,6 +24,7 @@ import type {
   SignUpDto,
 } from '~/types/auth'
 import type { StatisticService } from './statistic.service'
+import type { Profile } from '~/types/user.types'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -63,7 +64,9 @@ export class Application<
     return this.#ee.off(event, fn, context, once)
   }
 
-  public async getProfile(): Promise<void> {
+  public async getProfile(): Promise<
+    AppError | AppSilentError | AppSuccess<Profile>
+  > {
     this.profileLoading = new Promise((resolve) => {
       this.resolveProfileLoading = resolve
     })
@@ -77,10 +80,9 @@ export class Application<
     }
     if (res instanceof AppSuccess) {
       this.#ee.emit('profile:loaded', res.data)
-      this.#ee.emit('auth:login')
     }
-
     this.resolveProfileLoading?.()
+    return res
   }
 
   async signIn(dto: SignInDto): Promise<void | AppError> {
@@ -88,7 +90,10 @@ export class Application<
     if (res instanceof AppError) {
       return res
     }
-    this.getProfile()
+    const profile = await this.getProfile()
+    if (profile instanceof AppSuccess) {
+      this.#ee.emit('auth:login')
+    }
   }
 
   async signUp(dto: SignUpDto): Promise<void | AppError> {
