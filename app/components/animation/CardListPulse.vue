@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { onMounted, ref, type ComponentPublicInstance } from 'vue'
 import { createPulse } from '~/utils/animations'
+import { animationController } from '~/utils/animations/animationController'
 
 export type Tech = {
   icon: string
@@ -47,7 +48,8 @@ const isLast = (index: number) => {
   return index === props.techList.length - 1
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await animationController.waitAll()
   createPulse(items.value)
 })
 </script>

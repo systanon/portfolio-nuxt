@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, type ComponentPublicInstance } from 'vue'
 import { createTextAssembly } from '~/utils/animations'
+import { animationController } from '~/utils/animations/animationController'
 
 const props = defineProps<{
   text: string
@@ -18,7 +19,8 @@ const chars = computed(() => {
   return props.text.split('')
 })
 
-onMounted(() => {
+onMounted(async () => {
+  await animationController.waitAll()
   createTextAssembly(charList.value)
 })
 </script>
@@ -26,6 +28,7 @@ onMounted(() => {
 <style scoped>
 .char {
   display: inline-block;
+  opacity: 0;
   will-change: transform, opacity, filter;
 }
 </style>
