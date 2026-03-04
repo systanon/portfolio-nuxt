@@ -6,8 +6,8 @@
       :key="planet.name"
       class="solar-system__orbit"
       :style="{
-        width: planet.orbitSize + 'px',
-        height: planet.orbitSize + 'px',
+        width: rem(planet.orbitSize),
+        height: rem(planet.orbitSize),
       }"
       :ref="setOrbitRef(planet.name)"
     >
@@ -15,8 +15,8 @@
         class="solar-system__orbit-planet"
         :ref="setPlanetRef(planet.name)"
         :style="{
-          width: planet.planetSize + 'px',
-          height: planet.planetSize + 'px',
+          width: rem(planet.planetSize),
+          height: rem(planet.planetSize),
           background: planet.gradient,
         }"
       >
@@ -24,8 +24,8 @@
           v-if="planet.rings"
           class="solar-system__planet-rings"
           :style="{
-            width: planet.rings.width + 'px',
-            height: planet.rings.height + 'px',
+            width: rem(planet.rings.width),
+            height: rem(planet.rings.height),
             background: planet.rings.gradient,
           }"
         ></div>
@@ -74,8 +74,8 @@ onMounted(() => {
 
   &__sun {
     position: absolute;
-    width: 60px;
-    height: 60px;
+    width: rem(60);
+    height: rem(60);
     background: radial-gradient(circle, #ffd700, #ff8c00);
     border-radius: 50%;
     top: 50%;
