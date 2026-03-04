@@ -26,6 +26,6 @@ onBeforeUnmount(() => {
 .universe {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: var(--space-bg);
 }
 </style>
