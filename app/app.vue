@@ -1,10 +1,13 @@
 <template>
-  <div>
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </div>
+  <SplashScreen v-if="!ready" @finished="ready = true" />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
+
+<script setup lang="ts">
+const ready = ref(false)
+</script>
 
 <style lang="scss">
 @use '~/assets/scss/_theme.scss';
