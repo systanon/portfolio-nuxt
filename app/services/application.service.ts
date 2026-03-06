@@ -37,6 +37,9 @@ export class Application<
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
+  appLoading: Promise<void>
+  #resolveApp!: () => void
+
   constructor(
     todoService: TodoService,
     authService: AuthService,
@@ -45,6 +48,9 @@ export class Application<
     this.#todoService = todoService
     this.#authService = authService
     this.#statisticService = statisticService
+    this.appLoading = new Promise((resolve) => {
+      this.#resolveApp = resolve
+    })
   }
 
   public on<T extends EventEmitter.EventNames<EventTypes>>(
@@ -176,5 +182,10 @@ export class Application<
   async saveStatistic(dto: StatisticDTO): Promise<void | AppError> {
     const res = await this.#statisticService.save(dto)
     return res
+  }
+
+  async init() {
+    await this.getProfile()
+    this.#resolveApp()
   }
 }

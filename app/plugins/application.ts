@@ -6,6 +6,7 @@ import { TodoService } from '~/services/todo.service'
 import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
 import { StatisticService } from '~/services/statistic.service'
+import { animationController } from '~/utils/animations/animationController'
 
 export default defineNuxtPlugin({
   name: 'application-init',
@@ -26,6 +27,8 @@ export default defineNuxtPlugin({
       authService,
       statisticService,
     )
+
+    animationController.start(application.appLoading)
 
     const appStore = useAppStore()
     appStore.bindApplicationEvents(application)
@@ -54,7 +57,7 @@ export default defineNuxtPlugin({
       },
     )
 
-    application.getProfile()
+    application.init()
 
     return {
       provide: {
