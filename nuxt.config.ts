@@ -14,6 +14,9 @@ export default defineNuxtConfig({
         },
       },
     },
+    ssr: {
+      noExternal: ['vue'],
+    },
   },
   components: [{ path: '~/components', pathPrefix: false }],
   runtimeConfig: {
