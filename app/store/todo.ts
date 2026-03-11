@@ -1,4 +1,4 @@
-import type { WSMessage } from '~/services/ws.service'
+import type { WSMessage } from '~/lib/ws.client'
 import { AppError } from '~/types/app-errors'
 import type { GetAllParams } from '~/types/app.types'
 import type { CreateTodoDTO, Todo, UpdateTodoDTO } from '~/types/todo'

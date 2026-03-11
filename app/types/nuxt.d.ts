@@ -1,4 +1,4 @@
-import type { WSService } from '~/services/ws.service'
+import type { WSService } from '~/lib/ws.client'
 
 declare module '#app' {
   interface NuxtApp {

@@ -33,7 +33,7 @@ export class WSService {
 
     this.ws.onopen = () => {
       this.reconnectAttempts = 0
-      console.log('✅ WS Connected')
+      console.log('WS: Connected')
 
       if (this.userId) {
         this.auth(this.userId)

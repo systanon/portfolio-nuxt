@@ -1,4 +1,4 @@
-import { WSService } from '~/services/ws.service'
+import { WSService } from '~/lib/ws.client'
 
 export default defineNuxtPlugin({
   name: 'ws-init',
