@@ -4,13 +4,13 @@ import type { GetAllParams } from '~/types/app.types'
 import type { CreateTodoDTO, Todo, UpdateTodoDTO } from '~/types/todo'
 
 export const useTodoStore = defineStore('todos', () => {
-  const { $ws } = useNuxtApp()
   const app = useApp()
 
   const rows: Ref<Todo[]> = ref([])
   const indexID = ref(new Map<number, Todo>())
   const total = ref<number>(0)
   const pages = ref<number>(0)
+  let unsubscribe = ref<(() => void) | null>(null)
   let currentPage = 0
 
   function messageHandler(message: WSMessage) {
@@ -28,25 +28,21 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   async function getAll(params?: GetAllParams) {
-    try {
-      const {
-        data,
-        total: _total,
-        pages: _pages,
-      } = await app.getAllTodos(params)
+    const res = await app.getAllTodos(params)
 
-      rows.value = data.map((todo) => {
-        indexID.value.set(todo.id, todo)
-        return todo
-      })
-      total.value = _total
-      pages.value = _pages
-      currentPage = params?.page ?? 1
-    } catch (error) {
+    if (res instanceof AppError) {
       rows.value = []
       indexID.value = new Map()
       total.value = 0
       pages.value = 0
+    } else {
+      rows.value = res.data.map((todo) => {
+        indexID.value.set(todo.id, todo)
+        return todo
+      })
+      total.value = res.total
+      pages.value = res.pages
+      currentPage = params?.page ?? 1
     }
   }
 
@@ -100,11 +96,11 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   function initWS() {
-    $ws.subscribe('todos', messageHandler)
+    unsubscribe.value = app.subscribe('todos', messageHandler)
   }
 
   function destroyWS() {
-    $ws.unsubscribe('todos', messageHandler)
+    unsubscribe.value?.()
   }
 
   return {

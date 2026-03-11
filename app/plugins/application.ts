@@ -7,6 +7,7 @@ import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
 import { StatisticService } from '~/services/statistic.service'
 import { animationController } from '~/utils/animations/animationController'
+import { WSClient } from '~/lib/ws.client'
 
 export default defineNuxtPlugin({
   name: 'application-init',
@@ -16,6 +17,8 @@ export default defineNuxtPlugin({
     const fetcher: $Fetch = $fetch.create({
       baseURL: config.public.apiBase,
     })
+
+    const wsClient = new WSClient(config.public.wsURL)
     const refreshClient = new HTTPClient(fetcher)
     const httpClient = new HTTPClient(fetcher)
 
@@ -26,6 +29,7 @@ export default defineNuxtPlugin({
       todoService,
       authService,
       statisticService,
+      wsClient,
     )
 
     animationController.start(application.appLoading)

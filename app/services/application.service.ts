@@ -25,6 +25,7 @@ import type {
 } from '~/types/auth'
 import type { StatisticService } from './statistic.service'
 import type { Profile } from '~/types/user.types'
+import type { WSClient, WSHandler } from '~/lib/ws.client'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -34,6 +35,7 @@ export class Application<
   #todoService: TodoService
   #authService: AuthService
   #statisticService: StatisticService
+  #wsClient: WSClient
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
@@ -44,10 +46,12 @@ export class Application<
     todoService: TodoService,
     authService: AuthService,
     statisticService: StatisticService,
+    wsClient: WSClient,
   ) {
     this.#todoService = todoService
     this.#authService = authService
     this.#statisticService = statisticService
+    this.#wsClient = wsClient
     this.appLoading = new Promise((resolve) => {
       this.#resolveApp = resolve
     })
@@ -98,6 +102,7 @@ export class Application<
     }
     const profile = await this.getProfile()
     if (profile instanceof AppSuccess) {
+      this.#wsClient.auth(profile.data.id)
       this.#ee.emit('auth:login')
     }
   }
@@ -132,6 +137,7 @@ export class Application<
     if (res instanceof AppError) {
       return res
     }
+    this.#wsClient.unauth()
     this.#ee.emit('auth:logout')
   }
 
@@ -185,7 +191,16 @@ export class Application<
   }
 
   async init() {
-    await this.getProfile()
+    const res = await this.getProfile()
+    if (res instanceof AppSuccess) {
+      this.#wsClient.connect(res.data.id)
+    } else {
+      this.#wsClient.connect()
+    }
     this.#resolveApp()
+  }
+
+  subscribe<T = any>(topic: string, handler: WSHandler<T>) {
+    return this.#wsClient.subscribe(topic, handler)
   }
 }
