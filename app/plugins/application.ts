@@ -51,7 +51,7 @@ export default defineNuxtPlugin({
 
     httpClient.addErrorInterceptor(
       async (error, retry, options: RetryableOptions) => {
-        if (error.response.status === 401 && !options._retry) {
+        if (error?.response?.status === 401 && !options._retry) {
           options._retry = true
           const response = await application.refresh()
           if (response instanceof AppSuccess) {
