@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import { ref, type Ref } from 'vue'
-import type { Todo } from '@/types/todo'
+import type { Todo } from '~/types/todo'
 
 const props = defineProps<{
   todo: Todo

@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { socialLinks } from '@/config/social-links'
+import { socialLinks } from '~/config/social-links'
 definePageMeta({
   accessMode: 'public',
 })

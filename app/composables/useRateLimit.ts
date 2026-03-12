@@ -1,5 +1,5 @@
 import { ref, nextTick } from 'vue'
-import type { IProgressBar } from '@/components/animation/ProgressBar.vue'
+import type { IProgressBar } from '~/components/animation/ProgressBar.vue'
 
 export function useRateLimit() {
   const isBlocked = ref<boolean>(false)

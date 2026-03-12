@@ -5,5 +5,5 @@
 </template>
 
 <script lang="ts" setup>
-import { rem } from '@/utils/rem'
+import { rem } from '~/utils/rem'
 </script>

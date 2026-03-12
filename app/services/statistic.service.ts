@@ -1,7 +1,7 @@
-import { HTTPClient } from '@/lib/http.client'
-import { AppError } from '@/types/app-errors'
-import { API_URL } from '@/constants/apiUrl'
-import { AppSuccess, type StatisticDTO } from '@/types/app.types'
+import { HTTPClient } from '~/lib/http.client'
+import { AppError } from '~/types/app-errors'
+import { API_URL } from '~/constants/apiUrl'
+import type { StatisticDTO } from '~/types/app.types'
 
 export class StatisticService {
   private readonly httpClient: HTTPClient

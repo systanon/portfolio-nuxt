@@ -1,5 +1,5 @@
-import type { HTTPClient } from '@/lib/http.client'
-import { AppError, AppRateLimitError, AppSilentError } from '@/types/app-errors'
+import type { HTTPClient } from '~/lib/http.client'
+import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 import type {
   AuthResponse,
   ConfirmQuery,
@@ -9,7 +9,7 @@ import type {
   SignInDto,
   SignUpDto,
 } from '~/types/auth'
-import { API_URL } from '@/constants'
+import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
 import type { Profile, ProfileUpdateInfo } from '~/types/user.types'
 
