@@ -100,21 +100,22 @@ export class HTTPClient {
 
   private handleError(error: any) {
     if (this.isFetchError(error)) {
-      const data = error.response._data as ErrorResponse
+      const data = error.response._data as ErrorResponse | undefined
+      const err = data?.error
 
-      if (data.error.code === 'RATE_LIMIT') {
+      if (err?.code === 'RATE_LIMIT') {
         return new AppRateLimitError(
-          data.error.message,
+          err.message,
           Number(error.response.headers.get('Retry-After')),
         )
       }
 
-      if (data.error.code === 'UNAUTHORIZED') {
-        return new AppSilentError(data.error.message, { cause: data.error })
+      if (err?.code === 'UNAUTHORIZED') {
+        return new AppSilentError(err.message, { cause: err })
       }
 
-      return new AppError(data.error.message ?? 'Unknown error', {
-        cause: data.error,
+      return new AppError(err?.message ?? 'Unknown error', {
+        cause: err ?? data,
       })
     }
 
