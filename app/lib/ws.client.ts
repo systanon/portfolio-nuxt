@@ -1,4 +1,6 @@
-type WSHandler<T = any> = (data: T) => void
+import type { NotificationService } from '~/services/notification.service'
+
+export type WSHandler<T = any> = (data: T) => void
 
 export type WSMessage<T = any> = {
   event: string
@@ -7,21 +9,21 @@ export type WSMessage<T = any> = {
   user_id?: number
 }
 
-export class WSService {
+export class WSClient {
   private readonly handlers = new Map<string, Set<WSHandler>>()
   private ws: WebSocket | null = null
   private url: string
-  private userId: number | null = null
   private reconnectAttempts = 0
   private isDestroyed = false
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null
+  private notification: NotificationService | undefined
 
-  constructor(url: string) {
+  constructor(url: string, notification?: NotificationService) {
     this.url = url
-    this.connect()
+    this.notification = notification
   }
 
-  public connect() {
+  public connect(user_id?: number) {
     if (this.isDestroyed) return
     if (
       this.ws?.readyState === WebSocket.CONNECTING ||
@@ -33,10 +35,10 @@ export class WSService {
 
     this.ws.onopen = () => {
       this.reconnectAttempts = 0
-      console.log('✅ WS Connected')
+      console.log('WS: Connected')
 
-      if (this.userId) {
-        this.auth(this.userId)
+      if (user_id) {
+        this.auth(user_id)
       }
     }
 
@@ -50,7 +52,7 @@ export class WSService {
       console.warn(`WS: Closed. Reconnecting in ${delay}ms...`, e.reason)
 
       this.reconnectAttempts++
-      this.reconnectTimer = setTimeout(() => this.connect(), delay)
+      this.reconnectTimer = setTimeout(() => this.connect(user_id), delay)
     }
 
     this.ws.onerror = (err) => {
@@ -82,7 +84,6 @@ export class WSService {
   }
 
   auth(user_id: number) {
-    this.userId = user_id
     this.emit('auth', { user_id })
   }
 
@@ -93,6 +94,12 @@ export class WSService {
       this.ws.onclose = null
       this.ws.onerror = null
       this.ws = null
+    }
+  }
+
+  unauth() {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.emit('unauth', {})
     }
   }
 
