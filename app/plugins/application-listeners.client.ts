@@ -12,7 +12,7 @@ export default defineNuxtPlugin({
       checkAccessCurrentRoute(router, appStore.isLogged)
     })
     application.on('auth:login', () => {
-      router.push({ name: 'profile' })
+      router.push('/profile')
     })
   },
 })

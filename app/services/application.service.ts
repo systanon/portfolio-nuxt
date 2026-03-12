@@ -24,7 +24,7 @@ import type {
   SignUpDto,
 } from '~/types/auth'
 import type { StatisticService } from './statistic.service'
-import type { Profile } from '~/types/user.types'
+import type { Profile, ProfileDTO } from '~/types/user.types'
 import type { WSClient, WSHandler } from '~/lib/ws.client'
 
 export class Application<
@@ -130,6 +130,11 @@ export class Application<
     if (res instanceof AppRateLimitError) {
       return res
     }
+  }
+
+  async updateProfile(dto: ProfileDTO): Promise<AppSuccess<null> | AppError> {
+    const res = await this.#authService.updateProfile(dto)
+    return res
   }
 
   async logout(): Promise<void | AppError> {

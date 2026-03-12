@@ -23,16 +23,16 @@
     </div>
   </section>
 
-  <UIModal ref="cvModalRef" title="Download CV">
+  <UiModal ref="cvModalRef" title="Download CV">
     <CvForm ref="cvFormRef" />
     <template #actions="{ close }">
       <UiButton @click="close" label="Cancel" />
       <UiButton @click="submitForm" label="Submit" />
     </template>
-  </UIModal>
+  </UiModal>
 </template>
 <script setup lang="ts">
-import UIModal, { type IModalOpen } from '~/components/ui/modals/UiModal.vue'
+import { type IModalOpen } from '~/components/ui/modals/UiModal.vue'
 import { AppError } from '~/types/app-errors'
 
 definePageMeta({
