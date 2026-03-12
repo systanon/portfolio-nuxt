@@ -11,7 +11,7 @@ import type {
 } from '~/types/auth'
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
-import type { Profile, ProfileUpdateInfo } from '~/types/user.types'
+import type { Profile, ProfileDTO } from '~/types/user.types'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
@@ -110,17 +110,17 @@ export class AuthService {
     return result
   }
 
-  async updateProfile(dto: ProfileUpdateInfo): Promise<AppError | string> {
+  async updateProfile(dto: ProfileDTO): Promise<AppError | AppSuccess<null>> {
     const url = API_URL.auth.profile
     const body = JSON.stringify(dto)
 
-    const result = await this.httpClient.do(url, {
+    const result = await this.httpClient.do<null>(url, {
       method: 'PATCH',
       credentials: 'include',
       body,
     })
     if (result instanceof AppSuccess) {
-      return result.message
+      return result
     } else {
       return new AppError(result.message)
     }

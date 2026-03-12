@@ -11,6 +11,8 @@ export type Profile = {
   updated_at: string
 }
 //TODO:use correct formating for birth_date
-export type ProfileUpdateInfo = Partial<
+export type ProfileUpdate = Partial<
   Omit<Profile, 'id' | 'created_at' | 'updated_at' | 'avatar' | 'birth_date'>
 >
+
+export type ProfileDTO = ProfileUpdate
