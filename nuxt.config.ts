@@ -27,8 +27,8 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/api/**': {
-      proxy: process.env.GO_BACKEND_URL + '/**',
-    },
+    '/api/**': process.env.GO_BACKEND_URL
+      ? { proxy: `${process.env.GO_BACKEND_URL}/**` }
+      : {},
   },
 })
