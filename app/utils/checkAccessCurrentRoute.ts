@@ -1,14 +1,10 @@
 import type { Router } from 'vue-router'
 
-export const checkAccessCurrentRoute = async (
-  router: Router,
-  isLogged: boolean,
-) => {
+export const checkAccessCurrentRoute = (router: Router, isLogged: boolean) => {
   const route = router.currentRoute.value
   const { accessMode = 'public' } = route.meta
-  if (accessMode === 'public') return
 
-  const canAccess = await canUserAccess(route, isLogged)
+  const canAccess = canUserAccess(route, isLogged)
   if (canAccess) return
 
   if (accessMode === 'private') router.push({ name: 'sign-in' })

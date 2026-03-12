@@ -1,11 +1,14 @@
 import type { RouteLocationNormalized } from 'vue-router'
 
-export const canUserAccess = async (
+export function canUserAccess(
   to: RouteLocationNormalized,
   isAuthenticated: boolean,
-) => {
+): boolean {
   const { accessMode = 'public' } = to.meta
 
+  if (accessMode === 'public') {
+    return true
+  }
   if (accessMode === 'only-for-unauthorized' && !isAuthenticated) {
     return true
   }
