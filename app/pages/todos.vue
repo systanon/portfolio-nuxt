@@ -11,32 +11,38 @@
         <span class="page-todo__create-text"> Create todo </span>
       </template>
     </UiButtonIcon>
-    <section class="page-todo__todos">
-      <TodoItem
-        v-for="todo of rows"
-        :key="todo.id"
-        :todo="todo"
-        @edit="openEditForm"
-        @delete="deleteHandler"
-        @toggle="toggle"
-      />
-      <UiPaginationMobile
-        v-if="isMobile || isTablet"
-        v-model:page="pagination.page"
-        v-model:pages="pagination.pages"
-        @prev-page="prevPage"
-        @next-page="nextPage"
-      />
-      <UiPagination
-        v-else
-        class="page-todo__pagination"
-        v-model:page="pagination.page"
-        v-model:pages="pagination.pages"
-        @first-page="firstPage"
-        @latest-page="latestPage"
-        @btn-page="btnPage"
-      />
-    </section>
+    <template v-if="loading">
+      <section class="page-todo__todos" v-if="rows.length">
+        <TodoItem
+          v-for="todo of rows"
+          :key="todo.id"
+          :todo="todo"
+          @edit="openEditForm"
+          @delete="deleteHandler"
+          @toggle="toggle"
+        />
+        <UiPaginationMobile
+          v-if="isMobile || isTablet"
+          v-model:page="pagination.page"
+          v-model:pages="pagination.pages"
+          @prev-page="prevPage"
+          @next-page="nextPage"
+        />
+        <UiPagination
+          v-else
+          class="page-todo__pagination"
+          v-model:page="pagination.page"
+          v-model:pages="pagination.pages"
+          @first-page="firstPage"
+          @latest-page="latestPage"
+          @btn-page="btnPage"
+        />
+      </section>
+      <section v-else>
+        <NoDataFound label="Empty todos" />
+      </section>
+    </template>
+    <template v-else> <Loader /> </template>
   </section>
   <UiModal ref="deleteModalRef" title="Delete todo?" class="page-todo__modal">
     <template #default>
@@ -73,6 +79,7 @@
 
 <script lang="ts" setup>
 import type { IModalOpen } from '~/components/ui/modals/UiModal.vue'
+import { useAppStore } from '~/store/application'
 import { useTodoStore } from '~/store/todo'
 import { AppError } from '~/types/app-errors'
 import type { Todo } from '~/types/todo'
@@ -88,7 +95,9 @@ const createModalRef = ref<IModalOpen | null>(null)
 const { isTablet, isMobile } = useWindowResize()
 
 const todoStore = useTodoStore()
+const appStore = useAppStore()
 const { pages, rows } = storeToRefs(todoStore)
+const { loading } = storeToRefs(appStore)
 const { getAll, update, create, remove } = todoStore
 const {
   pagination,
@@ -139,10 +148,10 @@ const updateTodo = async () => {
 const deleteHandler = async (todo: Todo) => {
   const { id } = todo
   const modal = deleteModalRef.value
-  const res = await modal?.open()
-  if (res) {
-    const res = await remove(id)
-    if (res instanceof AppError) return
+  const confirmed = await modal?.open()
+  if (confirmed) {
+    const removeResult = await remove(id)
+    if (removeResult instanceof AppError) return
   }
 }
 
@@ -200,6 +209,9 @@ onUnmounted(() => {
 @include media-query('tablet') {
   .page-todo__todos {
     grid-template-columns: 1fr 1fr;
+    > :last-of-type {
+      grid-column: 1 / -1;
+    }
   }
 }
 </style>
