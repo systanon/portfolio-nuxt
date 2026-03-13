@@ -11,38 +11,36 @@
         <span class="page-todo__create-text"> Create todo </span>
       </template>
     </UiButtonIcon>
-    <template v-if="loading">
-      <section class="page-todo__todos" v-if="rows.length">
-        <TodoItem
-          v-for="todo of rows"
-          :key="todo.id"
-          :todo="todo"
-          @edit="openEditForm"
-          @delete="deleteHandler"
-          @toggle="toggle"
-        />
-        <UiPaginationMobile
-          v-if="isMobile || isTablet"
-          v-model:page="pagination.page"
-          v-model:pages="pagination.pages"
-          @prev-page="prevPage"
-          @next-page="nextPage"
-        />
-        <UiPagination
-          v-else
-          class="page-todo__pagination"
-          v-model:page="pagination.page"
-          v-model:pages="pagination.pages"
-          @first-page="firstPage"
-          @latest-page="latestPage"
-          @btn-page="btnPage"
-        />
-      </section>
+    <template v-if="!loading">
+      <template v-if="rows.length">
+        <section class="page-todo__todos">
+          <TodoItem
+            v-for="todo of rows"
+            :key="todo.id"
+            :todo="todo"
+            @edit="openEditForm"
+            @delete="deleteHandler"
+            @toggle="toggle"
+          />
+        </section>
+      </template>
       <section v-else>
         <NoDataFound label="Empty todos" />
       </section>
     </template>
     <template v-else> <Loader /> </template>
+    <section class="page-todo__pagination">
+      <UiPagination
+        class="page-todo__pagination"
+        v-model:page="pagination.page"
+        v-model:pages="pages"
+        @first-page="firstPage"
+        @latest-page="latestPage"
+        @btn-page="btnPage"
+        @prev-page="prevPage"
+        @next-page="nextPage"
+      />
+    </section>
   </section>
   <UiModal ref="deleteModalRef" title="Delete todo?" class="page-todo__modal">
     <template #default>
@@ -209,9 +207,6 @@ onUnmounted(() => {
 @include media-query('tablet') {
   .page-todo__todos {
     grid-template-columns: 1fr 1fr;
-    > :last-of-type {
-      grid-column: 1 / -1;
-    }
   }
 }
 </style>

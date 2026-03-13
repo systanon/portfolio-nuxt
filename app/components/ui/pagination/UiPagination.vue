@@ -1,65 +1,82 @@
 <template>
-  <div v-if="pages > 1" class="ui-pagination">
-    <UiButtonIcon
-      @click="$emit('firstPage')"
-      :disabled="page <= 1"
-      iconName="left-arrow"
-      :withBorder="false"
-      class="ui-pagination__arrows arrow-left"
-    />
+  <section v-if="pages > 1" class="ui-pagination">
+    <div v-if="isMobile || isTablet" class="ui-pagination__mobile">
+      <UiButtonIcon
+        @click="$emit('prevPage')"
+        :disabled="page <= 1"
+        iconName="left-arrow"
+        :withBorder="false"
+        class="ui-pagination__mobile-arrow"
+      />
 
-    <UiButton
-      v-if="pages > VISIBLE_PAGES"
-      label="1"
-      class="ui-pagination__buttons"
-      :active="page === 1"
-      @click="$emit('btnPage', 1)"
-    />
+      <span class="ui-pagination__mobile-info"> {{ page }} / {{ pages }} </span>
 
-    <span
-      v-if="pages > VISIBLE_PAGES && page > range + 2"
-      class="ui-pagination__dots"
-      >...</span
-    >
+      <UiButtonIcon
+        @click="$emit('nextPage')"
+        :disabled="page >= pages"
+        iconName="right-arrow"
+        :withBorder="false"
+        class="ui-pagination__mobile-arrow"
+      />
+    </div>
+    <div v-else class="ui-pagination__desktop">
+      <UiButtonIcon
+        @click="$emit('firstPage')"
+        :disabled="page <= 1"
+        iconName="left-arrow"
+        :withBorder="false"
+        class="ui-pagination__desktop-arrows arrow-left"
+      />
 
-    <UiButton
-      v-for="_page in visiblePages"
-      :key="_page"
-      class="ui-pagination__buttons"
-      :active="page === _page"
-      @click="$emit('btnPage', _page)"
-      :label="_page"
-    />
+      <UiButton
+        v-if="pages > VISIBLE_PAGES"
+        label="1"
+        class="ui-pagination__desktop-buttons"
+        :active="page === 1"
+        @click="$emit('btnPage', 1)"
+      />
 
-    <span
-      v-if="pages > VISIBLE_PAGES && page < pages - (range + 1)"
-      class="ui-pagination__dots"
-      >...</span
-    >
+      <span
+        v-if="pages > VISIBLE_PAGES && page > range + 2"
+        class="ui-pagination__desktop-dots"
+        >...</span
+      >
 
-    <UiButton
-      v-if="pages > VISIBLE_PAGES"
-      class="ui-pagination__buttons"
-      :active="page === pages"
-      :label="pages"
-      @click="$emit('btnPage', pages)"
-    />
+      <UiButton
+        v-for="_page in visiblePages"
+        :key="_page"
+        class="ui-pagination__desktop-buttons"
+        :active="page === _page"
+        @click="$emit('btnPage', _page)"
+        :label="_page"
+      />
 
-    <UiButtonIcon
-      @click="$emit('latestPage')"
-      :disabled="page >= pages"
-      :withBorder="false"
-      class="ui-pagination__arrows arrow-right"
-      iconName="right-arrow"
-    />
-  </div>
+      <span
+        v-if="pages > VISIBLE_PAGES && page < pages - (range + 1)"
+        class="ui-pagination__desktop-dots"
+        >...</span
+      >
+
+      <UiButton
+        v-if="pages > VISIBLE_PAGES"
+        class="ui-pagination__desktop-buttons"
+        :active="page === pages"
+        :label="pages"
+        @click="$emit('btnPage', pages)"
+      />
+
+      <UiButtonIcon
+        @click="$emit('latestPage')"
+        :disabled="page >= pages"
+        :withBorder="false"
+        class="ui-pagination__desktop-arrows arrow-right"
+        iconName="right-arrow"
+      />
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
-import UiButtonIcon from '@/components/ui/buttons/UiButtonIcon.vue'
-import UiButton from '@/components/ui/buttons/UiButton.vue'
-
 const VISIBLE_PAGES = 7
 
 interface Pagination {
@@ -73,6 +90,7 @@ const props = withDefaults(defineProps<Pagination>(), {
   pages: 1,
   range: 2,
 })
+const { isTablet, isMobile } = useWindowResize()
 
 const visiblePages = computed(() => {
   if (props.pages <= VISIBLE_PAGES) {
@@ -92,17 +110,31 @@ const visiblePages = computed(() => {
 
 <style lang="scss" scoped>
 .ui-pagination {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  gap: rem(16);
-  padding: rem(30) 0;
-  &__dots {
+  &__desktop {
+    width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    font-size: rem(40);
+    text-align: center;
+    gap: rem(16);
+    padding: rem(30) 0;
+    &-dots {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: rem(40);
+    }
+  }
+  &__mobile {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: rem(16);
+    padding: rem(20) 0;
+
+    &-info {
+      color: var(--text-active-primary);
+    }
   }
 }
 </style>
