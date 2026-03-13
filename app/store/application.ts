@@ -20,6 +20,10 @@ export const useAppStore = defineStore('app', () => {
     application.on('auth:logout', () => {
       profile.value = null
     })
+
+    application.on('data:loading', (isLoading: boolean) => {
+      loading.value = isLoading
+    })
   }
 
   return {
