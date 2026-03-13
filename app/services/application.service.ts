@@ -159,10 +159,10 @@ export class Application<
   public async getAllTodos(
     params?: GetAllParams,
   ): Promise<PaginateResult<Todo> | AppError> {
-    this.#ee.emit('data:loading', false)
+    this.#ee.emit('data:loading', true)
     const res = await this.#todoService.getAll(params)
     this.#ee.emit('todo:loaded', res)
-    this.#ee.emit('data:loading', true)
+    this.#ee.emit('data:loading', false)
     return res
   }
 
