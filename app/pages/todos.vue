@@ -31,7 +31,6 @@
     <template v-else> <Loader /> </template>
     <section class="page-todo__pagination">
       <UiPagination
-        class="page-todo__pagination"
         v-model:page="pagination.page"
         v-model:pages="pages"
         @first-page="firstPage"
@@ -89,8 +88,6 @@ const editingTodo = ref<Todo | undefined>(undefined)
 const deleteModalRef = ref<IModalOpen | null>(null)
 const editModalRef = ref<IModalOpen | null>(null)
 const createModalRef = ref<IModalOpen | null>(null)
-
-const { isTablet, isMobile } = useWindowResize()
 
 const todoStore = useTodoStore()
 const appStore = useAppStore()
@@ -202,6 +199,9 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+  }
+  &__pagination {
+    margin-top: auto;
   }
 }
 @include media-query('tablet') {
