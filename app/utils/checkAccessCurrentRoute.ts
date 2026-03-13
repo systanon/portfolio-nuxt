@@ -1,4 +1,5 @@
 import type { Router } from 'vue-router'
+import { canUserAccess } from './canUserAccess'
 
 export const checkAccessCurrentRoute = (router: Router, isLogged: boolean) => {
   const route = router.currentRoute.value
