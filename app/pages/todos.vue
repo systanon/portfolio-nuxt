@@ -20,6 +20,22 @@
         @delete="deleteHandler"
         @toggle="toggle"
       />
+      <UiPaginationMobile
+        v-if="isMobile || isTablet"
+        v-model:page="pagination.page"
+        v-model:pages="pagination.pages"
+        @prev-page="prevPage"
+        @next-page="nextPage"
+      />
+      <UiPagination
+        v-else
+        class="page-todo__pagination"
+        v-model:page="pagination.page"
+        v-model:pages="pagination.pages"
+        @first-page="firstPage"
+        @latest-page="latestPage"
+        @btn-page="btnPage"
+      />
     </section>
   </section>
   <UiModal ref="deleteModalRef" title="Delete todo?" class="page-todo__modal">
@@ -69,10 +85,22 @@ const deleteModalRef = ref<IModalOpen | null>(null)
 const editModalRef = ref<IModalOpen | null>(null)
 const createModalRef = ref<IModalOpen | null>(null)
 
+const { isTablet, isMobile } = useWindowResize()
+
 const todoStore = useTodoStore()
 const { pages, rows } = storeToRefs(todoStore)
 const { getAll, update, create, remove } = todoStore
-
+const {
+  pagination,
+  firstPage,
+  prevPage,
+  nextPage,
+  latestPage,
+  btnPage,
+  setPages,
+  saveQuery,
+  requestParams,
+} = usePaginatedRoute(pages)
 const openEditForm = async (todo: Todo) => {
   editingTodo.value = todo
   await editModalRef.value?.open()
@@ -128,8 +156,14 @@ const toggle = ({
   update(id, payload)
 }
 
+watch(requestParams, (params) => {
+  getAll(params)
+  saveQuery()
+})
+
 onMounted(() => {
-  getAll()
+  getAll(requestParams.value)
+  saveQuery()
   todoStore.initWS()
 })
 
