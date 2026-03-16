@@ -1,4 +1,5 @@
 import { useAppStore } from '~/store/application'
+import { canUserAccess } from '~/router/canUserAccess'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const application = useApp()
