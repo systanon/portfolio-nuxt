@@ -1,6 +1,7 @@
+/// <reference types="node" />
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { canUserAccess } from '../../app/utils/canUserAccess'
+import { canUserAccess } from '../../app/router/canUserAccess'
 import type { RouteLocationNormalized } from 'vue-router'
 
 function createRoute(meta: { accessMode?: string }): RouteLocationNormalized {

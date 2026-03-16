@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { checkAccessCurrentRoute } from '../../app/utils/checkAccessCurrentRoute'
+import { checkAccessCurrentRoute } from '../../app/router/checkAccessCurrentRoute'
 import type { Router, RouteLocationNormalizedLoaded } from 'vue-router'
 
 function createRoute(meta: {
