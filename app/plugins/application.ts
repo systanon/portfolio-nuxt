@@ -1,5 +1,5 @@
 import type { $Fetch } from 'nitropack'
-import { Application } from '~/services/application.service'
+import { Application } from '~/services/application'
 import { HTTPClient, type RetryableOptions } from '~/lib/http.client'
 import { AuthService } from '~/services/auth.service'
 import { TodoService } from '~/services/todo.service'
