@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { createProgressAnimation } from '~/utils/animations'
+import { createProgress } from '~/animations'
 
 export interface IProgressBar {
   play: (
@@ -41,11 +41,10 @@ const pause = ref<() => void>(() => {})
 const resume = ref<() => void>(() => {})
 const seek = ref<(progress: number) => void>(() => {})
 const getTween = ref<() => gsap.core.Tween | null>()
-const progressBar = ref<HTMLDivElement | null>(null)
+const progressBar = ref<HTMLDivElement>()
 
 onMounted(() => {
-  if (!progressBar.value) return
-  const progress = createProgressAnimation(progressBar.value, props.progress)
+  const progress = createProgress(progressBar.value!, props.progress)
 
   play.value = progress.play
   reset.value = progress.reset
