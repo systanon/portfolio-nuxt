@@ -35,7 +35,7 @@ onMounted(() => {
 .splash-screen {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: var(--z-splash-screen);
   will-change: transform, opacity;
 }
 </style>

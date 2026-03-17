@@ -1,0 +1,20 @@
+/**
+ * Z-Index CSS variables — use with var(--z-*).
+ * Matches app/constants/zIndex.ts for consistency.
+ *
+ * Layer order (low → high):
+ * base → sticky-header → dropdown → popover → overlay → modal → drawer → burger button → splash screen → notification
+ */
+
+:root {
+  --z-base: 0;
+  --z-sticky-header: 100;
+  --z-dropdown: 200;
+  --z-popover: 300;
+  --z-overlay: 400;
+  --z-modal: 500;
+  --z-drawer: 600;
+  --z-burger-btn: 601;
+  --z-splash-screen: 602;
+  --z-notification: 700;
+}

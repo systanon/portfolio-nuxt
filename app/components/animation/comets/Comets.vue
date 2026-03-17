@@ -45,6 +45,5 @@ onUnmounted(() => {
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: -5;
 }
 </style>
