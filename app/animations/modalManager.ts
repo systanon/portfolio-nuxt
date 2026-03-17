@@ -1,6 +1,6 @@
 import type { gsap as GSAPType } from 'gsap'
 
-export class ModalEngine {
+export class ModalManager {
   private gsap: typeof GSAPType
   private timelineIndex: Map<number, gsap.core.Timeline> = new Map()
   private modalIndex: Map<

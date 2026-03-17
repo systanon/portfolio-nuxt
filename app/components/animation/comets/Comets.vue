@@ -12,8 +12,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { type Comet } from '~/utils/animations/cometEngine'
-import { cometsEngine } from '~/utils/animations'
+import { type Comet } from '~/animations/cometEngine'
+import { cometsEngine } from '~/animations'
 
 const comets = ref<Comet[]>([])
 let unsubscribe: (() => void) | null = null

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import type { Comet } from '~/utils/animations/cometEngine'
+import type { Comet } from '~/animations/cometEngine'
 
 const props = defineProps<{
   comet: Comet
@@ -43,9 +43,11 @@ onUnmounted(() => {
     top: 50%;
     transform: translateY(-50%);
     height: rem(2);
-    background: linear-gradient(to right,
-        rgba(255, 255, 255, 0),
-        rgba(255, 255, 255, 0.9));
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.9)
+    );
     pointer-events: none;
   }
 }

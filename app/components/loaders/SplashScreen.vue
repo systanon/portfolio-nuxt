@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { animationController } from '~/utils/animations/animationController'
-import { createSplash } from '~/utils/animations'
+import { animationController } from '~/animations/animationController'
+import { createSplash } from '~/animations'
 import { ensureMinDelay } from '~/utils/ensureMinDelay'
 
 const emit = defineEmits<{

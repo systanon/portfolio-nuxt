@@ -6,7 +6,7 @@ import { TodoService } from '~/services/todo.service'
 import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
 import { StatisticService } from '~/services/statistic.service'
-import { animationController } from '~/utils/animations/animationController'
+import { animationController } from '~/animations/animationController'
 import { WSClient } from '~/lib/ws.client'
 
 export default defineNuxtPlugin({

@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref, type ComponentPublicInstance } from 'vue'
-import { createPulse } from '~/utils/animations'
-import { animationController } from '~/utils/animations/animationController'
+import { createPulse } from '~/animations'
+import { animationController } from '~/animations/animationController'
 
 export type Tech = {
   icon: string

@@ -1,7 +1,7 @@
 import type { gsap as GSAPType } from 'gsap'
 import type { ComponentPublicInstance } from 'vue'
 
-export const textAssemblyAnimation = (gsap: typeof GSAPType) => {
+export const textAssembly = (gsap: typeof GSAPType) => {
   return (charList: ComponentPublicInstance[]) => {
     gsap.fromTo(
       charList,

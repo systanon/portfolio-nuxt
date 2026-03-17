@@ -30,7 +30,7 @@
 import { ref, nextTick } from 'vue'
 import UiButton from '~/components/ui/buttons/UiButton.vue'
 import { useEscapeKey } from '~/composables/useEscapeKey'
-import { createModalAnimation } from '~/utils/animations/'
+import { createModalManager } from '~/animations/'
 
 export type ModalOpen<T = any> = () => Promise<null | T>
 export interface IModalOpen<T = boolean> {
@@ -60,9 +60,9 @@ const open = async (): Promise<any> => {
   await nextTick()
 
   if (backdropRef.value && dialogRef.value) {
-    createModalAnimation.init(props.id, backdropRef.value, dialogRef.value)
+    createModalManager.init(props.id, backdropRef.value, dialogRef.value)
   }
-  createModalAnimation.open(props.id)
+  createModalManager.open(props.id)
 
   return new Promise((res) => {
     resolver = res
@@ -72,7 +72,7 @@ const open = async (): Promise<any> => {
 const confirm = async (...params: any[]) => {
   if (resolver) resolver(...params)
 
-  await createModalAnimation.close(props.id, () => (isOpen.value = false))
+  await createModalManager.close(props.id, () => (isOpen.value = false))
 }
 
 const close = () => {
