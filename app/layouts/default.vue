@@ -67,7 +67,7 @@ onUnmounted(() => {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: -5;
+    z-index: -2;
   }
 
   &::after {
@@ -84,7 +84,7 @@ onUnmounted(() => {
     background-repeat: no-repeat;
     background-position: center;
     transform: translateX(-50%);
-    z-index: -5;
+    z-index: -2;
   }
 }
 

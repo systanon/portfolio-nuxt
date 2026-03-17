@@ -92,7 +92,7 @@ defineExpose({
   &__backdrop {
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: var(--z-overlay);
     opacity: 0;
   }
   &__dialog {
@@ -105,7 +105,7 @@ defineExpose({
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 101;
+    z-index: var(--z-modal);
     opacity: 0;
   }
   &__actions {

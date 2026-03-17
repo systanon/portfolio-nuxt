@@ -97,7 +97,7 @@ onMounted(() => {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: var(--z-drawer);
   transform: translateX(-100%);
   will-change: transform;
 

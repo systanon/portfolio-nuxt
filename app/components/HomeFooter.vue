@@ -4,8 +4,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style lang="scss" scoped>
 .app-footer {
@@ -22,7 +21,7 @@
     left: 0;
     top: 0;
     transform: translateY(30%);
-    z-index: -4;
+    z-index: -1;
   }
 }
 

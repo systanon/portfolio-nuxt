@@ -39,7 +39,7 @@ defineExpose({ play: () => play.value(), reverse: () => reverse.value() })
   width: rem(32);
   height: rem(24);
   cursor: pointer;
-  z-index: 1001;
+  z-index: var(--z-burger-btn);
   position: relative;
   background: none;
   border: none;
