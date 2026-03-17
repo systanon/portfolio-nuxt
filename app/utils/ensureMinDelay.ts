@@ -4,9 +4,9 @@ export async function ensureMinDelay<T>(
   promise: Promise<T>,
   minDuration: number,
 ): Promise<T> {
-  const start = performance.now()
+  const start = Date.now()
   const result = await promise
-  const elapsed = performance.now() - start
+  const elapsed = Date.now() - start
   if (elapsed < minDuration) {
     await delay(minDuration - elapsed)
   }
