@@ -15,6 +15,7 @@
     "@pinia/nuxt": "^0.11.3",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
+    "@vueuse/components": "^14.2.1",
     "@vueuse/nuxt": "^14.2.1",
     "eventemitter3": "^5.0.4",
     "gsap": "^3.14.2",

@@ -2,11 +2,13 @@
   <header class="app-header">
     <div class="container">
       <div class="app-header__wrapper">
-        <template v-if="isMobile || isTablet">
-          <Logo />
-          <!-- <NavigationMenuMobile /> -->
-        </template>
-        <NavigationMenu v-else />
+        <ClientOnly>
+          <template v-if="isMobile || isTablet">
+            <Logo />
+            <NavigationMenuMobile />
+          </template>
+          <NavigationMenu v-else />
+        </ClientOnly>
       </div>
     </div>
   </header>
