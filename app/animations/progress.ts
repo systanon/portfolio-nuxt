@@ -1,6 +1,6 @@
 import type { gsap as GSAPType } from 'gsap'
 
-export const progressAnimation = (gsap: typeof GSAPType) => {
+export const progress = (gsap: typeof GSAPType) => {
   return (progressBar: HTMLDivElement, progress: boolean) => {
     let tween: gsap.core.Tween | null = null
 

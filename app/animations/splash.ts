@@ -1,5 +1,5 @@
 import type { gsap as GSAPType } from 'gsap'
-export function hideSplash(gsap: typeof GSAPType) {
+export function splash(gsap: typeof GSAPType) {
   return () => {
     let hideTl: gsap.core.Timeline | null = null
 

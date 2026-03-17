@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, type ComponentPublicInstance } from 'vue'
-import { createTextAssembly } from '~/utils/animations'
-import { animationController } from '~/utils/animations/animationController'
+import { createTextAssembly } from '~/animations'
+import { animationController } from '~/animations/animationController'
 
 const props = defineProps<{
   text: string

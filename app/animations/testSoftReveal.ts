@@ -1,6 +1,6 @@
 import type { gsap as GSAPType } from 'gsap'
 
-export const textSoftRevealAnimation = (gsap: typeof GSAPType) => {
+export const textSoftReveal = (gsap: typeof GSAPType) => {
   return (text: HTMLElement) => {
     gsap.fromTo(
       text,

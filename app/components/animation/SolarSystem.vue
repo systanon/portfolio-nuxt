@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { createSolarSystem } from '~/utils/animations'
-import type { PlanetConfig } from '~/utils/animations/solarSystem'
+import { createSolarSystem } from '~/animations'
+import type { PlanetConfig } from '~/animations/solarSystem'
 
 import { solarSystem } from '~/config/solar-system'
 

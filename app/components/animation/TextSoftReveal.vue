@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts" setup>
-import { createTextSoftReveal } from '~/utils/animations'
-import { animationController } from '~/utils/animations/animationController'
+import { createTextSoftReveal } from '~/animations'
+import { animationController } from '~/animations/animationController'
 
 defineProps<{
   text: string

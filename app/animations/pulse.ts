@@ -1,7 +1,7 @@
 import type { gsap as GSAPType } from 'gsap'
 import type { ComponentPublicInstance } from 'vue'
 
-export const pulseAnimation = (gsap: typeof GSAPType) => {
+export const pulse = (gsap: typeof GSAPType) => {
   return (items: ComponentPublicInstance[]) => {
     const pulseTimes = 3
     const delay = 2
