@@ -26,11 +26,16 @@ export const useAppStore = defineStore('app', () => {
     })
   }
 
+  function updateField<K extends keyof Profile>(key: K, value: Profile[K]) {
+    profile.value![key] = value
+  }
+
   return {
     profile,
     loading,
     pageTitle,
     isLogged,
+    updateField,
     bindApplicationEvents,
   }
 })
