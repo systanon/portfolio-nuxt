@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   async registration(dto: SignUpDto): Promise<AppSuccess | AppError> {
-    const url = API_URL.auth.sign_up
+    const url = API_URL.sign_up
     const body = JSON.stringify(dto)
     return await this.httpClient.do(url, {
       method: 'POST',
@@ -33,13 +33,10 @@ export class AuthService {
   }
 
   async confirmEmail(params: ConfirmQuery): Promise<void | AppError> {
-    const response = await this.httpClient.do<AuthResponse>(
-      API_URL.auth.confirm,
-      {
-        method: 'POST',
-        params,
-      },
-    )
+    const response = await this.httpClient.do<AuthResponse>(API_URL.confirm, {
+      method: 'POST',
+      params,
+    })
     if (response instanceof AppSuccess) {
       const access_token = response.data.access_token
       const token = useCookie('access_token')
@@ -52,7 +49,7 @@ export class AuthService {
   async resendConfirmEmail(
     dto: ResendConfirmEmailDto,
   ): Promise<AppSuccess | AppError | AppRateLimitError> {
-    const url = API_URL.auth.resendEmail
+    const url = API_URL.resendEmail
     const body = JSON.stringify(dto)
 
     return await this.httpClient.do(url, {
@@ -64,7 +61,7 @@ export class AuthService {
   async forgotPassword(
     dto: ForgotPasswordDto,
   ): Promise<AppSuccess | AppError | AppRateLimitError> {
-    const url = API_URL.auth.forgotPass
+    const url = API_URL.forgotPass
     const body = JSON.stringify(dto)
 
     return await this.httpClient.do(url, {
@@ -74,7 +71,7 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<AppSuccess | AppError> {
-    const url = API_URL.auth.resetPass
+    const url = API_URL.resetPass
     const body = JSON.stringify(dto)
     return await this.httpClient.do(url, {
       method: 'POST',
@@ -83,7 +80,7 @@ export class AuthService {
   }
 
   async authorization(dto: SignInDto): Promise<void | AppError> {
-    const url = API_URL.auth.sign_in
+    const url = API_URL.sign_in
     const body = JSON.stringify(dto)
 
     const result = await this.httpClient.do<AuthResponse>(url, {
@@ -102,7 +99,7 @@ export class AuthService {
   }
 
   async getProfile(): Promise<AppSuccess<Profile> | AppError | AppSilentError> {
-    const url = API_URL.auth.profile
+    const url = API_URL.profile
     const result = await this.httpClient.do<Profile>(url, {
       method: 'POST',
       credentials: 'include',
@@ -111,7 +108,7 @@ export class AuthService {
   }
 
   async updateProfile(dto: ProfileDTO): Promise<AppError | AppSuccess<null>> {
-    const url = API_URL.auth.profile
+    const url = API_URL.profile
     const body = JSON.stringify(dto)
 
     const result = await this.httpClient.do<null>(url, {
@@ -127,7 +124,7 @@ export class AuthService {
   }
 
   async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
-    const url = API_URL.auth.refresh
+    const url = API_URL.refresh
     const response = await this.httpClientRefresh.do<AuthResponse>(url, {
       method: 'POST',
       credentials: 'include',
@@ -142,7 +139,7 @@ export class AuthService {
   }
 
   async logout(): Promise<void | AppError> {
-    const url = API_URL.auth.logout
+    const url = API_URL.logout
     const result = await this.httpClient.do(url, {
       method: 'POST',
       credentials: 'include',
