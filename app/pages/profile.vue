@@ -12,24 +12,24 @@
         class="page-profile__fields-item"
       >
         <div class="page-profile__fields-label">
-          <h3>{{ field.label }}</h3>
+          <h3>{{ labels[key] }}</h3>
         </div>
         <UiInput
-          v-model="field.value.value"
-          :placeholder="field.label"
+          v-model="field.value"
+          :placeholder="labels[key]"
           :type="'text'"
           :validation="v$[key]"
           :id="key"
-          :iconName="field.isEditing.value ? 'close-square' : 'edit'"
-          :disabled="!field.isEditing.value"
-          @iconClick="field.isEditing.value ? cancelEdit(key) : toggleEdit(key)"
+          :iconName="isEditingMap[key] ? 'close-square' : 'edit'"
+          :disabled="!isEditingMap[key]"
+          @iconClick="isEditingMap[key] ? cancelEdit(key) : toggleEdit(key)"
         />
         <div class="page-profile__fields-actions">
           <UiButtonIcon
             :disabled="
-              !field.isEditing.value ||
+              !isEditingMap[key] ||
               v$[key].$error ||
-              field.value.value === field.originalValue
+              field.value === profile![key]
             "
             @click="submitField(key)"
             :withBorder="false"
@@ -84,53 +84,51 @@ type FieldKey = keyof ProfileUpdate
 
 const appStore = useAppStore()
 const application = useApp()
+const { profile } = storeToRefs(appStore)
 
-const avatar = computed(
-  () => appStore.profile?.avatar || avatarFallback,
-)
+const avatar = computed(() => profile.value?.avatar || avatarFallback)
 
-interface FieldData {
-  label: string
-  value: Ref<string>
-  originalValue: string
-  isEditing: Ref<boolean>
+const localProfile = reactive<Partial<ProfileUpdate>>({})
+const isEditingMap = reactive<Record<FieldKey, boolean>>({
+  email: false,
+  first_name: false,
+  last_name: false,
+  phone: false,
+  bio: false,
+})
+
+const labels = {
+  email: 'Email',
+  first_name: 'First Name',
+  last_name: 'Last Name',
+  phone: 'Phone',
+  bio: 'Bio',
+}
+
+function createField(key: FieldKey) {
+  return computed({
+    get: () => {
+      if (isEditingMap[key]) {
+        return localProfile[key] ?? ''
+      }
+      return profile.value?.[key] ?? ''
+    },
+    set: (val: string) => {
+      localProfile[key] = val
+    },
+  })
 }
 
 const deleteModalRef = ref<IModalOpen | null>(null)
 const signOutModalRef = ref<IModalOpen | null>(null)
 
 const fields = {
-  email: {
-    label: 'Email',
-    value: ref(appStore.profile?.email ?? ''),
-    originalValue: appStore.profile?.email ?? '',
-    isEditing: ref(false),
-  },
-  first_name: {
-    label: 'First Name',
-    value: ref(appStore.profile?.first_name ?? ''),
-    originalValue: appStore.profile?.first_name ?? '',
-    isEditing: ref(false),
-  },
-  last_name: {
-    label: 'Last Name',
-    value: ref(appStore.profile?.last_name ?? ''),
-    originalValue: appStore.profile?.last_name ?? '',
-    isEditing: ref(false),
-  },
-  phone: {
-    label: 'Phone',
-    value: ref(appStore.profile?.phone ?? ''),
-    originalValue: appStore.profile?.phone ?? '',
-    isEditing: ref(false),
-  },
-  bio: {
-    label: 'Bio',
-    value: ref(appStore.profile?.bio ?? ''),
-    originalValue: appStore.profile?.bio ?? '',
-    isEditing: ref(false),
-  },
-} satisfies Record<FieldKey, FieldData>
+  email: createField('email'),
+  first_name: createField('first_name'),
+  last_name: createField('last_name'),
+  phone: createField('phone'),
+  bio: createField('bio'),
+}
 
 const rules = computed(() => ({
   email: { required, email },
@@ -142,11 +140,11 @@ const rules = computed(() => ({
 
 const state = computed(() => {
   const s: Record<FieldKey, string> = {
-    email: fields.email.value.value,
-    first_name: fields.first_name.value.value,
-    last_name: fields.last_name.value.value,
-    phone: fields.phone.value.value,
-    bio: fields.bio.value.value,
+    email: fields.email.value,
+    first_name: fields.first_name.value,
+    last_name: fields.last_name.value,
+    phone: fields.phone.value,
+    bio: fields.bio.value,
   }
   return s
 })
@@ -154,33 +152,37 @@ const state = computed(() => {
 const v$ = useVuelidate(rules, state)
 
 function toggleEdit(key: FieldKey) {
-  fields[key].isEditing.value = true
+  localProfile[key] = profile.value?.[key] ?? ''
+  isEditingMap[key] = true
 }
 
 function cancelEdit(key: FieldKey) {
-  const field = fields[key]
-  field.value.value = field.originalValue
-  field.isEditing.value = false
+  delete localProfile[key]
+  isEditingMap[key] = false
   v$.value[key].$reset()
 }
 
 async function submitField(key: FieldKey) {
-  const field = fields[key]
   const validation = v$.value[key]
   validation.$touch()
 
   if (validation.$invalid) return
 
-  if (field.value.value !== field.originalValue) {
+  const newValue = localProfile[key]
+  const oldValue = profile.value?.[key]
+
+  if (newValue !== oldValue) {
     const res = await application.updateProfile({
-      [key]: field.value.value,
+      [key]: newValue,
     })
+
     if (res instanceof AppSuccess) {
-      field.originalValue = field.value.value
+      appStore.updateField(key, newValue!)
+      delete localProfile[key]
     }
   }
 
-  field.isEditing.value = false
+  isEditingMap[key] = false
   validation.$reset()
 }
 
