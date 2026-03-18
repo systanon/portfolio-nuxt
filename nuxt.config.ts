@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   components: [{ path: '~/components', pathPrefix: false }],
   runtimeConfig: {
     public: {
-      apiBase: '/api',
+      apiBase: process.env.API_BASE,
       wsURL: process.env.WS_API,
     },
   },
