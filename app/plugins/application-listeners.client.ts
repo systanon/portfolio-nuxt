@@ -1,4 +1,5 @@
 import { useAppStore } from '~/store/application'
+import { checkAccessCurrentRoute } from '~/router/checkAccessCurrentRoute'
 
 export default defineNuxtPlugin({
   name: 'application-listeners',
