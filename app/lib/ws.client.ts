@@ -1,4 +1,4 @@
-import type { NotificationService } from '~/services/notification.service'
+import type { NotificationService } from '~/application/services/notification.service'
 
 export type WSHandler<T = any> = (data: T) => void
 

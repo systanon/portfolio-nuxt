@@ -5,7 +5,7 @@ import type {
   Todo,
   UpdateTodoDTO,
 } from '~/types/todo'
-import type { TodoService } from '~/services/todo.service'
+import type { TodoService } from '~/application/services/todo.service'
 import type { ID } from '~/types/general'
 import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
@@ -15,7 +15,7 @@ import {
   type PaginateResult,
   type StatisticDTO,
 } from '~/types/app.types'
-import type { AuthService } from '~/services/auth.service'
+import type { AuthService } from '~/application/services/auth.service'
 import type {
   AuthResponse,
   ForgotPasswordDto,
@@ -23,7 +23,7 @@ import type {
   SignInDto,
   SignUpDto,
 } from '~/types/auth'
-import type { StatisticService } from './statistic.service'
+import type { StatisticService } from './services/statistic.service'
 import type { Profile, ProfileDTO } from '~/types/user.types'
 import type { WSClient, WSHandler } from '~/lib/ws.client'
 

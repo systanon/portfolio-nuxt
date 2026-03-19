@@ -1,4 +1,4 @@
-import type { Application } from '~/services/application'
+import type { Application } from '~/application/application'
 import type { Profile } from '~/types/user.types'
 
 export const useAppStore = defineStore('app', () => {
