@@ -30,12 +30,17 @@ export const useAppStore = defineStore('app', () => {
     profile.value![key] = value
   }
 
+  function setProfile(data: Profile) {
+    profile.value = data
+  }
+
   return {
     profile,
     loading,
     pageTitle,
     isLogged,
     updateField,
+    setProfile,
     bindApplicationEvents,
   }
 })
