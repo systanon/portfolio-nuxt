@@ -13,7 +13,7 @@ export default defineNuxtPlugin({
     const config = useRuntimeConfig()
     const appStore = useAppStore()
 
-    const requestHeaders = useRequestHeaders(['cookie'])
+    const requestHeaders = useRequestHeaders()
 
     const fetcher: $Fetch = $fetch.create({
       baseURL: config.public.apiBase,
@@ -21,13 +21,10 @@ export default defineNuxtPlugin({
 
     const httpClient = new HTTPClient(fetcher)
 
-    const headers = new Headers()
-
-    if (requestHeaders.cookie) {
-      headers.set('cookie', requestHeaders.cookie)
-    }
+    const headers = new Headers(requestHeaders)
 
     const token = useCookie('access_token').value
+
     if (token) {
       headers.set('Authorization', token)
     }
