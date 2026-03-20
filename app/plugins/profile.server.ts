@@ -23,7 +23,10 @@ export default defineNuxtPlugin({
 
     const headers = new Headers()
 
-    headers.set('cookie', requestHeaders.cookie!)
+    if (requestHeaders.cookie) {
+      headers.set('cookie', requestHeaders.cookie)
+    }
+
     const token = useCookie('access_token').value
     if (token) {
       headers.set('Authorization', token)
