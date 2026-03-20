@@ -9,7 +9,14 @@ export type WSMessage<T = any> = {
   user_id?: number
 }
 
-export class WSClient {
+export interface WSClientLike {
+  connect(user_id?: number): void
+  auth(user_id: number): void
+  unauth(): void
+  subscribe<T = any>(topic: string, handler: WSHandler<T>): () => void
+}
+
+export class WSClient implements WSClientLike {
   private readonly handlers = new Map<string, Set<WSHandler>>()
   private ws: WebSocket | null = null
   private url: string
