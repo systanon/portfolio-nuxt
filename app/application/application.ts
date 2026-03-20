@@ -5,7 +5,7 @@ import type {
   Todo,
   UpdateTodoDTO,
 } from '~/types/todo'
-import type { TodoService } from '~/services/todo.service'
+import type { TodoService } from '~/application/services/todo.service'
 import type { ID } from '~/types/general'
 import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
@@ -15,7 +15,7 @@ import {
   type PaginateResult,
   type StatisticDTO,
 } from '~/types/app.types'
-import type { AuthService } from '~/services/auth.service'
+import type { AuthService } from '~/application/services/auth.service'
 import type {
   AuthResponse,
   ForgotPasswordDto,
@@ -23,10 +23,9 @@ import type {
   SignInDto,
   SignUpDto,
 } from '~/types/auth'
-import type { StatisticService } from './statistic.service'
+import type { StatisticService } from './services/statistic.service'
 import type { Profile, ProfileDTO } from '~/types/user.types'
-import type { WSClient, WSHandler } from '~/lib/ws.client'
-
+import type { WSHandler } from '~/lib/ws.client'
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
   EventContext extends any = any,
@@ -35,7 +34,6 @@ export class Application<
   #todoService: TodoService
   #authService: AuthService
   #statisticService: StatisticService
-  #wsClient: WSClient
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
@@ -46,12 +44,10 @@ export class Application<
     todoService: TodoService,
     authService: AuthService,
     statisticService: StatisticService,
-    wsClient: WSClient,
   ) {
     this.#todoService = todoService
     this.#authService = authService
     this.#statisticService = statisticService
-    this.#wsClient = wsClient
     this.appLoading = new Promise((resolve) => {
       this.#resolveApp = resolve
     })
@@ -102,7 +98,6 @@ export class Application<
     }
     const profile = await this.getProfile()
     if (profile instanceof AppSuccess) {
-      this.#wsClient.auth(profile.data.id)
       this.#ee.emit('auth:login')
     }
   }
@@ -142,13 +137,7 @@ export class Application<
     if (res instanceof AppError) {
       return res
     }
-    this.#wsClient.unauth()
     this.#ee.emit('auth:logout')
-  }
-
-  async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
-    const res = await this.#authService.refresh()
-    return res
   }
 
   public async createTodo(dto: CreateTodoDTO): Promise<ID | AppError> {
@@ -198,16 +187,10 @@ export class Application<
   }
 
   async init() {
-    const res = await this.getProfile()
-    if (res instanceof AppSuccess) {
-      this.#wsClient.connect(res.data.id)
-    } else {
-      this.#wsClient.connect()
-    }
-    this.#resolveApp()
+    await this.#resolveApp()
   }
 
   subscribe<T = any>(topic: string, handler: WSHandler<T>) {
-    return this.#wsClient.subscribe(topic, handler)
+    return this.#todoService.subscribe(topic, handler)
   }
 }

@@ -12,14 +12,15 @@ import type {
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
 import type { Profile, ProfileDTO } from '~/types/user.types'
+import type { WSClientLike } from '~/lib/ws.client'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
-  private readonly httpClientRefresh: HTTPClient
+  private readonly wsClient: WSClientLike
 
-  constructor(httpClient: HTTPClient, httpClientRefresh: HTTPClient) {
+  constructor(httpClient: HTTPClient, wsClient: WSClientLike) {
     this.httpClient = httpClient
-    this.httpClientRefresh = httpClientRefresh
+    this.wsClient = wsClient
   }
 
   async registration(dto: SignUpDto): Promise<AppSuccess | AppError> {
@@ -104,6 +105,9 @@ export class AuthService {
       method: 'POST',
       credentials: 'include',
     })
+    if (result instanceof AppSuccess) {
+      this.wsClient.auth(result.data.id)
+    }
     return result
   }
 
@@ -125,7 +129,7 @@ export class AuthService {
 
   async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
     const url = API_URL.refresh
-    const response = await this.httpClientRefresh.do<AuthResponse>(url, {
+    const response = await this.httpClient.do<AuthResponse>(url, {
       method: 'POST',
       credentials: 'include',
     })
@@ -147,6 +151,7 @@ export class AuthService {
     if (result instanceof AppSuccess) {
       const accessToken = useCookie('access_token')
       accessToken.value = null
+      this.wsClient.unauth()
     } else {
       return new AppError(result.message)
     }

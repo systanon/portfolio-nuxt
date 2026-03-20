@@ -1,4 +1,4 @@
-import type { Application } from '~/services/application'
+import type { Application } from '~/application/application'
 import type { Profile } from '~/types/user.types'
 
 export const useAppStore = defineStore('app', () => {
@@ -30,12 +30,17 @@ export const useAppStore = defineStore('app', () => {
     profile.value![key] = value
   }
 
+  function setProfile(data: Profile) {
+    profile.value = data
+  }
+
   return {
     profile,
     loading,
     pageTitle,
     isLogged,
     updateField,
+    setProfile,
     bindApplicationEvents,
   }
 })

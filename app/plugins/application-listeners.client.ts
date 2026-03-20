@@ -1,8 +1,9 @@
 import { useAppStore } from '~/store/application'
+import { checkAccessCurrentRoute } from '~/router/checkAccessCurrentRoute'
 
 export default defineNuxtPlugin({
   name: 'application-listeners',
-  dependsOn: ['application-init'],
+  dependsOn: ['application-client'],
   setup() {
     const router = useRouter()
     const application = useApp()
