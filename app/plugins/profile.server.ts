@@ -16,7 +16,9 @@ export default defineNuxtPlugin({
     const requestHeaders = useRequestHeaders()
 
     const fetcher: $Fetch = $fetch.create({
-      baseURL: config.public.apiBase,
+      baseURL: config.public.isVPS
+        ? config.public.apiURL + config.public.apiBase
+        : config.public.apiBase,
     })
 
     const httpClient = new HTTPClient(fetcher)

@@ -23,6 +23,8 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.API_BASE,
       wsURL: process.env.WS_API,
+      apiURL: process.env.GO_BACKEND_URL,
+      isVPS: process.env.IS_VPS === 'true',
     },
   },
 
