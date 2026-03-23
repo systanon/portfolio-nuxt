@@ -7,6 +7,7 @@ import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
 import { StatisticService } from '~/application/services/statistic.service'
 import { animationController } from '~/animations/animationController'
+import { UserService } from '~/application/services/user.service'
 import { WSClient } from '~/lib/ws.client'
 
 export default defineNuxtPlugin({
@@ -23,10 +24,12 @@ export default defineNuxtPlugin({
 
     const todoService = new TodoService(httpClient, wsClient)
     const authService = new AuthService(httpClient, wsClient)
+    const userService = new UserService(httpClient, wsClient)
     const statisticService = new StatisticService(httpClient)
     const application = new Application(
       todoService,
       authService,
+      userService,
       statisticService,
     )
 

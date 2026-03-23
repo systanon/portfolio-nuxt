@@ -99,34 +99,6 @@ export class AuthService {
     }
   }
 
-  async getProfile(): Promise<AppSuccess<Profile> | AppError | AppSilentError> {
-    const url = API_URL.profile
-    const result = await this.httpClient.do<Profile>(url, {
-      method: 'POST',
-      credentials: 'include',
-    })
-    if (result instanceof AppSuccess) {
-      this.wsClient.auth(result.data.id)
-    }
-    return result
-  }
-
-  async updateProfile(dto: ProfileDTO): Promise<AppError | AppSuccess<null>> {
-    const url = API_URL.profile
-    const body = JSON.stringify(dto)
-
-    const result = await this.httpClient.do<null>(url, {
-      method: 'PATCH',
-      credentials: 'include',
-      body,
-    })
-    if (result instanceof AppSuccess) {
-      return result
-    } else {
-      return new AppError(result.message)
-    }
-  }
-
   async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
     const url = API_URL.refresh
     const response = await this.httpClient.do<AuthResponse>(url, {
