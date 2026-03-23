@@ -17,7 +17,6 @@ import {
 } from '~/types/app.types'
 import type { AuthService } from '~/application/services/auth.service'
 import type {
-  AuthResponse,
   ForgotPasswordDto,
   ResendConfirmEmailDto,
   SignInDto,
@@ -26,6 +25,8 @@ import type {
 import type { StatisticService } from './services/statistic.service'
 import type { Profile, ProfileDTO } from '~/types/user.types'
 import type { WSHandler } from '~/lib/ws.client'
+import type { UserService } from './services/user.service'
+
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
   EventContext extends any = any,
@@ -33,6 +34,7 @@ export class Application<
   #ee: EventEmitter = new EventEmitter()
   #todoService: TodoService
   #authService: AuthService
+  #userService: UserService
   #statisticService: StatisticService
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
@@ -43,10 +45,12 @@ export class Application<
   constructor(
     todoService: TodoService,
     authService: AuthService,
+    userService: UserService,
     statisticService: StatisticService,
   ) {
     this.#todoService = todoService
     this.#authService = authService
+    this.#userService = userService
     this.#statisticService = statisticService
     this.appLoading = new Promise((resolve) => {
       this.#resolveApp = resolve
@@ -76,7 +80,7 @@ export class Application<
     this.profileLoading = new Promise((resolve) => {
       this.resolveProfileLoading = resolve
     })
-    const res = await this.#authService.getProfile()
+    const res = await this.#userService.getProfile()
 
     if (res instanceof AppError) {
       //TODO: handle error (e.g. show notification)
@@ -128,7 +132,7 @@ export class Application<
   }
 
   async updateProfile(dto: ProfileDTO): Promise<AppSuccess<null> | AppError> {
-    const res = await this.#authService.updateProfile(dto)
+    const res = await this.#userService.updateProfile(dto)
     return res
   }
 
