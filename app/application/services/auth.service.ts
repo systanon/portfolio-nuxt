@@ -1,5 +1,5 @@
 import type { HTTPClient } from '~/lib/http.client'
-import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
+import { AppError, AppRateLimitError } from '~/types/app-errors'
 import type {
   AuthResponse,
   ConfirmQuery,
@@ -11,7 +11,6 @@ import type {
 } from '~/types/auth'
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
-import type { Profile, ProfileDTO } from '~/types/user.types'
 import type { WSClientLike } from '~/lib/ws.client'
 
 export class AuthService {
