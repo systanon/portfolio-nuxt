@@ -28,6 +28,18 @@
           Forgot password?</AppLink
         >
       </div>
+      <UiButtonIcon
+        class="page-sign-in__auth"
+        type="submit"
+        iconName="google-logo"
+        iconSize="medium"
+        @click="openGoogleAuth"
+      >
+        <template #append>
+          <span class="page-sign-in__auth-text">Continue with Google</span>
+        </template>
+      </UiButtonIcon>
+
       <UiButton type="submit" label="Submit" />
     </form>
   </section>
@@ -41,6 +53,8 @@ definePageMeta({
 })
 
 const app = useApp()
+
+const { openGoogleAuth } = useGoogleAuth()
 
 const email = ref('')
 const password = ref('')
@@ -85,6 +99,15 @@ async function submit(): Promise<void> {
     gap: rem(20);
     align-items: flex-end;
     padding-bottom: rem(15);
+  }
+  &__auth {
+    margin-bottom: rem(15);
+    :deep(.ui-button-icon) {
+      gap: unset;
+    }
+    &-text {
+      margin: 0 auto;
+    }
   }
 }
 </style>

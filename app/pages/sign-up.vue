@@ -38,6 +38,17 @@
           >Sign In</AppLink
         >
       </div>
+      <UiButtonIcon
+        class="page-sign-up__auth"
+        type="submit"
+        iconName="google-logo"
+        iconSize="medium"
+        @click="openGoogleAuth"
+      >
+        <template #append>
+          <span class="page-sign-up__auth-text">Continue with Google</span>
+        </template>
+      </UiButtonIcon>
       <UiButton type="submit" label="Submit" />
     </form>
   </section>
@@ -51,6 +62,7 @@ definePageMeta({
 })
 
 const app = useApp()
+const { openGoogleAuth } = useGoogleAuth()
 
 const email = ref<string>('')
 const password = ref<string>('')
@@ -101,6 +113,15 @@ const submitHandler = async () => {
     padding-bottom: rem(15);
     &-text {
       padding-right: rem(10);
+    }
+  }
+  &__auth {
+    margin-bottom: rem(15);
+    :deep(.ui-button-icon) {
+      gap: unset;
+    }
+    &-text {
+      margin: 0 auto;
     }
   }
 }

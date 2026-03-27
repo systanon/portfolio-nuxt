@@ -25,6 +25,7 @@ export default defineNuxtConfig({
       wsURL: process.env.WS_API,
       apiURL: process.env.GO_BACKEND_URL,
       isVPS: process.env.IS_VPS === 'true',
+      googleAuthURL: process.env.GOOGLE_AUTH_URL,
     },
   },
 
