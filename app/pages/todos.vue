@@ -1,6 +1,32 @@
 <template>
   <section class="page-todo">
     <h2 class="page-todo__title">This is Todos page</h2>
+    <section class="page-todo__filters">
+      <UiInput
+        v-model="q"
+        class="page-todo__search"
+        placeholder="Search todos…"
+      />
+
+      <UiSelect
+        v-model="completed"
+        class="page-todo__select"
+        :options="[
+          { value: 'all', label: 'All' },
+          { value: 'true', label: 'Completed' },
+          { value: 'false', label: 'Not completed' },
+        ]"
+      />
+
+      <UiSelect
+        v-model="sortOrder"
+        class="page-todo__select"
+        :options="[
+          { value: 'DESC', label: 'Sort: DESC' },
+          { value: 'ASC', label: 'Sort: ASC' },
+        ]"
+      />
+    </section>
     <UiButtonIcon
       class="page-todo__create"
       iconName="plus"
@@ -105,6 +131,15 @@ const {
   saveQuery,
   requestParams,
 } = usePaginatedRoute(pages)
+
+const { q, completed, sortOrder, requestFiltersParams, saveFiltersQuery } =
+  useFilters()
+
+const requestAllParams = computed(() => ({
+  ...requestParams.value,
+  ...requestFiltersParams.value,
+}))
+
 const openEditForm = async (todo: Todo) => {
   editingTodo.value = todo
   await editModalRef.value?.open()
@@ -160,14 +195,16 @@ const toggle = ({
   update(id, payload)
 }
 
-watch(requestParams, (params) => {
+watch(requestAllParams, (params) => {
   getAll(params)
   saveQuery()
+  saveFiltersQuery()
 })
 
 onMounted(() => {
-  getAll(requestParams.value)
+  getAll(requestAllParams.value)
   saveQuery()
+  saveFiltersQuery()
   todoStore.initWS()
 })
 
@@ -185,6 +222,15 @@ onUnmounted(() => {
 
   &__title {
     text-align: center;
+  }
+  &__filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: rem(12);
+    align-items: center;
+    max-width: rem(720);
+    margin: 0 auto;
+    width: 100%;
   }
   &__create {
     margin: 0 auto;
@@ -205,6 +251,9 @@ onUnmounted(() => {
   }
 }
 @include media-query('tablet') {
+  .page-todo__filters {
+    grid-template-columns: 1fr rem(180) rem(180);
+  }
   .page-todo__todos {
     grid-template-columns: 1fr 1fr;
   }
