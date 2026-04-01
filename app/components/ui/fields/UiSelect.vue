@@ -62,7 +62,6 @@ const props = withDefaults(
     validation?: BaseValidation
   }>(),
   {
-    options: () => [],
     propValue: 'value',
     propLabel: 'label',
     disabled: false,

@@ -231,9 +231,15 @@ onUnmounted(() => {
     max-width: rem(720);
     margin: 0 auto;
     width: 100%;
+    :deep(.ui-input__field) {
+      background-color: var(--backdrop-color);
+      color: var(--text-color-secondary);
+    }
   }
+
   &__create {
     margin: 0 auto;
+    background-color: var(--backdrop-color);
   }
 
   &__todos {
