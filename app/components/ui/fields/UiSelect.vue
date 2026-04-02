@@ -1,17 +1,23 @@
 <template>
   <BaseField :label="label" :validation="validation">
     <template #default="{ id }">
-      <div ref="rootRef" :class="['ui-select', { _disabled: disabled }]">
+      <div
+        ref="rootRef"
+        :class="[
+          'ui-select',
+          { _disabled: disabled, 'ui-select--error': $v?.$error },
+        ]"
+      >
         <button
-          :class="['ui-select__toggler']"
-          :disabled="disabled"
           :id="id"
           ref="togglerRef"
+          :class="['ui-select__toggler']"
+          :disabled="disabled"
           type="button"
           @click="toggle"
           @keydown="onTogglerKeydown"
         >
-          <span class="ui-select__toggler-text"> {{ selectedValue }}</span>
+          <span class="ui-select__toggler-text">{{ selectedLabel }}</span>
           <UiIcon
             :class="['ui-select__toggler-icon', { _open: optionsShown }]"
             name="arrow"
@@ -22,11 +28,11 @@
           <ul class="ui-select__list">
             <li
               v-for="(option, index) in options"
-              :key="index"
+              :key="optionKey(option, index)"
+              :ref="(el) => (optionRefs[index] = el as HTMLElement | null)"
+              :tabindex="index === activeIndex ? 0 : -1"
               class="ui-select__list-item"
               @click="selectOption(option)"
-              :tabindex="index === activeIndex ? 0 : -1"
-              :ref="(el) => (optionRefs[index] = el as HTMLElement | null)"
               @keydown="onOptionKeydown($event, index)"
             >
               <span
@@ -35,7 +41,7 @@
                   { _active: isHighlighted(option, index) },
                 ]"
               >
-                {{ option[propLabel] }}
+                {{ formatOptionLabel(option) }}
               </span>
             </li>
           </ul>
@@ -48,30 +54,30 @@
 <script lang="ts" setup>
 import type { BaseValidation } from '@vuelidate/core'
 
-export type UISelectOption = Record<string, any>
-export type UISelectOptions = readonly UISelectOption[]
+export type UiSelectOption = Record<string, unknown>
+export type UiSelectOptions = readonly UiSelectOption[]
+
+interface Props {
+  modelValue: string
+  options: UiSelectOptions
+  placeholder?: string
+  propValue?: string
+  propLabel?: string
+  disabled?: boolean
+  label?: string
+  validation?: BaseValidation
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  propValue: 'value',
+  propLabel: 'label',
+  disabled: false,
+})
+
 const emit = defineEmits<{
   (e: 'list-visible', value: boolean): void
   (e: 'update:modelValue', value: string): void
 }>()
-
-const props = withDefaults(
-  defineProps<{
-    modelValue: string
-    options: UISelectOptions
-    placeholder?: string
-    propValue?: string
-    propLabel?: string
-    disabled?: boolean
-    label?: string
-    validation?: BaseValidation
-  }>(),
-  {
-    propValue: 'value',
-    propLabel: 'label',
-    disabled: false,
-  },
-)
 
 const optionsShown = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
@@ -79,16 +85,24 @@ const togglerRef = ref<HTMLButtonElement | null>(null)
 const optionRefs = ref<Array<HTMLElement | null>>([])
 const activeIndex = ref(0)
 
-const { modelValueProxy, $v } = useField<string>(props, emit as any)
+const { modelValueProxy, $v } = useField(props, emit)
 
-const selectedValue = computed(() => {
-  return (
-    props.options.find(
-      (item) => item[props.propValue] === modelValueProxy.value,
-    )?.[props.propLabel] ??
-    props.placeholder ??
-    'placeholder'
+function formatOptionLabel(option: UiSelectOption): string {
+  const raw = option[props.propLabel]
+  return raw == null ? '' : String(raw)
+}
+
+function optionKey(option: UiSelectOption, index: number): string {
+  const v = option[props.propValue]
+  return v == null ? `i-${index}` : String(v)
+}
+
+const selectedLabel = computed(() => {
+  const match = props.options.find(
+    (item) => item[props.propValue] === modelValueProxy.value,
   )
+  if (match) return formatOptionLabel(match)
+  return props.placeholder ?? ''
 })
 
 const setShowOptions = (show: boolean) => {
@@ -107,16 +121,16 @@ const hide = () => {
 }
 
 const updateValue = (value: string) => {
-  emit('update:modelValue', value)
+  modelValueProxy.value = value
   hide()
 }
 
-const selectOption = (option: UISelectOption) => {
+const selectOption = (option: UiSelectOption) => {
   if (props.disabled) return
-  updateValue(String(option[props.propValue]))
+  updateValue(String(option[props.propValue] ?? ''))
 }
 
-const isActive = (item: UISelectOption) => {
+const isActive = (item: UiSelectOption) => {
   return modelValueProxy.value === item[props.propValue]
 }
 
@@ -144,7 +158,7 @@ const moveActiveIndex = async (delta: number) => {
   focusActiveOption()
 }
 
-const isHighlighted = (item: UISelectOption, index: number) => {
+const isHighlighted = (item: UiSelectOption, index: number) => {
   if (optionsShown.value) return index === activeIndex.value
   return isActive(item)
 }
@@ -275,7 +289,7 @@ onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .ui-select {
   display: flex;
   position: relative;
@@ -283,6 +297,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   width: 100%;
   border: 1px solid var(--border-color);
   border-radius: rem(6);
+
+  &--error {
+    border-color: var(--error);
+  }
+
   &__toggler {
     padding: rem(0) rem(16);
     width: 100%;
