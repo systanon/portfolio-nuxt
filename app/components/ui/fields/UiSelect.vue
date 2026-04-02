@@ -335,7 +335,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     display: grid;
     grid-template-rows: 1fr auto;
     overflow: hidden;
-    z-index: 100;
+    z-index: var(--z-dropdown);
     padding: rem(10);
     top: calc(100% + rem(10));
     width: 100%;
