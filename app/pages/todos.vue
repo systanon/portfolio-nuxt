@@ -11,20 +11,13 @@
       <UiSelect
         v-model="completed"
         class="page-todo__select"
-        :options="[
-          { value: 'all', label: 'All' },
-          { value: 'true', label: 'Completed' },
-          { value: 'false', label: 'Not completed' },
-        ]"
+        :options="todoCompletedFilters"
       />
 
       <UiSelect
         v-model="sortOrder"
         class="page-todo__select"
-        :options="[
-          { value: 'DESC', label: 'Sort: DESC' },
-          { value: 'ASC', label: 'Sort: ASC' },
-        ]"
+        :options="createdFilters"
       />
     </section>
     <UiButtonIcon
@@ -106,6 +99,7 @@ import { useAppStore } from '~/store/application'
 import { useTodoStore } from '~/store/todo'
 import { AppError } from '~/types/app-errors'
 import type { Todo } from '~/types/todo'
+import { todoCompletedFilters, createdFilters } from '~/constants/filters'
 
 const createFormRef = ref()
 const editFormRef = ref()

@@ -49,7 +49,7 @@
 import type { BaseValidation } from '@vuelidate/core'
 
 export type UISelectOption = Record<string, any>
-export type UISelectOptions = UISelectOption[]
+export type UISelectOptions = readonly UISelectOption[]
 const emit = defineEmits<{
   (e: 'list-visible', value: boolean): void
   (e: 'update:modelValue', value: string): void
