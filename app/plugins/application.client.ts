@@ -1,6 +1,11 @@
-import type { $Fetch } from 'nitropack'
+import type { $Fetch, NitroFetchOptions } from 'nitropack'
 import { Application } from '~/application/application'
-import { HTTPClient, type RetryableOptions } from '~/lib/http.client'
+import {
+  HTTPClient,
+  isFetchError,
+  type ErrorInterceptorContext,
+  type RetryableOptions,
+} from '~/lib/http.client'
 import { AuthService } from '~/application/services/auth.service'
 import { TodoService } from '~/application/services/todo.service'
 import { useAppStore } from '~/store/application'
@@ -9,6 +14,19 @@ import { StatisticService } from '~/application/services/statistic.service'
 import { animationController } from '~/animations/animationController'
 import { UserService } from '~/application/services/user.service'
 import { WSClient } from '~/lib/ws.client'
+import { API_URL } from '~/constants'
+
+function requestInterceptor(
+  _url: string,
+  options: NitroFetchOptions<'json'>,
+): void {
+  if (options.credentials !== 'include') return
+  const token = useCookie('access_token').value
+  if (!token) return
+  const headers = new Headers(options.headers as HeadersInit | undefined)
+  headers.set('Authorization', token)
+  options.headers = headers
+}
 
 export default defineNuxtPlugin({
   name: 'application-client',
@@ -33,29 +51,40 @@ export default defineNuxtPlugin({
       statisticService,
     )
 
+    function requestInterceptor(
+      _url: string,
+      options: NitroFetchOptions<'json'>,
+    ): void {
+      if (options.credentials !== 'include') return
+      const token = useCookie('access_token').value
+      if (!token) return
+      const headers = new Headers(options.headers as HeadersInit | undefined)
+      headers.set('Authorization', token)
+      options.headers = headers
+    }
+
+    async function responseInterceptor(
+      error: unknown,
+      retry: () => Promise<unknown>,
+      options: RetryableOptions,
+      { url }: ErrorInterceptorContext,
+    ): Promise<void | boolean> {
+      if (url.includes(API_URL.refresh)) return
+
+      const status = isFetchError(error) ? error.response.status : undefined
+      if (status !== 401 || options._retry) return
+
+      options._retry = true
+      const response = await authService.refresh()
+      if (response instanceof AppSuccess) return true
+    }
+
     const appStore = useAppStore()
     appStore.bindApplicationEvents(application)
 
-    httpClient.addRequestInterceptor((_url, options) => {
-      if (options.credentials === 'include') {
-        const token = useCookie('access_token').value
-        const newHeaders = new Headers(options.headers)
-        if (token) {
-          newHeaders.set('Authorization', token)
-          options.headers = newHeaders
-        }
-      }
-    })
+    httpClient.addRequestInterceptor(requestInterceptor)
 
-    httpClient.addErrorInterceptor(
-      async (error, _retry, options: RetryableOptions) => {
-        if (error?.response?.status === 401 && !options._retry) {
-          options._retry = true
-          const response = await authService.refresh()
-          if (response instanceof AppSuccess) return true
-        }
-      },
-    )
+    httpClient.addErrorInterceptor(responseInterceptor)
 
     animationController.start(application.appLoading)
     await application.init()
