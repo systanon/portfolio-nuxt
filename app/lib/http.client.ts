@@ -3,22 +3,50 @@ import type { ErrorResponse, SuccessResponse } from '~/types/api'
 import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 import { AppSuccess } from '~/types/app.types'
 
+export interface RetryableOptions extends NitroFetchOptions<'json'> {
+  _retry?: boolean
+}
+
 type RequestInterceptor = (
   url: string,
   options: NitroFetchOptions<'json'>,
 ) => Promise<void> | void
 
-export interface RetryableOptions extends NitroFetchOptions<'json'> {
-  _retry?: boolean
+export type RawFetchResponse<T = unknown> = {
+  _data: T
+  headers: Headers
+  status: number
+  statusText?: string
 }
 
-type ResponseInterceptor = (response: Response) => Promise<void> | void
+type ResponseInterceptor = (response: RawFetchResponse) => Promise<void> | void
+
+export type ErrorInterceptorContext = {
+  url: string
+}
 
 type ErrorInterceptor = (
-  error: any,
-  retry: () => Promise<any>,
+  error: unknown,
+  retry: () => Promise<unknown>,
   options: NitroFetchOptions<'json'>,
+  context: ErrorInterceptorContext,
 ) => Promise<boolean | void> | boolean | void
+
+const MAX_ERROR_PIPELINE_RETRIES = 5
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+export function isFetchError(error: unknown): error is {
+  response: RawFetchResponse<ErrorResponse | unknown>
+  message?: string
+} {
+  if (!isRecord(error)) return false
+  const response = error.response
+  if (!isRecord(response)) return false
+  return 'status' in response && 'headers' in response && '_data' in response
+}
 
 export class HTTPClient {
   private fetcher: $Fetch
@@ -31,40 +59,53 @@ export class HTTPClient {
     this.fetcher = fetcher
   }
 
-  addRequestInterceptor(fn: RequestInterceptor) {
+  addRequestInterceptor(fn: RequestInterceptor): () => void {
     this.requestInterceptors.push(fn)
+    return () => this.removeFrom(this.requestInterceptors, fn)
   }
 
-  addResponseInterceptor(fn: ResponseInterceptor) {
+  addResponseInterceptor(fn: ResponseInterceptor): () => void {
     this.responseInterceptors.push(fn)
+    return () => this.removeFrom(this.responseInterceptors, fn)
   }
 
-  addErrorInterceptor(fn: ErrorInterceptor) {
+  addErrorInterceptor(fn: ErrorInterceptor): () => void {
     this.errorInterceptors.push(fn)
+    return () => this.removeFrom(this.errorInterceptors, fn)
   }
 
   async do<T>(
     url: string,
     options: NitroFetchOptions<'json'> = {},
   ): Promise<AppSuccess<T> | AppError | AppRateLimitError | AppSilentError> {
-    const exec = async () => {
+    let pipelineRetries = 0
+
+    const exec = async (): Promise<
+      AppSuccess<T> | AppError | AppRateLimitError | AppSilentError
+    > => {
       try {
-        for (const i of this.requestInterceptors) {
-          await i(url, options)
-        }
+        await this.runRequestInterceptors(url, options)
 
-        const response = await this.fetcher.raw(url, options)
+        const response = (await this.fetcher.raw(
+          url,
+          options,
+        )) as RawFetchResponse<unknown>
 
-        for (const i of this.responseInterceptors) {
-          await i(response)
-        }
+        await this.runResponseInterceptors(response)
 
         const data = response._data as SuccessResponse<T>
         return new AppSuccess<T>(data.data, response.headers, data.message)
       } catch (error) {
-        for (const i of this.errorInterceptors) {
-          const shouldRetry = await i(error, exec, options)
-          if (shouldRetry) return exec()
+        if (pipelineRetries >= MAX_ERROR_PIPELINE_RETRIES) {
+          return this.handleError(error)
+        }
+
+        for (const interceptor of this.errorInterceptors) {
+          const shouldRetry = await interceptor(error, exec, options, { url })
+          if (shouldRetry) {
+            pipelineRetries += 1
+            return exec()
+          }
         }
 
         return this.handleError(error)
@@ -77,29 +118,67 @@ export class HTTPClient {
   async download(
     url: string,
     options: NitroFetchOptions<'json'> = {},
-  ): Promise<Blob | AppError> {
-    try {
-      for (const i of this.requestInterceptors) {
-        await i(url, options)
+  ): Promise<Blob | AppError | AppRateLimitError | AppSilentError> {
+    let pipelineRetries = 0
+
+    const exec = async (): Promise<
+      Blob | AppError | AppRateLimitError | AppSilentError
+    > => {
+      try {
+        await this.runRequestInterceptors(url, options)
+
+        const response = (await this.fetcher.raw(url, {
+          ...options,
+          responseType: 'blob',
+        })) as RawFetchResponse<unknown>
+
+        await this.runResponseInterceptors(response)
+
+        return response._data as Blob
+      } catch (error) {
+        if (pipelineRetries >= MAX_ERROR_PIPELINE_RETRIES) {
+          return this.handleError(error)
+        }
+
+        for (const interceptor of this.errorInterceptors) {
+          const shouldRetry = await interceptor(error, exec, options, { url })
+          if (shouldRetry) {
+            pipelineRetries += 1
+            return exec()
+          }
+        }
+
+        return this.handleError(error)
       }
+    }
 
-      const response = await this.fetcher.raw(url, {
-        ...options,
-        responseType: 'blob',
-      })
+    return exec()
+  }
 
-      for (const i of this.responseInterceptors) {
-        await i(response)
-      }
-
-      return response._data as Blob
-    } catch (error) {
-      return this.handleError(error)
+  private async runRequestInterceptors(
+    url: string,
+    options: NitroFetchOptions<'json'>,
+  ): Promise<void> {
+    for (const interceptor of this.requestInterceptors) {
+      await interceptor(url, options)
     }
   }
 
-  private handleError(error: any) {
-    if (this.isFetchError(error)) {
+  private async runResponseInterceptors(
+    response: RawFetchResponse,
+  ): Promise<void> {
+    for (const interceptor of this.responseInterceptors) {
+      await interceptor(response)
+    }
+  }
+
+  private removeFrom<T>(list: T[], fn: T): void {
+    const i = list.indexOf(fn)
+    if (i !== -1) list.splice(i, 1)
+  }
+
+  private handleError(error: unknown) {
+    if (isFetchError(error)) {
       const data = error.response._data as ErrorResponse | undefined
       const err = data?.error
 
@@ -124,11 +203,5 @@ export class HTTPClient {
     }
 
     return new AppError('Unknown error', { cause: error })
-  }
-
-  private isFetchError(error: any): error is {
-    response: { _data?: ErrorResponse; status: number; headers: Headers }
-  } {
-    return error && error.response
   }
 }
