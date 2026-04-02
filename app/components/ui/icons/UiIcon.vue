@@ -46,17 +46,14 @@ const colorClass = computed(() => `_${props.color}-color`)
 .ui-icon {
   &._primary-color {
     color: var(--icon-color-primary);
-    fill: currentColor;
   }
 
   &._secondary-color {
     color: var(--icon-color-secondary);
-    fill: currentColor;
   }
 
   &._tertiary-color {
     color: var(--icon-color-tertiary);
-    fill: currentColor;
   }
 
   &._small {

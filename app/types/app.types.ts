@@ -5,12 +5,13 @@ export type PaginateResult<T> = {
 }
 
 export type GetAllParams = {
-  search?: string[]
   page?: number
   perPage?: number
   offset?: number
   limit?: number
-  sort?: string
+  completed?: boolean
+  q?: string
+  sortOrder?: 'ASC' | 'DESC'
 }
 
 export class AppBase {
