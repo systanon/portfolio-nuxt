@@ -6,8 +6,10 @@
           :class="['ui-select__toggler']"
           :disabled="disabled"
           :id="id"
+          ref="togglerRef"
           type="button"
           @click="toggle"
+          @keydown="onTogglerKeydown"
         >
           <span class="ui-select__toggler-text"> {{ selectedValue }}</span>
           <UiIcon
@@ -23,11 +25,14 @@
               :key="index"
               class="ui-select__list-item"
               @click="selectOption(option)"
+              :tabindex="index === activeIndex ? 0 : -1"
+              :ref="(el) => (optionRefs[index] = el as HTMLElement | null)"
+              @keydown="onOptionKeydown($event, index)"
             >
               <span
                 :class="[
                   'ui-select__list-item-text',
-                  { _active: isActive(option) },
+                  { _active: isHighlighted(option, index) },
                 ]"
               >
                 {{ option[propLabel] }}
@@ -70,6 +75,9 @@ const props = withDefaults(
 
 const optionsShown = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
+const togglerRef = ref<HTMLButtonElement | null>(null)
+const optionRefs = ref<Array<HTMLElement | null>>([])
+const activeIndex = ref(0)
 
 const { modelValueProxy, $v } = useField<string>(props, emit as any)
 
@@ -105,20 +113,162 @@ const updateValue = (value: string) => {
 
 const selectOption = (option: UISelectOption) => {
   if (props.disabled) return
-
-  updateValue(option[props.propValue])
+  updateValue(String(option[props.propValue]))
 }
 
 const isActive = (item: UISelectOption) => {
   return modelValueProxy.value === item[props.propValue]
 }
 
+const getSelectedIndex = () => {
+  return props.options.findIndex(
+    (item) => item[props.propValue] === modelValueProxy.value,
+  )
+}
+
+const focusActiveOption = () => {
+  const el = optionRefs.value[activeIndex.value]
+  el?.focus()
+}
+
+const moveActiveIndex = async (delta: number) => {
+  const total = props.options.length
+  if (!total) return
+
+  let nextIndex = activeIndex.value + delta
+  if (nextIndex < 0) nextIndex = total - 1
+  if (nextIndex >= total) nextIndex = 0
+
+  activeIndex.value = nextIndex
+  await nextTick()
+  focusActiveOption()
+}
+
+const isHighlighted = (item: UISelectOption, index: number) => {
+  if (optionsShown.value) return index === activeIndex.value
+  return isActive(item)
+}
+
+const onTogglerKeydown = async (e: KeyboardEvent) => {
+  if (props.disabled) return
+
+  if (e.key === 'Escape' && optionsShown.value) {
+    e.preventDefault()
+    hide()
+    return
+  }
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    if (!optionsShown.value) {
+      setShowOptions(true)
+      await nextTick()
+      await moveActiveIndex(1)
+    } else {
+      await moveActiveIndex(1)
+    }
+  }
+
+  if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    if (!optionsShown.value) {
+      setShowOptions(true)
+      await nextTick()
+      await moveActiveIndex(-1)
+    } else {
+      await moveActiveIndex(-1)
+    }
+  }
+}
+
+const onOptionKeydown = async (e: KeyboardEvent, index: number) => {
+  activeIndex.value = index
+
+  if (e.key === 'Escape') {
+    e.preventDefault()
+    hide()
+    return
+  }
+
+  if (e.key === 'Tab') {
+    hide()
+    return
+  }
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    await moveActiveIndex(1)
+    return
+  }
+
+  if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    await moveActiveIndex(-1)
+    return
+  }
+
+  if (e.key === 'Home') {
+    e.preventDefault()
+    activeIndex.value = 0
+    await nextTick()
+    focusActiveOption()
+    return
+  }
+
+  if (e.key === 'End') {
+    e.preventDefault()
+    activeIndex.value = props.options.length - 1
+    await nextTick()
+    focusActiveOption()
+    return
+  }
+
+  const isSelectKey =
+    e.key === 'Enter' ||
+    e.key === ' ' ||
+    e.code === 'Space' ||
+    e.key === 'Spacebar'
+  if (isSelectKey) {
+    e.preventDefault()
+    const option = props.options[activeIndex.value]
+    if (option) selectOption(option)
+  }
+}
+
 onClickOutside(rootRef, () => {
   if (optionsShown.value) hide()
 })
 
+watch(optionsShown, async (shown) => {
+  if (!shown) {
+    await nextTick()
+    togglerRef.value?.focus()
+    return
+  }
+
+  optionRefs.value = []
+  activeIndex.value = Math.max(getSelectedIndex(), 0)
+  await nextTick()
+  focusActiveOption()
+})
+
+watch(
+  () => modelValueProxy.value,
+  async () => {
+    if (!optionsShown.value) return
+    activeIndex.value = Math.max(getSelectedIndex(), 0)
+    await nextTick()
+    focusActiveOption()
+  },
+)
+
 const onKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && optionsShown.value) hide()
+  if (
+    e.key === 'Escape' &&
+    optionsShown.value &&
+    rootRef.value?.contains(document.activeElement)
+  )
+    hide()
 }
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
@@ -178,6 +328,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     padding-bottom: rem(3);
     padding-top: rem(3);
     color: var(--text-color-primary);
+
+    &:focus-visible {
+      outline: 2px solid var(--active-primary);
+      outline-offset: rem(2);
+      border-radius: rem(6);
+    }
   }
   &__list-item-text {
     color: var(--text-color-primary);
