@@ -1,7 +1,10 @@
 <template>
   <button
     :disabled="disabled"
-    :class="['ui-button-icon', { _bordered: withBorder }]"
+    :class="[
+      'ui-button-icon',
+      { _bordered: withBorder, '_only-icon': onlyIcon },
+    ]"
   >
     <slot name="prepend"></slot>
     <UiIcon :name="iconName" :size="iconSize" :color="iconColor" />
@@ -24,10 +27,12 @@ withDefaults(
     iconSize?: IconSize
     withBorder?: boolean
     iconColor?: IconColor
+    onlyIcon?: boolean
   }>(),
   {
     disabled: false,
     withBorder: true,
+    onlyIcon: false,
   },
 )
 </script>
@@ -46,6 +51,12 @@ withDefaults(
   height: rem(60);
   min-width: rem(60);
   gap: rem(15);
+
+  &._only-icon {
+    padding: 0;
+    height: unset;
+    min-width: unset;
+  }
   &._bordered {
     border: 1px solid var(--border-color);
     &:hover {
