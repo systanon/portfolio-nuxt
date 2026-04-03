@@ -1,41 +1,46 @@
-import { ref } from 'vue'
-
 export type NotificationType = 'success' | 'error' | 'info'
 
 export interface NotificationPayload {
   id: string
   type: NotificationType
   message: string
+  durationMs: number
   pause: () => void
   resume: () => void
 }
 
 export class NotificationService {
-  notifications = ref<Map<string, NotificationPayload>>(new Map())
+  notifications = shallowReactive(new Map<string, NotificationPayload>())
 
-  async notify(type: NotificationType, message: string, timeout = 8000) {
+  private timers = new Map<string, ReturnType<typeof setTimeout>>()
+
+  notify(type: NotificationType, message: string, timeout = 8000) {
     const id = crypto.randomUUID()
 
     let remaining = timeout
-    let timer: ReturnType<typeof setTimeout> | null = null
     let lastStart = Date.now()
-
-    const remove = () => this.remove(id)
 
     const startTimer = () => {
       lastStart = Date.now()
-      timer = setTimeout(remove, remaining)
+      const existing = this.timers.get(id)
+      if (existing) clearTimeout(existing)
+      const t = setTimeout(() => {
+        this.timers.delete(id)
+        this.remove(id)
+      }, remaining)
+      this.timers.set(id, t)
     }
 
     const pause = () => {
-      if (!timer) return
-      clearTimeout(timer)
-      timer = null
+      const t = this.timers.get(id)
+      if (!t) return
+      clearTimeout(t)
+      this.timers.delete(id)
       remaining = Math.max(0, remaining - (Date.now() - lastStart))
     }
 
     const resume = () => {
-      if (timer || remaining <= 0) return
+      if (this.timers.has(id) || remaining <= 0) return
       startTimer()
     }
 
@@ -43,12 +48,12 @@ export class NotificationService {
       id,
       type,
       message,
+      durationMs: timeout,
       pause,
       resume,
     }
 
-    this.notifications.value.set(id, payload)
-    this.notifications.value = new Map(this.notifications.value)
+    this.notifications.set(id, payload)
 
     if (timeout > 0) startTimer()
 
@@ -56,12 +61,17 @@ export class NotificationService {
   }
 
   remove(id: string) {
-    this.notifications.value.delete(id)
-    this.notifications.value = new Map(this.notifications.value)
+    const t = this.timers.get(id)
+    if (t) {
+      clearTimeout(t)
+      this.timers.delete(id)
+    }
+    this.notifications.delete(id)
   }
 
   clear() {
-    this.notifications.value.clear()
-    this.notifications.value = new Map()
+    for (const t of this.timers.values()) clearTimeout(t)
+    this.timers.clear()
+    this.notifications.clear()
   }
 }
