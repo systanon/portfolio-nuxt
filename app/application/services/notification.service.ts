@@ -1,3 +1,5 @@
+import { shallowReactive } from 'vue'
+
 export type NotificationType = 'success' | 'error' | 'info'
 
 export interface NotificationPayload {
