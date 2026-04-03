@@ -36,7 +36,7 @@ export const progress = (gsap: typeof GSAPType) => {
     const reset = () => {
       tween?.kill()
       tween = null
-      gsap.set(progressBar, { width: '0%' })
+      gsap.set(progressBar, { width: progress ? '0%' : '100%' })
     }
 
     const getTween = () => tween
