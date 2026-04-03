@@ -38,6 +38,8 @@ export default defineNuxtPlugin({
     })
 
     const wsClient = new WSClient(config.public.wsURL)
+    wsClient.onOpen(onOpenCb)
+    wsClient.connect()
     const httpClient = new HTTPClient(fetcher)
 
     const todoService = new TodoService(httpClient, wsClient)
@@ -79,6 +81,13 @@ export default defineNuxtPlugin({
       if (response instanceof AppSuccess) return true
     }
 
+    function onOpenCb() {
+      const appStore = useAppStore()
+      if (appStore.profile?.id) {
+        wsClient.auth(appStore.profile.id)
+      }
+    }
+
     const appStore = useAppStore()
     appStore.bindApplicationEvents(application)
 
@@ -88,7 +97,7 @@ export default defineNuxtPlugin({
 
     animationController.start(application.appLoading)
     await application.init()
-    wsClient.connect(appStore.profile?.id)
+
     return {
       provide: {
         appInstance: application,
