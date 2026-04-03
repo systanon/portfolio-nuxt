@@ -3,6 +3,9 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <ClientOnly>
+    <NotificationsHost />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
