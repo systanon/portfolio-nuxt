@@ -7,13 +7,13 @@ vi.mock('~/lib/ws.client', () => {
       constructor(_url: string) {}
 
       connect() {}
+      onOpen() {}
       auth() {}
       unauth() {}
+      destroy() {}
       subscribe() {
         return () => {}
       }
-
-      // `todoService` may call `emit` on the client.
       emit() {}
     },
   }
