@@ -32,11 +32,7 @@ export default defineNuxtPlugin({
     wsClient.connect()
     const httpClient = new HTTPClient(fetcher)
 
-    const todoService = new TodoService(
-      httpClient,
-      wsClient,
-      notificationService,
-    )
+    const todoService = new TodoService(httpClient, wsClient)
     const authService = new AuthService(httpClient, wsClient)
     const userService = new UserService(httpClient, wsClient)
     const statisticService = new StatisticService(httpClient)
