@@ -17,6 +17,8 @@ import { WSClient } from '~/lib/ws.client'
 import { API_URL } from '~/constants'
 import { NotificationService } from '~/application/services/notification.service'
 
+const URL_EXCLUDE = [API_URL.refresh, API_URL.sign_in, API_URL.sign_up]
+
 export default defineNuxtPlugin({
   name: 'application-client',
   async setup() {
@@ -62,7 +64,7 @@ export default defineNuxtPlugin({
       options: RetryableOptions,
       { url }: ErrorInterceptorContext,
     ): Promise<void | boolean> {
-      if (url.includes(API_URL.refresh)) return
+      if (URL_EXCLUDE.some((excludeUrl) => url.includes(excludeUrl))) return
 
       const status = isFetchError(error) ? error.response.status : undefined
       if (status !== 401 || options._retry) return
