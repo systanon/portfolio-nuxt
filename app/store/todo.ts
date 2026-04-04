@@ -36,10 +36,11 @@ export const useTodoStore = defineStore('todos', () => {
       total.value = 0
       pages.value = 0
     } else {
-      rows.value = res.data.map((todo) => {
-        indexID.value.set(todo.id, todo)
-        return todo
-      })
+      rows.value =
+        res.data?.map((todo) => {
+          indexID.value.set(todo.id, todo)
+          return todo
+        }) ?? []
       total.value = res.total
       pages.value = res.pages
       currentPage = params?.page ?? 1
