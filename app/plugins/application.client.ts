@@ -15,18 +15,7 @@ import { animationController } from '~/animations/animationController'
 import { UserService } from '~/application/services/user.service'
 import { WSClient } from '~/lib/ws.client'
 import { API_URL } from '~/constants'
-
-function requestInterceptor(
-  _url: string,
-  options: NitroFetchOptions<'json'>,
-): void {
-  if (options.credentials !== 'include') return
-  const token = useCookie('access_token').value
-  if (!token) return
-  const headers = new Headers(options.headers as HeadersInit | undefined)
-  headers.set('Authorization', token)
-  options.headers = headers
-}
+import { NotificationService } from '~/application/services/notification.service'
 
 export default defineNuxtPlugin({
   name: 'application-client',
@@ -36,6 +25,7 @@ export default defineNuxtPlugin({
     const fetcher: $Fetch = $fetch.create({
       baseURL: config.public.apiBase,
     })
+    const notificationService = new NotificationService()
 
     const wsClient = new WSClient(config.public.wsURL)
     wsClient.onOpen(onOpenCb)
@@ -51,6 +41,7 @@ export default defineNuxtPlugin({
       authService,
       userService,
       statisticService,
+      notificationService,
     )
 
     function requestInterceptor(
@@ -97,10 +88,10 @@ export default defineNuxtPlugin({
 
     animationController.start(application.appLoading)
     await application.init()
-
     return {
       provide: {
         appInstance: application,
+        notification: notificationService,
       },
     }
   },

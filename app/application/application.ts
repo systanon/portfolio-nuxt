@@ -26,6 +26,7 @@ import type { StatisticService } from './services/statistic.service'
 import type { Profile, ProfileDTO } from '~/types/user.types'
 import type { WSHandler } from '~/lib/ws.client'
 import type { UserService } from './services/user.service'
+import type { NotificationService } from './services/notification.service'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -39,6 +40,8 @@ export class Application<
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
 
+  notificationService: NotificationService
+
   appLoading: Promise<void>
   #resolveApp!: () => void
 
@@ -47,11 +50,13 @@ export class Application<
     authService: AuthService,
     userService: UserService,
     statisticService: StatisticService,
+    notificationService: NotificationService,
   ) {
     this.#todoService = todoService
     this.#authService = authService
     this.#userService = userService
     this.#statisticService = statisticService
+    this.notificationService = notificationService
     this.appLoading = new Promise((resolve) => {
       this.#resolveApp = resolve
     })
@@ -83,10 +88,10 @@ export class Application<
     const res = await this.#userService.getProfile()
 
     if (res instanceof AppError) {
-      //TODO: handle error (e.g. show notification)
+      this.notificationService.notify('error', res.message)
     }
     if (res instanceof AppSilentError) {
-      //TODO: handle silent error (e.g. show notification)
+      this.notificationService.notify('info', res.message)
     }
     if (res instanceof AppSuccess) {
       this.#ee.emit('profile:loaded', res.data)
@@ -98,6 +103,8 @@ export class Application<
   async signIn(dto: SignInDto): Promise<void | AppError> {
     const res = await this.#authService.authorization(dto)
     if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+
       return res
     }
     const profile = await this.getProfile()
@@ -109,6 +116,8 @@ export class Application<
   async signUp(dto: SignUpDto): Promise<void | AppError> {
     const res = await this.#authService.registration(dto)
     if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+
       return res
     }
   }
@@ -118,6 +127,8 @@ export class Application<
   ): Promise<void | AppRateLimitError> {
     const res = await this.#authService.forgotPassword(dto)
     if (res instanceof AppRateLimitError) {
+      this.notificationService.notify('error', res.message)
+
       return res
     }
   }
@@ -127,18 +138,25 @@ export class Application<
   ): Promise<void | AppRateLimitError> {
     const res = await this.#authService.resendConfirmEmail(dto)
     if (res instanceof AppRateLimitError) {
+      this.notificationService.notify('error', res.message)
       return res
     }
   }
 
   async updateProfile(dto: ProfileDTO): Promise<AppSuccess<null> | AppError> {
     const res = await this.#userService.updateProfile(dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+
     return res
   }
 
   async logout(): Promise<void | AppError> {
     const res = await this.#authService.logout()
     if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+
       return res
     }
     this.#ee.emit('auth:logout')
@@ -146,6 +164,10 @@ export class Application<
 
   public async createTodo(dto: CreateTodoDTO): Promise<ID | AppError> {
     const res = await this.#todoService.create(dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+
     return res
   }
 
@@ -154,6 +176,9 @@ export class Application<
   ): Promise<PaginateResult<Todo> | AppError> {
     this.#ee.emit('data:loading', true)
     const res = await this.#todoService.getAll(params)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
     this.#ee.emit('todo:loaded', res)
     this.#ee.emit('data:loading', false)
     return res
@@ -161,6 +186,9 @@ export class Application<
 
   public async getOneTodo(id: ID): Promise<Todo | AppError> {
     const res = await this.#todoService.getOne(id)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
     return res
   }
 
@@ -169,6 +197,10 @@ export class Application<
     dto: ReplaceTodoDTO,
   ): Promise<void | AppError> {
     const res = await this.#todoService.replace(id, dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+
     return res
   }
 
@@ -177,16 +209,25 @@ export class Application<
     dto: UpdateTodoDTO,
   ): Promise<void | AppError> {
     const res = await this.#todoService.update(id, dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
     return res
   }
 
   public async deleteTodo(id: ID): Promise<void | AppError> {
     const res = await this.#todoService.delete(id)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
     return res
   }
 
   async saveStatistic(dto: StatisticDTO): Promise<void | AppError> {
     const res = await this.#statisticService.save(dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
     return res
   }
 
