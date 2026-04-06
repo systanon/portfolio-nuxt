@@ -70,10 +70,7 @@ export default defineNuxtPlugin({
 
       options._retry = true
       const response = await authService.refresh()
-      if (response instanceof AppSuccess) {
-        accessToken.value = response.data.access_token
-        return true
-      }
+      if (response instanceof AppSuccess) return true
     }
 
     const appStore = useAppStore()
