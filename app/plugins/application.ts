@@ -11,7 +11,6 @@ import { TodoService } from '~/application/services/todo.service'
 import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
 import { StatisticService } from '~/application/services/statistic.service'
-import { animationController } from '~/animations/animationController'
 import { UserService } from '~/application/services/user.service'
 import { WSClient } from '~/lib/ws.client'
 import { API_URL } from '~/constants'
@@ -20,22 +19,22 @@ import { NotificationService } from '~/application/services/notification.service
 const URL_EXCLUDE = [API_URL.refresh, API_URL.sign_in, API_URL.sign_up]
 
 export default defineNuxtPlugin({
-  name: 'application-client',
+  name: 'application',
   async setup() {
     const config = useRuntimeConfig()
-
+    const accessToken = useCookie('access_token')
     const fetcher: $Fetch = $fetch.create({
-      baseURL: config.public.apiBase,
+      baseURL: config.public.isVPS
+        ? config.public.apiURL + config.public.apiBase
+        : config.public.apiBase,
     })
     const notificationService = new NotificationService()
 
     const wsClient = new WSClient(config.public.wsURL)
-    wsClient.onOpen(onOpenCb)
-    wsClient.connect()
     const httpClient = new HTTPClient(fetcher)
 
     const todoService = new TodoService(httpClient, wsClient)
-    const authService = new AuthService(httpClient, wsClient)
+    const authService = new AuthService(httpClient, wsClient, accessToken)
     const userService = new UserService(httpClient, wsClient)
     const statisticService = new StatisticService(httpClient)
     const application = new Application(
@@ -51,7 +50,7 @@ export default defineNuxtPlugin({
       options: NitroFetchOptions<'json'>,
     ): void {
       if (options.credentials !== 'include') return
-      const token = useCookie('access_token').value
+      const token = accessToken.value
       if (!token) return
       const headers = new Headers(options.headers as HeadersInit | undefined)
       headers.set('Authorization', token)
@@ -74,13 +73,6 @@ export default defineNuxtPlugin({
       if (response instanceof AppSuccess) return true
     }
 
-    function onOpenCb() {
-      const appStore = useAppStore()
-      if (appStore.profile?.id) {
-        wsClient.auth(appStore.profile.id)
-      }
-    }
-
     const appStore = useAppStore()
     appStore.bindApplicationEvents(application)
 
@@ -88,12 +80,12 @@ export default defineNuxtPlugin({
 
     httpClient.addErrorInterceptor(responseInterceptor)
 
-    animationController.start(application.appLoading)
-    await application.init()
     return {
       provide: {
         appInstance: application,
         notification: notificationService,
+        wsClient: wsClient,
+        httpClient: httpClient,
       },
     }
   },

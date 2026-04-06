@@ -3,7 +3,7 @@ import { checkAccessCurrentRoute } from '~/router/checkAccessCurrentRoute'
 
 export default defineNuxtPlugin({
   name: 'application-listeners',
-  dependsOn: ['application-client'],
+  dependsOn: ['application'],
   setup() {
     const router = useRouter()
     const application = useApp()
