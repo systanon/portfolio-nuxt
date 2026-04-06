@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import type { HTTPClient } from '~/lib/http.client'
 import { AppError, AppRateLimitError } from '~/types/app-errors'
 import type {
@@ -12,17 +13,16 @@ import type {
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
 import type { WSClientLike } from '~/lib/ws.client'
-import type { CookieRef } from '#app'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
   private readonly wsClient: WSClientLike
-  private readonly accessToken: CookieRef<string | null | undefined>
+  private readonly accessToken: Ref<string | null | undefined>
 
   constructor(
     httpClient: HTTPClient,
     wsClient: WSClientLike,
-    accessToken: CookieRef<string | null | undefined>,
+    accessToken: Ref<string | null | undefined>,
   ) {
     this.httpClient = httpClient
     this.wsClient = wsClient
