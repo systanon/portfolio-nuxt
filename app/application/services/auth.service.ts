@@ -12,14 +12,21 @@ import type {
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
 import type { WSClientLike } from '~/lib/ws.client'
+import type { CookieRef } from '#app'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
   private readonly wsClient: WSClientLike
+  private readonly accessToken: CookieRef<string | null | undefined>
 
-  constructor(httpClient: HTTPClient, wsClient: WSClientLike) {
+  constructor(
+    httpClient: HTTPClient,
+    wsClient: WSClientLike,
+    accessToken: CookieRef<string | null | undefined>,
+  ) {
     this.httpClient = httpClient
     this.wsClient = wsClient
+    this.accessToken = accessToken
   }
 
   async registration(dto: SignUpDto): Promise<AppSuccess | AppError> {
@@ -28,7 +35,6 @@ export class AuthService {
     return await this.httpClient.do(url, {
       method: 'POST',
       body,
-      credentials: 'include',
     })
   }
 
@@ -39,8 +45,7 @@ export class AuthService {
     })
     if (response instanceof AppSuccess) {
       const access_token = response.data.access_token
-      const token = useCookie('access_token')
-      token.value = access_token
+      this.accessToken.value = access_token
     } else {
       return new AppError(response.message)
     }
@@ -86,13 +91,11 @@ export class AuthService {
     const result = await this.httpClient.do<AuthResponse>(url, {
       method: 'POST',
       body,
-      credentials: 'include',
     })
 
     if (result instanceof AppSuccess) {
       const access_token = result.data.access_token
-      const token = useCookie('access_token')
-      token.value = access_token
+      this.accessToken.value = access_token
     } else {
       return new AppError(result.message)
     }
@@ -102,11 +105,10 @@ export class AuthService {
     const url = API_URL.refresh
     const response = await this.httpClient.do<AuthResponse>(url, {
       method: 'POST',
-      credentials: 'include',
     })
     if (response instanceof AppSuccess) {
       const access_token = response.data.access_token
-      useCookie('access_token').value = access_token
+      this.accessToken.value = access_token
       return response
     } else {
       return new AppError(response.message)
@@ -120,8 +122,7 @@ export class AuthService {
       credentials: 'include',
     })
     if (result instanceof AppSuccess) {
-      const accessToken = useCookie('access_token')
-      accessToken.value = null
+      this.accessToken.value = null
       this.wsClient.unauth()
     } else {
       return new AppError(result.message)

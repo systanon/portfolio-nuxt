@@ -21,7 +21,9 @@ export class UserService {
       credentials: 'include',
     })
     if (result instanceof AppSuccess) {
-      this.wsClient.auth(result.data.id)
+      if (import.meta.client) {
+        this.wsClient.auth(result.data.id)
+      }
     }
     return result
   }
