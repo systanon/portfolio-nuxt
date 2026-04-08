@@ -1,15 +1,16 @@
 <template>
   <header class="app-header">
     <div class="container">
-      <div class="app-header__wrapper">
-        <ClientOnly>
+      <ClientOnly>
+        <div class="app-header__wrapper">
           <template v-if="isMobile || isTablet">
             <Logo />
             <NavigationMenuMobile />
           </template>
           <NavigationMenu v-else />
-        </ClientOnly>
-      </div>
+        </div>
+        <AppBreadcrumbs />
+      </ClientOnly>
     </div>
   </header>
 </template>
