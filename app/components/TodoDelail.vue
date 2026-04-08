@@ -20,6 +20,10 @@ defineProps<{
 </script>
 <style lang="scss" scoped>
 .todo-detail {
+  background-color: var(--backdrop);
+  padding: rem(25);
+  max-width: rem(700);
+  margin: 0 auto;
   &__title {
     text-align: center;
     padding-bottom: rem(25);

@@ -99,7 +99,9 @@ import { useTodoStore } from '~/store/todo'
 import { AppError } from '~/types/app-errors'
 import type { Todo } from '~/types/todo'
 import { todoCompletedFilters, createdFilters } from '~/constants/filters'
-
+definePageMeta({
+  name: 'TodoList',
+})
 const createFormRef = ref()
 const editFormRef = ref()
 const editingTodo = ref<Todo | undefined>(undefined)
