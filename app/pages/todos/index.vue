@@ -40,6 +40,7 @@
             @edit="openEditForm"
             @delete="deleteHandler"
             @toggle="toggle"
+            @detail="getDetail"
           />
         </section>
       </template>
@@ -144,6 +145,10 @@ const openCreateForm = () => {
   createModalRef.value?.open()
 }
 
+const getDetail = (id: number) => {
+  navigateTo(`/todos/${id}`)
+}
+
 const submitWithModal = async (
   modal: IModalOpen | null,
   action: () => Promise<unknown>,
@@ -189,16 +194,16 @@ const toggle = ({
   update(id, payload)
 }
 
-watch(requestAllParams, (params) => {
-  getAll(params)
-  saveQuery()
-  saveFiltersQuery()
-})
+useAsyncData(
+  () => `todos-${JSON.stringify(requestAllParams.value)}`,
+  async () => {
+    await getAll(requestAllParams.value)
+    saveQuery()
+    saveFiltersQuery()
+  },
+)
 
 onMounted(() => {
-  getAll(requestAllParams.value)
-  saveQuery()
-  saveFiltersQuery()
   todoStore.initWS()
 })
 

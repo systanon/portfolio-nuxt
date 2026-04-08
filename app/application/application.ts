@@ -184,7 +184,7 @@ export class Application<
     return res
   }
 
-  public async getOneTodo(id: ID): Promise<Todo | AppError> {
+  public async getOneTodo(id: ID): Promise<AppSuccess<Todo> | AppError> {
     const res = await this.#todoService.getOne(id)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
@@ -232,7 +232,7 @@ export class Application<
   }
 
   async init() {
-    await this.#resolveApp()
+    this.#resolveApp()
   }
 
   subscribe<T = any>(topic: string, handler: WSHandler<T>) {

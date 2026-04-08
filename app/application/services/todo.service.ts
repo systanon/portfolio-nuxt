@@ -56,14 +56,9 @@ export class TodoService {
     }
   }
 
-  async getOne(id: ID): Promise<Todo | AppError> {
+  async getOne(id: ID): Promise<AppSuccess<Todo> | AppError> {
     const url = `${API_URL.todos}/${id}`
-    const result = await this.httpClient.do<Todo>(url)
-    if (result instanceof AppSuccess) {
-      return result.data
-    } else {
-      return new AppError(result.message)
-    }
+    return this.httpClient.do<Todo>(url)
   }
 
   async replace(id: ID, dto: ReplaceTodoDTO): Promise<void | AppError> {
