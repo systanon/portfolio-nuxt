@@ -24,11 +24,7 @@ export default defineNuxtPlugin({
     const config = useRuntimeConfig()
     const accessToken = useCookie('access_token')
     const fetcher: $Fetch = $fetch.create({
-      baseURL: config.public.isVPS
-        ? import.meta.server
-          ? config.public.apiURL + config.public.apiBase
-          : config.public.apiBase
-        : config.public.apiBase,
+      baseURL: import.meta.server ? config.apiInternal : config.public.apiBase,
     })
     const notificationService = new NotificationService()
 
