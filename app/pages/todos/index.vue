@@ -31,24 +31,22 @@
       </template>
     </UiButtonIcon>
     <template v-if="!loading">
-      <template v-if="rows.length">
-        <section class="page-todo__todos">
-          <TodoItem
-            v-for="todo of rows"
-            :key="todo.id"
-            :todo="todo"
-            @edit="openEditForm"
-            @delete="deleteHandler"
-            @toggle="toggle"
-            @detail="getDetail"
-          />
-        </section>
-      </template>
+      <section v-if="rows.length" class="page-todo__todos">
+        <TodoItem
+          v-for="todo of rows"
+          :key="todo.id"
+          :todo="todo"
+          @edit="openEditForm"
+          @delete="deleteHandler"
+          @toggle="toggle"
+          @detail="getDetail"
+        />
+      </section>
       <section v-else>
         <NoDataFound label="Empty todos" />
       </section>
     </template>
-    <template v-else> <Loader /> </template>
+    <Loader v-else />
     <section class="page-todo__pagination">
       <UiPagination
         v-model:page="pagination.page"
@@ -122,13 +120,11 @@ const {
   nextPage,
   latestPage,
   btnPage,
-  setPages,
   saveQuery,
   requestParams,
 } = usePaginatedRoute(pages)
 
-const { q, completed, sortOrder, requestFiltersParams, saveFiltersQuery } =
-  useFilters()
+const { q, completed, sortOrder, requestFiltersParams } = useFilters()
 
 const requestAllParams = computed(() => ({
   ...requestParams.value,
@@ -168,7 +164,7 @@ const createTodo = async () => {
 
 const updateTodo = async () => {
   const data = await editFormRef.value?.submit()
-  const id = editingTodo?.value?.id
+  const id = editingTodo.value?.id
   if (!data || !id) return
 
   await submitWithModal(editModalRef.value, () => update(id as number, data))
@@ -194,13 +190,18 @@ const toggle = ({
   update(id, payload)
 }
 
+watch([q, completed, sortOrder], () => {
+  firstPage()
+})
+
 useAsyncData(
   () => `todos-${JSON.stringify(requestAllParams.value)}`,
   async () => {
     await getAll(requestAllParams.value)
-    saveQuery()
-    saveFiltersQuery()
+    saveQuery(requestFiltersParams.value)
+    return true
   },
+  { watch: [requestAllParams] },
 )
 
 onMounted(() => {

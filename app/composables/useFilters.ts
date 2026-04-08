@@ -1,19 +1,16 @@
 import type { LocationQueryRaw } from 'vue-router'
 
-export function useFilters(debounseDelay: number = 350) {
+export function useFilters(debounceDelay: number = 550) {
+  const VALID_COMPLETED = ['true', 'false'] as const
   const route = useRoute()
-  const router = useRouter()
   const initQ =
     typeof route.query.q === 'string' && isValidString(route.query.q)
       ? route.query.q
       : ''
 
-  const initCompleted =
-    route.query.completed === 'true'
-      ? 'true'
-      : route.query.completed === 'false'
-        ? 'false'
-        : 'all'
+  const initCompleted = VALID_COMPLETED.includes(route.query.completed as any)
+    ? (route.query.completed as string)
+    : 'all'
 
   const initSortOrder =
     typeof route.query.sortOrder === 'string' &&
@@ -22,17 +19,15 @@ export function useFilters(debounseDelay: number = 350) {
       : 'DESC'
 
   const q = ref(initQ)
-  const qDebounced = refDebounced(q, debounseDelay)
+  const qDebounced = refDebounced(q, debounceDelay)
   const completed = ref(initCompleted)
   const sortOrder = ref(initSortOrder)
 
   const requestFiltersParams = computed<LocationQueryRaw>(() => {
     return {
-      q: isValidString(qDebounced.value) ? qDebounced.value?.trim() : undefined,
+      q: isValidString(qDebounced.value) ? qDebounced.value.trim() : undefined,
       completed: completed.value !== 'all' ? completed.value : undefined,
-      sortOrder: isValidSortOrder(sortOrder.value)
-        ? sortOrder.value
-        : undefined,
+      sortOrder: sortOrder.value === 'ASC' ? 'ASC' : undefined,
     }
   })
 
@@ -44,27 +39,10 @@ export function useFilters(debounseDelay: number = 350) {
     return value === 'ASC' || value === 'DESC'
   }
 
-  const saveFiltersQuery = () => {
-    const nextQuery: Record<string, any> = { ...route.query }
-    const params = requestFiltersParams.value as Record<string, any>
-
-    if (params.q !== undefined) nextQuery.q = params.q
-    else delete nextQuery.q
-
-    if (params.completed !== undefined) nextQuery.completed = params.completed
-    else delete nextQuery.completed
-
-    if (params.sortOrder !== undefined) nextQuery.sortOrder = params.sortOrder
-    else delete nextQuery.sortOrder
-
-    router.replace({ query: nextQuery })
-  }
-
   return {
     q,
     completed,
     sortOrder,
     requestFiltersParams,
-    saveFiltersQuery,
   }
 }
