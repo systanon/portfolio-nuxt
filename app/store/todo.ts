@@ -7,6 +7,7 @@ export const useTodoStore = defineStore('todos', () => {
   const app = useApp()
 
   const rows: Ref<Todo[]> = ref([])
+  const currentTodo: Ref<Todo | null> = ref(null)
   const indexID = ref(new Map<number, Todo>())
   const total = ref<number>(0)
   const pages = ref<number>(0)
@@ -104,6 +105,10 @@ export const useTodoStore = defineStore('todos', () => {
     unsubscribe.value?.()
   }
 
+  function setCurrentTodo(todo: Todo | null) {
+    currentTodo.value = todo
+  }
+
   return {
     getAll,
     indexID,
@@ -114,6 +119,8 @@ export const useTodoStore = defineStore('todos', () => {
     pages,
     rows,
     initWS,
+    currentTodo,
+    setCurrentTodo,
     destroyWS,
   }
 })
