@@ -286,8 +286,4 @@ export class Application<
   async init() {
     this.#resolveApp()
   }
-
-  subscribe<T = any>(topic: string, handler: WSHandler<T>) {
-    return this.#todoService.subscribe(topic, handler)
-  }
 }
