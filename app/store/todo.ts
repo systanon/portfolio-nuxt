@@ -6,6 +6,8 @@ import type { CreateTodoDTO, Todo, UpdateTodoDTO } from '~/types/todo'
 export const useTodoStore = defineStore('todos', () => {
   const app = useApp()
 
+  const wsClient = useWsClient()
+
   const rows: Ref<Todo[]> = ref([])
   const currentTodo: Ref<Todo | null> = ref(null)
   const indexID = ref(new Map<number, Todo>())
@@ -98,7 +100,7 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   function initWS() {
-    unsubscribe.value = app.subscribe('todos', messageHandler)
+    unsubscribe.value = wsClient.subscribe('todos', messageHandler)
   }
 
   function destroyWS() {
