@@ -15,6 +15,7 @@ import { UserService } from '~/application/services/user.service'
 import { WSClient } from '~/lib/ws.client'
 import { API_URL } from '~/constants'
 import { NotificationService } from '~/application/services/notification.service'
+import { NotesService } from '~/application/services/note.service'
 
 const URL_EXCLUDE = [API_URL.refresh, API_URL.sign_in, API_URL.sign_up]
 
@@ -32,11 +33,13 @@ export default defineNuxtPlugin({
     const httpClient = new HTTPClient(fetcher)
 
     const todoService = new TodoService(httpClient, wsClient)
+    const notesService = new NotesService(httpClient, wsClient)
     const authService = new AuthService(httpClient, wsClient, accessToken)
     const userService = new UserService(httpClient, wsClient)
     const statisticService = new StatisticService(httpClient)
     const application = new Application(
       todoService,
+      notesService,
       authService,
       userService,
       statisticService,
