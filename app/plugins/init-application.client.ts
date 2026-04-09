@@ -5,7 +5,7 @@ export default defineNuxtPlugin({
   name: 'init-application-client',
   async setup() {
     const application = useApp()
-    const wsClient = useWS()
+    const wsClient = useWsClient()
 
     wsClient.onOpen(onOpenCb)
 
