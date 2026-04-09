@@ -27,6 +27,8 @@ import type { Profile, ProfileDTO } from '~/types/user.types'
 import type { WSHandler } from '~/lib/ws.client'
 import type { UserService } from './services/user.service'
 import type { NotificationService } from './services/notification.service'
+import type { NotesService } from './services/note.service'
+import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -34,6 +36,7 @@ export class Application<
 > {
   #ee: EventEmitter = new EventEmitter()
   #todoService: TodoService
+  #notesService: NotesService
   #authService: AuthService
   #userService: UserService
   #statisticService: StatisticService
@@ -47,12 +50,14 @@ export class Application<
 
   constructor(
     todoService: TodoService,
+    notesService: NotesService,
     authService: AuthService,
     userService: UserService,
     statisticService: StatisticService,
     notificationService: NotificationService,
   ) {
     this.#todoService = todoService
+    this.#notesService = notesService
     this.#authService = authService
     this.#userService = userService
     this.#statisticService = statisticService
@@ -231,11 +236,54 @@ export class Application<
     return res
   }
 
-  async init() {
-    this.#resolveApp()
+  public async getAllNotes(
+    params?: GetAllParams,
+  ): Promise<AppSuccess<PaginateResult<Note>> | AppError> {
+    const res = await this.#notesService.getAll(params)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+    return res
   }
 
-  subscribe<T = any>(topic: string, handler: WSHandler<T>) {
-    return this.#todoService.subscribe(topic, handler)
+  public async createNote(
+    dto: CreateNoteDTO,
+  ): Promise<AppSuccess<Note> | AppError> {
+    const res = await this.#notesService.create(dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+    return res
+  }
+
+  public async getOneNote(id: number): Promise<AppSuccess<Note> | AppError> {
+    const res = await this.#notesService.getOne(id)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+    return res
+  }
+
+  public async updateNote(
+    id: number,
+    dto: UpdateNoteDTO,
+  ): Promise<AppSuccess<Note> | AppError> {
+    const res = await this.#notesService.update(id, dto)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+    return res
+  }
+
+  public async deleteNote(id: number): Promise<AppSuccess<null> | AppError> {
+    const res = await this.#notesService.delete(id)
+    if (res instanceof AppError) {
+      this.notificationService.notify('error', res.message)
+    }
+    return res
+  }
+
+  async init() {
+    this.#resolveApp()
   }
 }

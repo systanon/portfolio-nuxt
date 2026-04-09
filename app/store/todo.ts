@@ -2,17 +2,20 @@ import type { WSMessage } from '~/lib/ws.client'
 import { AppError } from '~/types/app-errors'
 import type { GetAllParams } from '~/types/app.types'
 import type { CreateTodoDTO, Todo, UpdateTodoDTO } from '~/types/todo'
+import { PAGINATION_CONFIG } from '~/constants/pagination'
 
 export const useTodoStore = defineStore('todos', () => {
   const app = useApp()
+  const wsClient = useWsClient()
 
   const rows: Ref<Todo[]> = ref([])
   const currentTodo: Ref<Todo | null> = ref(null)
   const indexID = ref(new Map<number, Todo>())
   const total = ref<number>(0)
   const pages = ref<number>(0)
-  let unsubscribe = ref<(() => void) | null>(null)
+  let unsubscribe: (() => void) | null = null
   let currentPage = 0
+  let currentPerPage = 0
 
   function messageHandler(message: WSMessage<Todo | number>) {
     switch (message.event) {
@@ -45,6 +48,7 @@ export const useTodoStore = defineStore('todos', () => {
       total.value = res.total
       pages.value = res.pages
       currentPage = params?.page ?? 1
+      currentPerPage = params?.perPage ?? PAGINATION_CONFIG.DEFAULT_PAGE_SIZE
     }
   }
 
@@ -57,9 +61,12 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   function _create(todo: Todo): void {
+    if (indexID.value.has(todo.id)) return
+
     indexID.value.set(todo.id, todo)
     if (currentPage === 1) {
       rows.value.unshift(todo)
+      rows.value = rows.value.slice(0, currentPerPage)
     }
     total.value++
   }
@@ -71,6 +78,8 @@ export const useTodoStore = defineStore('todos', () => {
     }
     rows.value = rows.value.filter(({ id }) => id !== _todo.id)
     indexID.value.delete(_todo.id)
+    total.value--
+    pages.value = Math.ceil(total.value / currentPerPage)
   }
 
   async function create(payload: CreateTodoDTO): Promise<AppError | void> {
@@ -98,11 +107,11 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   function initWS() {
-    unsubscribe.value = app.subscribe('todos', messageHandler)
+    unsubscribe = wsClient.subscribe('todos', messageHandler)
   }
 
   function destroyWS() {
-    unsubscribe.value?.()
+    unsubscribe?.()
   }
 
   function setCurrentTodo(todo: Todo | null) {
