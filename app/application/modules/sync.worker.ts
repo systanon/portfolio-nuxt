@@ -1,5 +1,5 @@
 import { SyncEvent } from '~/types/sync'
-console.log('SyncWorker is loading...')
+
 const MAX_MISSED_PINGS = 3
 
 interface Connection extends MessagePort {
@@ -199,5 +199,3 @@ const onConnect = (event: MessageEvent): void => {
 
 self.addEventListener('connect', onConnect as EventListener, false)
 self.addEventListener('error', (err) => console.error('SyncWorker', err), false)
-
-console.log('SyncWorker started.')
