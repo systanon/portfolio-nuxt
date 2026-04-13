@@ -16,6 +16,7 @@ import { WSClient } from '~/lib/ws.client'
 import { API_URL } from '~/constants'
 import { NotificationService } from '~/application/services/notification.service'
 import { NotesService } from '~/application/services/note.service'
+import { createSyncModule } from '~/application/modules/sync.factory'
 
 const URL_EXCLUDE = [API_URL.refresh, API_URL.sign_in, API_URL.sign_up]
 
@@ -27,6 +28,7 @@ export default defineNuxtPlugin({
     const fetcher: $Fetch = $fetch.create({
       baseURL: import.meta.server ? config.apiInternal : config.public.apiBase,
     })
+    const syncModule = createSyncModule()
     const notificationService = new NotificationService()
 
     const wsClient = new WSClient(config.public.wsURL)
@@ -34,7 +36,12 @@ export default defineNuxtPlugin({
 
     const todoService = new TodoService(httpClient, wsClient)
     const notesService = new NotesService(httpClient, wsClient)
-    const authService = new AuthService(httpClient, wsClient, accessToken)
+    const authService = new AuthService(
+      httpClient,
+      wsClient,
+      accessToken,
+      syncModule,
+    )
     const userService = new UserService(httpClient, wsClient)
     const statisticService = new StatisticService(httpClient)
     const application = new Application(
@@ -44,6 +51,7 @@ export default defineNuxtPlugin({
       userService,
       statisticService,
       notificationService,
+      syncModule,
     )
 
     function requestInterceptor(
