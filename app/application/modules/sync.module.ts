@@ -24,14 +24,15 @@ export class SyncModule<
     clientID: null,
     master: true,
   })
-  private testConnectTimestamp = 0
+  private testConnectTimestamp = Date.now()
   private lostConnection = false
+  private pingInterval: ReturnType<typeof setInterval> | null = null
   private ee: EventEmitter = new EventEmitter()
   private callCount = 0
   private syncWorker: SharedWorker
   private config: SyncModuleConfig
-  private handlers: Record<string, Function> = {}
-  private procedures: Map<string, Function> = new Map()
+  private handlers: Record<string, (data: any) => void | Promise<void>> = {}
+  private procedures: Map<string, (...args: any[]) => any> = new Map()
   private callStack: Map<string, { resolve: Function; reject: Function }> =
     new Map()
   constructor(
@@ -58,6 +59,8 @@ export class SyncModule<
     const port = this.syncWorker.port
     port.addEventListener('message', this.handlePortMessage)
     port.start()
+    this.startPingWatcher()
+    window.addEventListener('beforeunload', this.destroy.bind(this))
   }
 
   get id() {
@@ -91,17 +94,20 @@ export class SyncModule<
     this.syncWorker.port.postMessage(structuredClone(message))
   }
 
-  public register(procedureName: string, fn: Function) {
+  public register<T extends (...args: any[]) => any>(
+    procedureName: string,
+    fn: T,
+  ) {
     this.procedures.set(procedureName, fn)
     return () => this.unregister(procedureName, fn)
   }
 
-  public unregister(procedureName: string, fn: Function) {
+  public unregister(procedureName: string, fn: (...args: any[]) => any) {
     const procedure = this.procedures.get(procedureName)
     procedure === fn && this.procedures.delete(procedureName)
   }
 
-  call(procedureName: string, ...params: any[]): Promise<any> {
+  public call(procedureName: string, ...params: any[]): Promise<any> {
     if (this.state.master) return Promise.reject('this is master tab')
 
     const requestID = `${this.state.clientID}-${this.callCount++}`
@@ -135,12 +141,42 @@ export class SyncModule<
     return promise
   }
 
+  private startPingWatcher() {
+    this.pingInterval = setInterval(() => {
+      const now = Date.now()
+
+      if (this.testConnectTimestamp + this.config.offlineInterval > now) {
+        if (this.lostConnection) {
+          this.lostConnection = false
+          console.log('SyncModule: connection restored')
+        }
+        return
+      }
+
+      if (this.lostConnection) return
+
+      this.lostConnection = true
+      this.state.master = true
+      console.warn('SyncModule: lost connection to syncWorker, becoming master')
+    }, this.config.pingPongInterval)
+  }
+
+  private destroy() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval)
+      this.pingInterval = null
+    }
+    this.syncWorker.port.removeEventListener('message', this.handlePortMessage)
+    this.syncWorker.port.close()
+  }
+
   private handleSync({ clientID }: { clientID: number }) {
     this.state.clientID = clientID
     console.log('connect to syncWorker', clientID)
   }
 
   private handlePing(data: { id: number; timestamp: number }) {
+    this.testConnectTimestamp = Date.now()
     const message = {
       event: SyncEvent.SYNC,
       data: {
@@ -193,28 +229,16 @@ export class SyncModule<
     }
 
     this.callStack.delete(requestID)
-    promise[state](result)
+    if (state === 'resolve') promise.resolve(result)
+    else promise.reject(result)
   }
 
   private readonly handlePortMessage = (ev: MessageEvent) => {
-    const root = ev.data as {
-      event: string
-      data?: {
-        type?: SyncEvent
-        data?: unknown
-        event?: string
-        params?: unknown[]
-      }
-      params?: unknown[]
-    }
-    if (root.event === SyncEvent.SYNC && root.data) {
-      if (root.data.type !== undefined) {
-        this.sync(root.data as { type: SyncEvent; data: any })
-      } else if (root.data.event != null && root.data.params != null) {
-        this.ee.emit(root.data.event, ...root.data.params)
-      }
-    } else if (root.event !== SyncEvent.SYNC) {
-      this.ee.emit(root.event, ...(root.params ?? []))
+    const { event, data, params } = ev.data
+    if (event === SyncEvent.SYNC) {
+      this.sync(data)
+    } else {
+      this.ee.emit(event, ...(params ?? []))
     }
   }
 
