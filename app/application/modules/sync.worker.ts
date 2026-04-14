@@ -179,9 +179,10 @@ const onConnect = (event: MessageEvent): void => {
   port.addEventListener('message', onMessage(port._id), false)
   port.start()
 
+  const masterConnection = masterID != null ? connections.get(masterID) : null
   if (
-    masterID == null ||
-    connections.get(masterID)!._pong + PING_PONG_INTERVAL_LIMIT < now
+    !masterConnection ||
+    masterConnection._pong + PING_PONG_INTERVAL_LIMIT < now
   ) {
     masterID = port._id
   }
