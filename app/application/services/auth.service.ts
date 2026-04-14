@@ -13,22 +13,35 @@ import type {
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
 import type { WSClientLike } from '~/lib/ws.client'
+import type { ISyncModule } from '~/types/sync'
 
 export class AuthService {
   private readonly httpClient: HTTPClient
   private readonly wsClient: WSClientLike
   private readonly accessToken: Ref<string | null | undefined>
+  private readonly syncModule: ISyncModule
 
   constructor(
     httpClient: HTTPClient,
     wsClient: WSClientLike,
     accessToken: Ref<string | null | undefined>,
+    syncModule: ISyncModule,
   ) {
     this.httpClient = httpClient
     this.wsClient = wsClient
     this.accessToken = accessToken
+    this.syncModule = syncModule
+    this.syncModule.on('login', this.applyToken.bind(this))
+    this.syncModule.on('logout', this.applyLogout.bind(this))
+  }
+  private applyToken({ access_token }: { access_token: string }) {
+    this.accessToken.value = access_token
   }
 
+  private applyLogout() {
+    this.accessToken.value = null
+    this.wsClient.unauth()
+  }
   async registration(dto: SignUpDto): Promise<AppSuccess | AppError> {
     const url = API_URL.sign_up
     const body = JSON.stringify(dto)
@@ -96,6 +109,7 @@ export class AuthService {
     if (result instanceof AppSuccess) {
       const access_token = result.data.access_token
       this.accessToken.value = access_token
+      this.syncModule.emit('login', { access_token })
     } else {
       return new AppError(result.message)
     }
@@ -124,6 +138,7 @@ export class AuthService {
     if (result instanceof AppSuccess) {
       this.accessToken.value = null
       this.wsClient.unauth()
+      this.syncModule.emit('logout')
     } else {
       return new AppError(result.message)
     }

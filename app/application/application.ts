@@ -24,11 +24,11 @@ import type {
 } from '~/types/auth'
 import type { StatisticService } from './services/statistic.service'
 import type { Profile, ProfileDTO } from '~/types/user.types'
-import type { WSHandler } from '~/lib/ws.client'
 import type { UserService } from './services/user.service'
 import type { NotificationService } from './services/notification.service'
 import type { NotesService } from './services/note.service'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
+import type { ISyncModule } from '~/types/sync'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
@@ -42,6 +42,7 @@ export class Application<
   #statisticService: StatisticService
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
+  private readonly syncModule: ISyncModule
 
   notificationService: NotificationService
 
@@ -55,6 +56,7 @@ export class Application<
     userService: UserService,
     statisticService: StatisticService,
     notificationService: NotificationService,
+    syncModule: ISyncModule,
   ) {
     this.#todoService = todoService
     this.#notesService = notesService
@@ -62,6 +64,13 @@ export class Application<
     this.#userService = userService
     this.#statisticService = statisticService
     this.notificationService = notificationService
+    this.syncModule = syncModule
+    this.syncModule.on('profile:loaded', (res: any) => {
+      this.#ee.emit('profile:loaded', res)
+    })
+    this.syncModule.on('logout', () => {
+      this.#ee.emit('auth:logout')
+    })
     this.appLoading = new Promise((resolve) => {
       this.#resolveApp = resolve
     })
@@ -100,6 +109,7 @@ export class Application<
     }
     if (res instanceof AppSuccess) {
       this.#ee.emit('profile:loaded', res.data)
+      this.syncModule.emit('profile:loaded', res.data)
     }
     this.resolveProfileLoading?.()
     return res
