@@ -29,17 +29,19 @@ import type { NotificationService } from './services/notification.service'
 import type { NotesService } from './services/note.service'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 import type { ISyncModule } from '~/types/sync'
+import { Logger } from '~/lib/logger'
 
 export class Application<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
   EventContext extends any = any,
 > {
-  #ee: EventEmitter = new EventEmitter()
-  #todoService: TodoService
-  #notesService: NotesService
-  #authService: AuthService
-  #userService: UserService
-  #statisticService: StatisticService
+  private ee: EventEmitter = new EventEmitter()
+  private todoService: TodoService
+  private notesService: NotesService
+  private authService: AuthService
+  private userService: UserService
+  private statisticService: StatisticService
+  private logger = new Logger('Application')
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
   private readonly syncModule: ISyncModule
@@ -47,7 +49,7 @@ export class Application<
   notificationService: NotificationService
 
   appLoading: Promise<void>
-  #resolveApp!: () => void
+  private resolveApp!: () => void
 
   constructor(
     todoService: TodoService,
@@ -58,21 +60,21 @@ export class Application<
     notificationService: NotificationService,
     syncModule: ISyncModule,
   ) {
-    this.#todoService = todoService
-    this.#notesService = notesService
-    this.#authService = authService
-    this.#userService = userService
-    this.#statisticService = statisticService
+    this.todoService = todoService
+    this.notesService = notesService
+    this.authService = authService
+    this.userService = userService
+    this.statisticService = statisticService
     this.notificationService = notificationService
     this.syncModule = syncModule
     this.syncModule.on('profile:loaded', (res: any) => {
-      this.#ee.emit('profile:loaded', res)
+      this.ee.emit('profile:loaded', res)
     })
     this.syncModule.on('logout', () => {
-      this.#ee.emit('auth:logout')
+      this.ee.emit('auth:logout')
     })
     this.appLoading = new Promise((resolve) => {
-      this.#resolveApp = resolve
+      this.resolveApp = resolve
     })
   }
 
@@ -81,7 +83,7 @@ export class Application<
     fn: EventEmitter.EventListener<EventTypes, T>,
     context?: EventContext,
   ): EventEmitter {
-    return this.#ee.on(event, fn, context)
+    return this.ee.on(event, fn, context)
   }
 
   public off<T extends EventEmitter.EventNames<EventTypes>>(
@@ -90,7 +92,7 @@ export class Application<
     context?: EventContext,
     once?: boolean,
   ): EventEmitter {
-    return this.#ee.off(event, fn, context, once)
+    return this.ee.off(event, fn, context, once)
   }
 
   public async getProfile(): Promise<
@@ -99,7 +101,7 @@ export class Application<
     this.profileLoading = new Promise((resolve) => {
       this.resolveProfileLoading = resolve
     })
-    const res = await this.#userService.getProfile()
+    const res = await this.userService.getProfile()
 
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
@@ -108,7 +110,7 @@ export class Application<
       this.notificationService.notify('info', res.message)
     }
     if (res instanceof AppSuccess) {
-      this.#ee.emit('profile:loaded', res.data)
+      this.ee.emit('profile:loaded', res.data)
       this.syncModule.emit('profile:loaded', res.data)
     }
     this.resolveProfileLoading?.()
@@ -116,20 +118,22 @@ export class Application<
   }
 
   async signIn(dto: SignInDto): Promise<void | AppError> {
-    const res = await this.#authService.authorization(dto)
+    const res = await this.authService.authorization(dto)
     if (res instanceof AppError) {
+      this.logger.warn(`Sign in failed: ${res.message}`)
       this.notificationService.notify('error', res.message)
 
       return res
     }
     const profile = await this.getProfile()
     if (profile instanceof AppSuccess) {
-      this.#ee.emit('auth:login')
+      this.logger.log('User signed in')
+      this.ee.emit('auth:login')
     }
   }
 
   async signUp(dto: SignUpDto): Promise<void | AppError> {
-    const res = await this.#authService.registration(dto)
+    const res = await this.authService.registration(dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
 
@@ -140,7 +144,7 @@ export class Application<
   async forgotPassword(
     dto: ForgotPasswordDto,
   ): Promise<void | AppRateLimitError> {
-    const res = await this.#authService.forgotPassword(dto)
+    const res = await this.authService.forgotPassword(dto)
     if (res instanceof AppRateLimitError) {
       this.notificationService.notify('error', res.message)
 
@@ -151,7 +155,7 @@ export class Application<
   async resendConfirmEmail(
     dto: ResendConfirmEmailDto,
   ): Promise<void | AppRateLimitError> {
-    const res = await this.#authService.resendConfirmEmail(dto)
+    const res = await this.authService.resendConfirmEmail(dto)
     if (res instanceof AppRateLimitError) {
       this.notificationService.notify('error', res.message)
       return res
@@ -159,7 +163,7 @@ export class Application<
   }
 
   async updateProfile(dto: ProfileDTO): Promise<AppSuccess<null> | AppError> {
-    const res = await this.#userService.updateProfile(dto)
+    const res = await this.userService.updateProfile(dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -168,17 +172,19 @@ export class Application<
   }
 
   async logout(): Promise<void | AppError> {
-    const res = await this.#authService.logout()
+    const res = await this.authService.logout()
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
 
       return res
     }
-    this.#ee.emit('auth:logout')
+    // TODO: also return AppSuccess
+    this.logger.log('User logged out')
+    this.ee.emit('auth:logout')
   }
 
   public async createTodo(dto: CreateTodoDTO): Promise<ID | AppError> {
-    const res = await this.#todoService.create(dto)
+    const res = await this.todoService.create(dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -189,18 +195,18 @@ export class Application<
   public async getAllTodos(
     params?: GetAllParams,
   ): Promise<PaginateResult<Todo> | AppError> {
-    this.#ee.emit('data:loading', true)
-    const res = await this.#todoService.getAll(params)
+    this.ee.emit('data:loading', true)
+    const res = await this.todoService.getAll(params)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
-    this.#ee.emit('todo:loaded', res)
-    this.#ee.emit('data:loading', false)
+    this.ee.emit('todo:loaded', res)
+    this.ee.emit('data:loading', false)
     return res
   }
 
   public async getOneTodo(id: ID): Promise<AppSuccess<Todo> | AppError> {
-    const res = await this.#todoService.getOne(id)
+    const res = await this.todoService.getOne(id)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -211,7 +217,7 @@ export class Application<
     id: ID,
     dto: ReplaceTodoDTO,
   ): Promise<void | AppError> {
-    const res = await this.#todoService.replace(id, dto)
+    const res = await this.todoService.replace(id, dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -223,7 +229,7 @@ export class Application<
     id: ID,
     dto: UpdateTodoDTO,
   ): Promise<void | AppError> {
-    const res = await this.#todoService.update(id, dto)
+    const res = await this.todoService.update(id, dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -231,7 +237,7 @@ export class Application<
   }
 
   public async deleteTodo(id: ID): Promise<void | AppError> {
-    const res = await this.#todoService.delete(id)
+    const res = await this.todoService.delete(id)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -239,7 +245,7 @@ export class Application<
   }
 
   async saveStatistic(dto: StatisticDTO): Promise<void | AppError> {
-    const res = await this.#statisticService.save(dto)
+    const res = await this.statisticService.save(dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -249,7 +255,7 @@ export class Application<
   public async getAllNotes(
     params?: GetAllParams,
   ): Promise<AppSuccess<PaginateResult<Note>> | AppError> {
-    const res = await this.#notesService.getAll(params)
+    const res = await this.notesService.getAll(params)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -259,7 +265,7 @@ export class Application<
   public async createNote(
     dto: CreateNoteDTO,
   ): Promise<AppSuccess<Note> | AppError> {
-    const res = await this.#notesService.create(dto)
+    const res = await this.notesService.create(dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -267,7 +273,7 @@ export class Application<
   }
 
   public async getOneNote(id: number): Promise<AppSuccess<Note> | AppError> {
-    const res = await this.#notesService.getOne(id)
+    const res = await this.notesService.getOne(id)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -278,7 +284,7 @@ export class Application<
     id: number,
     dto: UpdateNoteDTO,
   ): Promise<AppSuccess<Note> | AppError> {
-    const res = await this.#notesService.update(id, dto)
+    const res = await this.notesService.update(id, dto)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -286,7 +292,7 @@ export class Application<
   }
 
   public async deleteNote(id: number): Promise<AppSuccess<null> | AppError> {
-    const res = await this.#notesService.delete(id)
+    const res = await this.notesService.delete(id)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
@@ -294,6 +300,8 @@ export class Application<
   }
 
   async init() {
-    this.#resolveApp()
+    this.logger.log('Initializing')
+    this.resolveApp()
+    this.logger.log('Ready')
   }
 }
