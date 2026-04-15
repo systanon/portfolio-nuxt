@@ -1,3 +1,5 @@
+import { Logger } from './logger'
+
 const MAX_RECONNECT_DELAY_MS = 30_000
 const BASE_RECONNECT_DELAY_MS = 1000
 
@@ -27,6 +29,7 @@ export class WSClient implements WSClientLike {
   private isDestroyed = false
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null
   private openCallbacks = new Set<() => void>()
+  private logger = new Logger('WebSocketClient')
 
   constructor(url: string) {
     this.url = url
@@ -51,7 +54,7 @@ export class WSClient implements WSClientLike {
 
     this.ws.onopen = () => {
       this.reconnectAttempts = 0
-      this.log('Connected')
+      this.logger.log('Connected')
 
       this.openCallbacks.forEach((cb) => cb())
     }
@@ -72,7 +75,7 @@ export class WSClient implements WSClientLike {
         BASE_RECONNECT_DELAY_MS * Math.pow(2, this.reconnectAttempts),
         MAX_RECONNECT_DELAY_MS,
       )
-      this.log(
+      this.logger.warn(
         `Closed (code ${event.code}). Reconnecting in ${delay}ms`,
         event.reason,
       )
@@ -81,8 +84,8 @@ export class WSClient implements WSClientLike {
       this.reconnectTimer = setTimeout(() => this.connect(), delay)
     }
 
-    this.ws.onerror = () => {
-      this.log('Socket error')
+    this.ws.onerror = (event) => {
+      this.logger.error('Socket error', event)
       this.ws?.close()
     }
   }
@@ -90,7 +93,10 @@ export class WSClient implements WSClientLike {
   private handleMessage(message: MessageEvent) {
     try {
       const payload: WSMessage = JSON.parse(message.data)
-
+      this.logger.log(
+        `Received "${payload.topic ?? payload.event}"`,
+        payload.data,
+      )
       const called = new Set<WSHandler>()
 
       if (payload.topic) {
@@ -105,13 +111,13 @@ export class WSClient implements WSClientLike {
         })
       }
     } catch (e) {
-      this.log('Ignored non-JSON or invalid message')
+      this.logger.error('Ignored non-JSON or invalid message', message.data)
     }
   }
 
   emit<T>(event: string, data: T) {
     if (this.ws?.readyState !== WebSocket.OPEN) {
-      this.log('Cannot emit, socket not open')
+      this.logger.warn(`Cannot emit "${event}", socket not open`)
       return
     }
     this.ws.send(JSON.stringify({ event, data }))
@@ -145,6 +151,7 @@ export class WSClient implements WSClientLike {
   }
 
   destroy() {
+    this.logger.log('Destroying connection')
     this.isDestroyed = true
     this.reconnectAttempts = 0
     if (this.reconnectTimer) {
@@ -161,6 +168,7 @@ export class WSClient implements WSClientLike {
     const set = this.handlers.get(topic) ?? new Set<WSHandler>()
     set.add(handler as WSHandler)
     this.handlers.set(topic, set)
+    this.logger.log(`Subscribed to "${topic}" (total: ${set.size})`)
     return () => this.unsubscribe(topic, handler)
   }
 
@@ -168,12 +176,7 @@ export class WSClient implements WSClientLike {
     const set = this.handlers.get(topic)
     if (!set) return
     set.delete(handler as WSHandler)
+    this.logger.log(`Unsubscribed from "${topic}" (remaining: ${set.size})`)
     if (set.size === 0) this.handlers.delete(topic)
-  }
-
-  private log(...args: unknown[]) {
-    if (import.meta.dev) {
-      console.warn('[WS]', ...args)
-    }
   }
 }
