@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3'
 import type { Reactive } from 'vue'
 import { SyncEvent, type ISyncModule } from '~/types/sync'
 import type { RpcRequest, RpcResponse } from './sync.worker'
+import { Logger } from '~/lib/logger'
 
 const isPromise = (value: unknown): value is Promise<unknown> =>
   value instanceof Promise
@@ -35,6 +36,7 @@ export class SyncModule<
   private procedures: Map<string, (...args: any[]) => any> = new Map()
   private callStack: Map<string, { resolve: Function; reject: Function }> =
     new Map()
+  private logger = new Logger('SyncModule')
   constructor(
     syncWorker: SharedWorker,
     config: SyncModuleConfig = {
@@ -52,7 +54,7 @@ export class SyncModule<
       [SyncEvent.RPC_REQUEST]: this.handleRPCRequest.bind(this),
       [SyncEvent.RPC_RESPONSE]: this.handleRPCResponse.bind(this),
       [SyncEvent.DISCONNECT]: ({ reason }: { reason: string }) => {
-        console.warn('Disconnected from SyncWorker:', reason)
+        this.logger.warn('Disconnected from SyncWorker', reason)
       },
     }
 
@@ -133,10 +135,10 @@ export class SyncModule<
     }
     this.syncWorker.port.postMessage(structuredClone(message))
 
-    setTimeout(
-      () => result.reject(`request with id: ${requestID} was too long`),
-      2000,
-    )
+    setTimeout(() => {
+      this.logger.warn(`RPC timeout: ${requestID} (${procedureName})`)
+      result.reject(`request with id: ${requestID} was too long`)
+    }, 2000)
 
     return promise
   }
@@ -148,7 +150,7 @@ export class SyncModule<
       if (this.testConnectTimestamp + this.config.offlineInterval > now) {
         if (this.lostConnection) {
           this.lostConnection = false
-          console.log('SyncModule: connection restored')
+          this.logger.log('Connection restored')
         }
         return
       }
@@ -157,11 +159,12 @@ export class SyncModule<
 
       this.lostConnection = true
       this.state.master = true
-      console.warn('SyncModule: lost connection to syncWorker, becoming master')
+      this.logger.warn('Lost connection to syncWorker, becoming master')
     }, this.config.pingPongInterval)
   }
 
   private destroy() {
+    this.logger.log('Destroying')
     if (this.pingInterval) {
       clearInterval(this.pingInterval)
       this.pingInterval = null
@@ -172,7 +175,7 @@ export class SyncModule<
 
   private handleSync({ clientID }: { clientID: number }) {
     this.state.clientID = clientID
-    console.log('connect to syncWorker', clientID)
+    this.logger.log('Connect to syncWorker', clientID)
   }
 
   private handlePing(data: { id: number; timestamp: number }) {
@@ -190,7 +193,7 @@ export class SyncModule<
   private handleMaster({ master }: { master: boolean }) {
     if (this.state.master === master) return
     this.state.master = master
-    console.log('Master status updated:', master)
+    this.logger.log('Master status updated:', master)
   }
 
   private async handleRPCRequest(request: RpcRequest) {
@@ -201,11 +204,13 @@ export class SyncModule<
     if (isPromise(res)) {
       await res
         .then((data) => (result = data))
-        .catch((error) => ((result = error), (state = 'reject')))
-      console.log('RPC request received:', result)
+        .catch((error) => {
+          this.logger.error(`RPC procedure "${procedureName}" failed`, error)
+          result = error
+          state = 'reject'
+        })
     } else {
       result = res
-      console.log('RPC request received:', request)
     }
 
     const data = { clientID, requestID, state, result }
@@ -218,16 +223,16 @@ export class SyncModule<
 
   private handleRPCResponse(response: RpcResponse) {
     if (response.clientID !== this.state.clientID) {
-      console.log('the response is intended for another client', response)
+      this.logger.log('The response is intended for another client', response)
       return
     }
     const { requestID, state, result } = response
     const promise = this.callStack.get(requestID)
     if (!promise) {
-      console.error('there is no such request in call stack', response)
+      this.logger.error('There is no such request in call stack', response)
       return
     }
-
+    this.logger.log('RPC response received:', response)
     this.callStack.delete(requestID)
     if (state === 'resolve') promise.resolve(result)
     else promise.reject(result)
