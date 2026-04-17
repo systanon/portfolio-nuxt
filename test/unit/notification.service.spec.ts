@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { NotificationService } from '../../app/application/services/notification.service'
+import { NotificationService } from '../../app/application/services/client/notification.service'
 
 describe('NotificationService', () => {
   it('adds a notification and removes it after timeout', async () => {
