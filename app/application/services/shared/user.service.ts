@@ -1,17 +1,13 @@
 import { API_URL } from '~/constants'
 import type { HTTPClient } from '~/lib/http.client'
-import type { WSClientLike } from '~/lib/ws.client'
 import { AppError, type AppSilentError } from '~/types/app-errors'
 import { AppSuccess } from '~/types/app.types'
 import type { Profile, ProfileDTO } from '~/types/user.types'
 
 export class UserService {
   private readonly httpClient: HTTPClient
-  private readonly wsClient: WSClientLike
-
-  constructor(httpClient: HTTPClient, wsClient: WSClientLike) {
+  constructor(httpClient: HTTPClient) {
     this.httpClient = httpClient
-    this.wsClient = wsClient
   }
 
   async getProfile(): Promise<AppSuccess<Profile> | AppError | AppSilentError> {
@@ -20,11 +16,6 @@ export class UserService {
       method: 'POST',
       credentials: 'include',
     })
-    if (result instanceof AppSuccess) {
-      if (import.meta.client) {
-        this.wsClient.auth(result.data.id)
-      }
-    }
     return result
   }
   async updateProfile(dto: ProfileDTO): Promise<AppError | AppSuccess<null>> {

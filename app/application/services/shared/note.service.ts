@@ -1,6 +1,5 @@
 import { API_URL } from '~/constants'
 import type { HTTPClient } from '~/lib/http.client'
-import type { WSClientLike, WSHandler } from '~/lib/ws.client'
 import { AppError } from '~/types/app-errors'
 import {
   AppSuccess,
@@ -11,11 +10,9 @@ import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 
 export class NotesService {
   private readonly httpClient: HTTPClient
-  private readonly wsClient: WSClientLike
 
-  constructor(httpClient: HTTPClient, wsClient: WSClientLike) {
+  constructor(httpClient: HTTPClient) {
     this.httpClient = httpClient
-    this.wsClient = wsClient
   }
 
   async getAll(
@@ -75,9 +72,5 @@ export class NotesService {
       method: 'DELETE',
       credentials: 'include',
     })
-  }
-
-  subscribe<T = unknown>(topic: string, handler: WSHandler<T>) {
-    return this.wsClient.subscribe(topic, handler)
   }
 }

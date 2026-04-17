@@ -15,15 +15,12 @@ import {
 } from '~/types/app.types'
 import { getTotalPages } from '~/utils/getTotalPages'
 import { API_URL } from '~/constants'
-import type { WSClientLike, WSHandler } from '~/lib/ws.client'
 
 export class TodoService {
   private readonly httpClient: HTTPClient
-  private readonly wsClient: WSClientLike
 
-  constructor(httpClient: HTTPClient, wsClient: WSClientLike) {
+  constructor(httpClient: HTTPClient) {
     this.httpClient = httpClient
-    this.wsClient = wsClient
   }
 
   async create(dto: CreateTodoDTO): Promise<ID | AppError> {
@@ -93,9 +90,5 @@ export class TodoService {
     if (result instanceof AppError) {
       return result
     }
-  }
-
-  subscribe<T = any>(topic: string, handler: WSHandler<T>) {
-    return this.wsClient.subscribe(topic, handler)
   }
 }
