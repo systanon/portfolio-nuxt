@@ -1,6 +1,5 @@
 import { useAppStore } from '~/store/application'
 import { checkAccessCurrentRoute } from '~/router/checkAccessCurrentRoute'
-import type { ClientApplication } from '~/application/clientApplication'
 
 export default defineNuxtPlugin({
   name: 'subscribers-client',
@@ -8,7 +7,6 @@ export default defineNuxtPlugin({
   setup() {
     const router = useRouter()
     const application = useApp()
-    const authService = useAuthService()
     const appStore = useAppStore()
 
     application.on('auth:logout', () => {
