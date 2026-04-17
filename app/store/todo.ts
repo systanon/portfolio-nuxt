@@ -1,12 +1,11 @@
-import type { WSMessage } from '~/lib/ws.client'
+import type { WSMessage } from '~/application/services/client/ws.service'
 import { AppError } from '~/types/app-errors'
 import type { GetAllParams } from '~/types/app.types'
 import type { CreateTodoDTO, Todo, UpdateTodoDTO } from '~/types/todo'
 import { PAGINATION_CONFIG } from '~/constants/pagination'
 
 export const useTodoStore = defineStore('todos', () => {
-  const app = useApp()
-  const wsClient = useWsClient()
+  const application = useApp()
 
   const rows: Ref<Todo[]> = ref([])
   const currentTodo: Ref<Todo | null> = ref(null)
@@ -32,7 +31,7 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   async function getAll(params?: GetAllParams) {
-    const res = await app.getAllTodos(params)
+    const res = await application.getAllTodos(params)
 
     if (res instanceof AppError) {
       rows.value = []
@@ -83,7 +82,7 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   async function create(payload: CreateTodoDTO): Promise<AppError | void> {
-    const res = await app.createTodo(payload)
+    const res = await useClientApp().createTodo(payload)
     if (res instanceof AppError) {
       return res
     }
@@ -93,21 +92,21 @@ export const useTodoStore = defineStore('todos', () => {
     _id: number,
     payload: UpdateTodoDTO,
   ): Promise<AppError | void> {
-    const res = await app.updateTodo(_id, payload)
+    const res = await useClientApp().updateTodo(_id, payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
   async function remove(id: number): Promise<AppError | void> {
-    const res = await app.deleteTodo(id)
+    const res = await useClientApp().deleteTodo(id)
     if (res instanceof AppError) {
       return res
     }
   }
 
   function initWS() {
-    unsubscribe = wsClient.subscribe('todos', messageHandler)
+    unsubscribe = useWsService().subscribe('todos', messageHandler)
   }
 
   function destroyWS() {

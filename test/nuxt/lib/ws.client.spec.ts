@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 vi.unmock('~/lib/ws.client')
 
-import { WSClient } from '~/lib/ws.client'
+import { WSService } from '~/application/services/client/ws.service'
 
 const createdSockets: MockWebSocket[] = []
 
@@ -52,7 +52,7 @@ async function flushMicrotasks() {
   await Promise.resolve()
 }
 
-describe('WSClient', () => {
+describe('WSService', () => {
   beforeEach(() => {
     createdSockets.length = 0
     vi.stubGlobal('WebSocket', MockWebSocket as unknown as typeof WebSocket)
@@ -71,7 +71,7 @@ describe('WSClient', () => {
   }
 
   it('connect opens socket without sending auth on its own', async () => {
-    const client = new WSClient('ws://api.test/ws')
+    const client = new WSService('ws://api.test/ws')
     client.connect()
     await flushMicrotasks()
 
@@ -80,7 +80,7 @@ describe('WSClient', () => {
   })
 
   it('runs onOpen callbacks after connection, then auth can send', async () => {
-    const client = new WSClient('ws://api.test/ws')
+    const client = new WSService('ws://api.test/ws')
     const onOpen = vi.fn()
     client.onOpen(onOpen)
     client.onOpen(() => client.auth(99))
@@ -94,7 +94,7 @@ describe('WSClient', () => {
   })
 
   it('dispatches incoming JSON to handlers by topic', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const handler = vi.fn()
     client.subscribe('todos', handler)
     client.connect()
@@ -117,7 +117,7 @@ describe('WSClient', () => {
   })
 
   it('dispatches to handlers registered on event name', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const handler = vi.fn()
     client.subscribe('create', handler)
     client.connect()
@@ -135,7 +135,7 @@ describe('WSClient', () => {
   })
 
   it('deduplicates handler call when topic and event strings match', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const handler = vi.fn()
     client.subscribe('ping', handler)
     client.connect()
@@ -153,7 +153,7 @@ describe('WSClient', () => {
   })
 
   it('unsubscribe stops further deliveries', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const handler = vi.fn()
     const off = client.subscribe('todos', handler)
     client.connect()
@@ -172,7 +172,7 @@ describe('WSClient', () => {
   })
 
   it('ignores non-JSON payloads and JSON without topic or event', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const handler = vi.fn()
     client.subscribe('todos', handler)
     client.connect()
@@ -184,7 +184,7 @@ describe('WSClient', () => {
   })
 
   it('emit sends payload when socket is open', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     client.connect()
     await flushMicrotasks()
 
@@ -195,7 +195,7 @@ describe('WSClient', () => {
   })
 
   it('unauth sends unauth event when open', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     client.connect()
     await flushMicrotasks()
 
@@ -207,7 +207,7 @@ describe('WSClient', () => {
 
   it('runs onOpen again after reconnect', async () => {
     vi.useFakeTimers()
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const onOpen = vi.fn()
     client.onOpen(onOpen)
     client.connect()
@@ -224,7 +224,7 @@ describe('WSClient', () => {
 
   it('destroy closes socket and prevents reconnect', async () => {
     vi.useFakeTimers()
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     client.connect()
     await flushMicrotasks()
 
@@ -239,7 +239,7 @@ describe('WSClient', () => {
 
   it('schedules reconnect after close when not destroyed', async () => {
     vi.useFakeTimers()
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     client.connect()
     await flushMicrotasks()
 
@@ -253,7 +253,7 @@ describe('WSClient', () => {
   })
 
   it('onOpen returns an unsubscribe function that stops future calls', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     const handler = vi.fn()
     const off = client.onOpen(handler)
     client.connect()
@@ -272,7 +272,7 @@ describe('WSClient', () => {
   })
 
   it('onOpen fires immediately when socket is already open (late subscription)', async () => {
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     client.connect()
     await flushMicrotasks()
 
@@ -284,7 +284,7 @@ describe('WSClient', () => {
 
   it('destroy resets reconnectAttempts', async () => {
     vi.useFakeTimers()
-    const client = new WSClient('ws://x')
+    const client = new WSService('ws://x')
     client.connect()
     await flushMicrotasks()
 
@@ -297,7 +297,7 @@ describe('WSClient', () => {
 
     client.destroy()
 
-    const freshClient = new WSClient('ws://x')
+    const freshClient = new WSService('ws://x')
     const onOpen = vi.fn()
     freshClient.onOpen(onOpen)
     freshClient.connect()

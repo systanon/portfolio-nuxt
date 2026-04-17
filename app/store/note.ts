@@ -1,13 +1,11 @@
 import { AppError } from '@/types/app-errors'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 import type { GetAllParams } from '@/types/app.types'
-import type { WSMessage } from '~/lib/ws.client'
 import { PAGINATION_CONFIG } from '~/constants/pagination'
+import type { WSMessage } from '~/application/services/client/ws.service'
 
 export const useNoteStore = defineStore('notes', () => {
   const application = useApp()
-  const wsClient = useWsClient()
-
   const rows: Ref<Note[]> = ref([])
   const indexID = ref(new Map<number, Note>())
   const total = ref<number>(0)
@@ -84,28 +82,28 @@ export const useNoteStore = defineStore('notes', () => {
   }
 
   async function update(_id: number, payload: UpdateNoteDTO) {
-    const res = await application.updateNote(_id, payload)
+    const res = await useClientApp().updateNote(_id, payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
   async function create(payload: CreateNoteDTO) {
-    const res = await application.createNote(payload)
+    const res = await useClientApp().createNote(payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
   async function remove(id: number) {
-    const res = await application.deleteNote(id)
+    const res = await useClientApp().deleteNote(id)
     if (res instanceof AppError) {
       return res
     }
   }
 
   function initWS() {
-    unsubscribe = wsClient.subscribe('notes', messageHandler)
+    unsubscribe = useWsService().subscribe('notes', messageHandler)
   }
 
   function destroyWS() {

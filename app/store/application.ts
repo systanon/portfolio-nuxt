@@ -1,4 +1,5 @@
-import type { Application } from '~/application/application'
+import type { ClientApplication } from '~/application/clientApplication'
+import type { ServerApplication } from '~/application/serverApplication'
 import type { Profile } from '~/types/user.types'
 
 export const useAppStore = defineStore('app', () => {
@@ -8,7 +9,9 @@ export const useAppStore = defineStore('app', () => {
 
   const isLogged = computed(() => profile.value !== null)
 
-  function bindApplicationEvents(application: Application) {
+  function bindApplicationEvents(
+    application: ClientApplication | ServerApplication,
+  ) {
     application.on('profile:loaded', (data: Profile) => {
       profile.value = data
     })
