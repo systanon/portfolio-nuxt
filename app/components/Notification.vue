@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { NotificationPayload } from '~/application/services/notification.service'
+import type { NotificationPayload } from '~/application/services/client/notification.service'
 import type { IProgressBar } from './animation/ProgressBar.vue'
 
 const props = defineProps<{
