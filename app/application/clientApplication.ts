@@ -11,6 +11,7 @@ import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
 import {
   AppSuccess,
+  type BaseApplication,
   type GetAllParams,
   type PaginateResult,
   type StatisticDTO,
@@ -31,12 +32,16 @@ import type { NotesService } from './services/shared/note.service'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 import type { ISyncModule } from '~/types/sync'
 import { Logger } from '~/lib/logger'
+import type { BaseEventTypes } from '~/types/events'
 
-export class ClientApplication<
-  EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
-  EventContext extends any = any,
-> {
-  private ee: EventEmitter = new EventEmitter()
+export interface ClientEventTypes extends BaseEventTypes {
+  'auth:login': []
+  'auth:logout': []
+  'data:loading': [isLoading: boolean]
+}
+
+export class ClientApplication implements BaseApplication {
+  private ee = new EventEmitter<ClientEventTypes>()
   private todoService: TodoService
   private notesService: NotesService
   private authService: AuthService
@@ -82,20 +87,20 @@ export class ClientApplication<
     })
   }
 
-  public on<T extends EventEmitter.EventNames<EventTypes>>(
+  public on<T extends EventEmitter.EventNames<ClientEventTypes>>(
     event: T,
-    fn: EventEmitter.EventListener<EventTypes, T>,
-    context?: EventContext,
-  ): EventEmitter {
+    fn: EventEmitter.EventListener<ClientEventTypes, T>,
+    context?: unknown,
+  ): EventEmitter<ClientEventTypes> {
     return this.ee.on(event, fn, context)
   }
 
-  public off<T extends EventEmitter.EventNames<EventTypes>>(
+  public off<T extends EventEmitter.EventNames<ClientEventTypes>>(
     event: T,
-    fn?: EventEmitter.EventListener<EventTypes, T>,
-    context?: EventContext,
+    fn?: EventEmitter.EventListener<ClientEventTypes, T>,
+    context?: unknown,
     once?: boolean,
-  ): EventEmitter {
+  ): EventEmitter<ClientEventTypes> {
     return this.ee.off(event, fn, context, once)
   }
 
@@ -209,7 +214,7 @@ export class ClientApplication<
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
     }
-    this.ee.emit('todo:loaded', res)
+    // this.ee.emit('todo:loaded', res)
     this.ee.emit('data:loading', false)
     return res
   }
