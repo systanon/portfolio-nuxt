@@ -1,7 +1,10 @@
 import EventEmitter from 'eventemitter3'
 import type { Reactive } from 'vue'
 import { SyncEvent, type ISyncModule } from '~/types/sync'
-import type { RpcRequest, RpcResponse } from './sync.worker'
+import type {
+  RpcRequest,
+  RpcResponse,
+} from '~/application/modules/client/sync.worker'
 import { Logger } from '~/lib/logger'
 
 const isPromise = (value: unknown): value is Promise<unknown> =>
