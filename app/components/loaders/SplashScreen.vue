@@ -14,13 +14,12 @@ const emit = defineEmits<{
   (e: 'finished'): void
 }>()
 
-const application = useApp()
-
 const splashRef = ref<HTMLElement | null>(null)
 
 const { hideSplash } = createSplash()
 
 onMounted(() => {
+  const application = useClientApp()
   const animation = (async () => {
     await ensureMinDelay(application.appLoading, 600)
     await hideSplash(splashRef.value)
