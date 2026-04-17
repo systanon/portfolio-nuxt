@@ -1,4 +1,4 @@
-import type { NotificationService } from '~/application/services/notification.service'
+import type { NotificationService } from '~/application/services/client/notification.service'
 
 export const useNotification = (): NotificationService => {
   const { $notification } = useNuxtApp()
