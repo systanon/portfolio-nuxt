@@ -15,9 +15,5 @@ export default defineNuxtPlugin({
     application.on('auth:login', () => {
       router.push('/profile')
     })
-    // authService.on('auth-service:logged-out', () => {
-    //   //TODO: check if user logged in. If logged need remove user data from store and check access to current route
-    //   // checkAccessCurrentRoute(router, false)
-    // })
   },
 })
