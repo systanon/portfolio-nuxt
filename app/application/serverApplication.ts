@@ -6,6 +6,7 @@ import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
 import {
   AppSuccess,
+  type BaseApplication,
   type GetAllParams,
   type PaginateResult,
 } from '~/types/app.types'
@@ -22,12 +23,10 @@ import type { UserService } from './services/shared/user.service'
 import type { NotesService } from './services/shared/note.service'
 import type { Note } from '~/types/note'
 import { Logger } from '~/lib/logger'
+import type { BaseEventTypes } from '~/types/events'
 
-export class ServerApplication<
-  EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
-  EventContext extends any = any,
-> {
-  private ee: EventEmitter = new EventEmitter()
+export class ServerApplication implements BaseApplication {
+  private ee = new EventEmitter<BaseEventTypes>()
   private todoService: TodoService
   private notesService: NotesService
   private authService: AuthService
@@ -50,20 +49,20 @@ export class ServerApplication<
     this.accessToken = accessToken
   }
 
-  public on<T extends EventEmitter.EventNames<EventTypes>>(
+  public on<T extends EventEmitter.EventNames<BaseEventTypes>>(
     event: T,
-    fn: EventEmitter.EventListener<EventTypes, T>,
-    context?: EventContext,
-  ): EventEmitter {
+    fn: EventEmitter.EventListener<BaseEventTypes, T>,
+    context?: unknown,
+  ): EventEmitter<BaseEventTypes> {
     return this.ee.on(event, fn, context)
   }
 
-  public off<T extends EventEmitter.EventNames<EventTypes>>(
+  public off<T extends EventEmitter.EventNames<BaseEventTypes>>(
     event: T,
-    fn?: EventEmitter.EventListener<EventTypes, T>,
-    context?: EventContext,
+    fn?: EventEmitter.EventListener<BaseEventTypes, T>,
+    context?: unknown,
     once?: boolean,
-  ): EventEmitter {
+  ): EventEmitter<BaseEventTypes> {
     return this.ee.off(event, fn, context, once)
   }
 
@@ -86,57 +85,6 @@ export class ServerApplication<
     return res
   }
 
-  async signIn(dto: SignInDto): Promise<void | AppError> {
-    const res = await this.authService.authorization(dto)
-    if (res instanceof AppSuccess) {
-      const access_token = res.data.access_token
-      this.accessToken.value = access_token
-    }
-    if (res instanceof AppError) {
-      this.logger.warn(`Sign in failed: ${res.message}`)
-
-      return res
-    }
-    const profile = await this.getProfile()
-    if (profile instanceof AppSuccess) {
-      this.logger.log('User signed in')
-      this.ee.emit('auth:login')
-    }
-  }
-
-  async signUp(dto: SignUpDto): Promise<void | AppError> {
-    const res = await this.authService.registration(dto)
-    if (res instanceof AppError) {
-      return res
-    }
-  }
-
-  async forgotPassword(
-    dto: ForgotPasswordDto,
-  ): Promise<void | AppRateLimitError> {
-    const res = await this.authService.forgotPassword(dto)
-    if (res instanceof AppRateLimitError) {
-      return res
-    }
-  }
-
-  async resendConfirmEmail(
-    dto: ResendConfirmEmailDto,
-  ): Promise<void | AppRateLimitError> {
-    const res = await this.authService.resendConfirmEmail(dto)
-    if (res instanceof AppRateLimitError) {
-      return res
-    }
-  }
-
-  async updateProfile(dto: ProfileDTO): Promise<AppSuccess<null> | AppError> {
-    const res = await this.userService.updateProfile(dto)
-    if (res instanceof AppError) {
-    }
-
-    return res
-  }
-
   async logout(): Promise<void | AppError> {
     const res = await this.authService.logout()
     if (res instanceof AppError) {
@@ -152,7 +100,7 @@ export class ServerApplication<
   ): Promise<PaginateResult<Todo> | AppError> {
     this.ee.emit('data:loading', true)
     const res = await this.todoService.getAll(params)
-    this.ee.emit('todo:loaded', res)
+    // this.ee.emit('todo:loaded', res)
     this.ee.emit('data:loading', false)
     return res
   }
