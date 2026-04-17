@@ -5,7 +5,7 @@ import type {
   Todo,
   UpdateTodoDTO,
 } from '~/types/todo'
-import type { TodoService } from '~/application/services/todo.service'
+import type { TodoService } from '~/application/services/shared/todo.service'
 import type { ID } from '~/types/general'
 import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 
@@ -15,23 +15,24 @@ import {
   type PaginateResult,
   type StatisticDTO,
 } from '~/types/app.types'
-import type { AuthService } from '~/application/services/auth.service'
+import type { AuthService } from '~/application/services/shared/auth.service'
 import type {
+  AuthResponse,
   ForgotPasswordDto,
   ResendConfirmEmailDto,
   SignInDto,
   SignUpDto,
 } from '~/types/auth'
-import type { StatisticService } from './services/statistic.service'
+import type { StatisticService } from './services/client/statistic.service'
 import type { Profile, ProfileDTO } from '~/types/user.types'
-import type { UserService } from './services/user.service'
-import type { NotificationService } from './services/notification.service'
-import type { NotesService } from './services/note.service'
+import type { UserService } from './services/shared/user.service'
+import type { NotificationService } from './services/client/notification.service'
+import type { NotesService } from './services/shared/note.service'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 import type { ISyncModule } from '~/types/sync'
 import { Logger } from '~/lib/logger'
 
-export class Application<
+export class ClientApplication<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
   EventContext extends any = any,
 > {
@@ -41,6 +42,7 @@ export class Application<
   private authService: AuthService
   private userService: UserService
   private statisticService: StatisticService
+  private readonly accessToken: Ref<string | null | undefined>
   private logger = new Logger('Application')
   resolveProfileLoading: (() => void) | null = null
   profileLoading: Promise<void> = Promise.resolve()
@@ -59,6 +61,7 @@ export class Application<
     statisticService: StatisticService,
     notificationService: NotificationService,
     syncModule: ISyncModule,
+    accessToken: Ref<string | null | undefined>,
   ) {
     this.todoService = todoService
     this.notesService = notesService
@@ -66,6 +69,7 @@ export class Application<
     this.userService = userService
     this.statisticService = statisticService
     this.notificationService = notificationService
+    this.accessToken = accessToken
     this.syncModule = syncModule
     this.syncModule.on('profile:loaded', (res: any) => {
       this.ee.emit('profile:loaded', res)
@@ -119,6 +123,11 @@ export class Application<
 
   async signIn(dto: SignInDto): Promise<void | AppError> {
     const res = await this.authService.authorization(dto)
+    if (res instanceof AppSuccess) {
+      const access_token = res.data.access_token
+      this.accessToken.value = access_token
+      this.syncModule.emit('login', access_token)
+    }
     if (res instanceof AppError) {
       this.logger.warn(`Sign in failed: ${res.message}`)
       this.notificationService.notify('error', res.message)
@@ -295,6 +304,15 @@ export class Application<
     const res = await this.notesService.delete(id)
     if (res instanceof AppError) {
       this.notificationService.notify('error', res.message)
+    }
+    return res
+  }
+
+  public async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
+    const res = await this.authService.refresh()
+    if (res instanceof AppSuccess) {
+      const access_token = res.data.access_token
+      this.accessToken.value = access_token
     }
     return res
   }
