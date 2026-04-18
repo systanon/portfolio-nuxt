@@ -5,10 +5,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const application = useApp()
   const appStore = useAppStore()
 
-  if (import.meta.client) {
-    await application.profileLoading
-  }
-
+  await application.profileLoading
   const canAccessTo = canUserAccess(to, appStore.isLogged)
 
   if (!canAccessTo) {
