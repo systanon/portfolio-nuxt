@@ -5,8 +5,7 @@ import type { WSMessage } from '~/lib/ws.client'
 import { PAGINATION_CONFIG } from '~/constants/pagination'
 
 export const useNoteStore = defineStore('notes', () => {
-  const application = useApp()
-  const wsClient = useWsClient()
+  const { $api } = useNuxtApp()
 
   const rows: Ref<Note[]> = ref([])
   const indexID = ref(new Map<number, Note>())
@@ -33,7 +32,7 @@ export const useNoteStore = defineStore('notes', () => {
   }
 
   async function getAll(params: GetAllParams) {
-    const res = await application.getAllNotes(params)
+    const res = await $api.notes.getAll(params)
 
     if (res instanceof AppError) {
       rows.value = []
@@ -84,28 +83,28 @@ export const useNoteStore = defineStore('notes', () => {
   }
 
   async function update(_id: number, payload: UpdateNoteDTO) {
-    const res = await application.updateNote(_id, payload)
+    const res = await $api.notes.update(_id, payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
   async function create(payload: CreateNoteDTO) {
-    const res = await application.createNote(payload)
+    const res = await $api.notes.create(payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
   async function remove(id: number) {
-    const res = await application.deleteNote(id)
+    const res = await $api.notes.delete(id)
     if (res instanceof AppError) {
       return res
     }
   }
 
   function initWS() {
-    unsubscribe = wsClient.subscribe('notes', messageHandler)
+    unsubscribe = $api.ws.subscribe('notes', messageHandler)
   }
 
   function destroyWS() {

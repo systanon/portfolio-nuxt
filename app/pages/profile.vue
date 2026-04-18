@@ -83,7 +83,9 @@ definePageMeta({
 type FieldKey = keyof ProfileUpdate
 
 const appStore = useAppStore()
-const application = useApp()
+
+const { logout } = useAuth()
+const { updateProfile } = useProfile()
 const { profile } = storeToRefs(appStore)
 
 const avatar = computed(() => profile.value?.avatar || avatarFallback)
@@ -172,7 +174,7 @@ async function submitField(key: FieldKey) {
   const oldValue = profile.value?.[key]
 
   if (newValue !== oldValue) {
-    const res = await application.updateProfile({
+    const res = await updateProfile({
       [key]: newValue,
     })
 
@@ -198,7 +200,7 @@ const signOutHandler = async () => {
   const modal = signOutModalRef.value
   const confirmed = await modal?.open()
   if (confirmed) {
-    await application.logout()
+    logout()
   }
 }
 </script>
