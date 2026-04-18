@@ -1,6 +1,9 @@
-import type { NotificationService } from '~/application/services/notification.service'
-
-export const useNotification = (): NotificationService => {
+export const useNotification = () => {
   const { $notification } = useNuxtApp()
-  return $notification as NotificationService
+  return {
+    notify: $notification.notify.bind($notification),
+    remove: $notification.remove.bind($notification),
+    clear: $notification.clear.bind($notification),
+    notifications: $notification.notifications,
+  }
 }
