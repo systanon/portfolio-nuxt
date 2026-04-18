@@ -1,4 +1,4 @@
 export const useApp = () => {
-  const { $appInstance } = useNuxtApp()
-  return $appInstance
+  const { $application } = useNuxtApp()
+  return $application
 }
