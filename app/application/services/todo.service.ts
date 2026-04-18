@@ -19,26 +19,20 @@ import type { WSClientLike, WSHandler } from '~/lib/ws.client'
 
 export class TodoService {
   private readonly httpClient: HTTPClient
-  private readonly wsClient: WSClientLike
 
-  constructor(httpClient: HTTPClient, wsClient: WSClientLike) {
+  constructor(httpClient: HTTPClient) {
     this.httpClient = httpClient
-    this.wsClient = wsClient
   }
 
-  async create(dto: CreateTodoDTO): Promise<ID | AppError> {
+  async create(
+    dto: CreateTodoDTO,
+  ): Promise<AppSuccess<CreateTodoResponse> | AppError> {
     const url = API_URL.todos
     const body = JSON.stringify(dto)
-    const result = await this.httpClient.do<CreateTodoResponse>(url, {
+    return this.httpClient.do<CreateTodoResponse>(url, {
       method: 'POST',
       body,
     })
-
-    if (result instanceof AppSuccess) {
-      return Number(result.data.id)
-    } else {
-      return new AppError(result.message)
-    }
   }
 
   async getAll(
@@ -93,9 +87,5 @@ export class TodoService {
     if (result instanceof AppError) {
       return result
     }
-  }
-
-  subscribe<T = any>(topic: string, handler: WSHandler<T>) {
-    return this.wsClient.subscribe(topic, handler)
   }
 }
