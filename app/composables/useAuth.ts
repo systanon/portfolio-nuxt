@@ -1,4 +1,4 @@
-import { AppError, AppRateLimitError } from '~/types/app-errors'
+import { AppError, AppRateLimitError, AppSilentError } from '~/types/app-errors'
 import { AppSuccess } from '~/types/app.types'
 import type {
   ForgotPasswordDto,
@@ -11,27 +11,27 @@ import { eventBus } from '~/utils/event-bus'
 
 export const useAuth = () => {
   const { $api } = useNuxtApp()
-  const { setToken } = useAccess()
   const { getProfile } = useProfile()
   const { notify } = useNotification()
 
   const signIn = async (dto: SignInDto): Promise<void | AppError> => {
-    const res = await $api.auth.authorization(dto)
+    const res = await $api.auth.signIn(dto)
     if (res instanceof AppError) {
       // this.logger.warn(`Sign in failed: ${res.message}`)
       notify('error', res.message)
 
       return res
-    }
-    setToken(res.data.access_token)
-    const profile = await getProfile()
-    if (profile instanceof AppSuccess) {
+    } else if (res instanceof AppSilentError) {
+      // this.logger.warn(`Sign in failed: ${res.message}`)
+      notify('info', res.message)
+    } else if (res instanceof AppSuccess) {
       // this.logger.log('User signed in')
-      eventBus.emit('auth:login', profile.data)
+      eventBus.emit('auth:login', res.data)
     }
   }
+
   const signUp = async (dto: SignUpDto): Promise<void | AppError> => {
-    const res = await $api.auth.registration(dto)
+    const res = await $api.auth.signUp(dto)
     if (res instanceof AppError) {
       notify('error', res.message)
 

@@ -11,6 +11,7 @@ import type {
 } from '~/types/auth'
 import { API_URL } from '~/constants'
 import { AppSuccess } from '~/types/app.types'
+
 export class AuthService {
   private readonly httpClient: HTTPClient
 
@@ -89,6 +90,18 @@ export class AuthService {
       return result
     } else {
       return new AppError(result.message)
+    }
+  }
+
+  async refresh(): Promise<AppSuccess<AuthResponse> | AppError> {
+    const url = API_URL.refresh
+    const response = await this.httpClient.do<AuthResponse>(url, {
+      method: 'POST',
+    })
+    if (response instanceof AppSuccess) {
+      return response
+    } else {
+      return new AppError(response.message)
     }
   }
 

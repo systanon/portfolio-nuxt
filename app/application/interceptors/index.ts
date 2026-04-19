@@ -7,16 +7,15 @@ import {
 } from '~/lib/http.client'
 import { AppSuccess } from '~/types/app.types'
 import type { RequestInterceptor } from '~/lib/http.client'
-import { HTTPClient } from '~/lib/http.client'
-import type { AuthResponse } from '~/types/auth'
+import type { AuthApplication } from '../auth.application'
 
 export const createAuthHeaderInterceptor = (
-  getToken: () => string | null | undefined,
+  accessToken: Ref<string | null | undefined>,
 ): RequestInterceptor => {
   return (_url, options) => {
     if (options.credentials !== 'include') return
 
-    const token = getToken()
+    const token = accessToken.value
     if (!token) return
 
     const headers = new Headers(options.headers as HeadersInit | undefined)
@@ -37,10 +36,8 @@ export const createCookieForwardingInterceptor = (
 }
 
 export const createAuthRefreshInterceptor = (
-  httpClient: HTTPClient,
-  setToken: (newToken: string) => void,
+  authApplication: AuthApplication,
   excludeUrls: string[],
-  refreshUrl: string,
 ): ErrorInterceptor => {
   return async (
     error: unknown,
@@ -56,13 +53,8 @@ export const createAuthRefreshInterceptor = (
 
     options._retry = true
 
-    const response = await httpClient.do<AuthResponse>(refreshUrl, {
-      method: 'POST',
-    })
-
+    const response = await authApplication.refresh()
     if (response instanceof AppSuccess) {
-      const access_token = response.data.access_token
-      setToken(access_token)
       return true
     }
 

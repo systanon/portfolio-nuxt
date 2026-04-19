@@ -6,6 +6,7 @@ import type { UserService } from '~/application/services/user.service'
 import type { TodoService } from '~/application/services/todo.service'
 import type { NotesService } from '~/application/services/note.service'
 import type { WSService } from '~/application/services/ws.service'
+import type { AuthApplication } from '~/application/auth.application'
 
 declare module '#app' {
   interface NuxtApp {
@@ -13,7 +14,7 @@ declare module '#app' {
     $notification: NotificationModule
     $httpClient: HTTPClient
     $api: {
-      auth: AuthService
+      auth: AuthApplication
       user: UserService
       todo: TodoService
       notes: NotesService
