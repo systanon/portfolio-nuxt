@@ -19,13 +19,14 @@ declare module '#app' {
       todo: TodoService
       notes: NotesService
       ws: WSService
+      sync: SyncModule | SyncModuleMock
     }
   }
 }
 
 declare module 'vue' {
   interface ComponentCustomProperties {
-    $appInstance: Application
+    $application: Application
     $notification: NotificationModule
   }
 }

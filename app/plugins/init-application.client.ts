@@ -3,7 +3,7 @@ import { useAppStore } from '~/store/application'
 
 export default defineNuxtPlugin({
   name: 'init-application-client',
-  dependsOn: ['application'],
+  dependsOn: ['application', 'services'],
   async setup() {
     const application = useApp()
     const { $api } = useNuxtApp()

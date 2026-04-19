@@ -27,6 +27,7 @@ export const useAuth = () => {
     } else if (res instanceof AppSuccess) {
       // this.logger.log('User signed in')
       eventBus.emit('auth:login', res.data)
+      $api.sync.emit('sync:login', res.data)
     }
   }
 
@@ -67,9 +68,10 @@ export const useAuth = () => {
 
       return res
     }
-    // TODO: also return AppSuccess
+
     // this.logger.log('User logged out')
     eventBus.emit('auth:logout')
+    $api.sync.emit('sync:logout')
   }
 
   return {

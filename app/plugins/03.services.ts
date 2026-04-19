@@ -10,6 +10,9 @@ import {
   createAuthHeaderInterceptor,
   createAuthRefreshInterceptor,
 } from '~/application/interceptors'
+import { createSyncModule } from '~/application/modules/sync/sync.factory'
+import type { SyncModule } from '~/application/modules/sync/sync.module'
+import type { SyncModuleMock } from '~/application/modules/sync/sync.mock'
 
 type ApiProvide = {
   provide: {
@@ -19,6 +22,7 @@ type ApiProvide = {
       todo: TodoService
       notes: NotesService
       ws: WSService
+      sync: SyncModule | SyncModuleMock
     }
   }
 }
@@ -26,6 +30,8 @@ export default defineNuxtPlugin({
   name: 'services',
   setup(): ApiProvide {
     const URL_EXCLUDE = [API_URL.refresh, API_URL.sign_in, API_URL.sign_up]
+
+    const sync = createSyncModule()
 
     const { $httpClient } = useNuxtApp()
     const config = useRuntimeConfig()
@@ -54,6 +60,7 @@ export default defineNuxtPlugin({
           todo: new TodoService($httpClient),
           notes: new NotesService($httpClient),
           ws: new WSService(config.public.wsURL),
+          sync,
         },
       },
     }
