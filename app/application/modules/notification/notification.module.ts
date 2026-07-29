@@ -11,7 +11,7 @@ export interface NotificationPayload {
   resume: () => void
 }
 
-export class NotificationService {
+export class NotificationModule {
   notifications = shallowReactive(new Map<string, NotificationPayload>())
 
   private timers = new Map<string, ReturnType<typeof setTimeout>>()

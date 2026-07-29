@@ -8,7 +8,7 @@ export interface RetryableOptions extends NitroFetchOptions<'json'> {
   _retry?: boolean
 }
 
-type RequestInterceptor = (
+export type RequestInterceptor = (
   url: string,
   options: NitroFetchOptions<'json'>,
 ) => Promise<void> | void
@@ -20,13 +20,15 @@ export type RawFetchResponse<T = unknown> = {
   statusText?: string
 }
 
-type ResponseInterceptor = (response: RawFetchResponse) => Promise<void> | void
+export type ResponseInterceptor = (
+  response: RawFetchResponse,
+) => Promise<void> | void
 
 export type ErrorInterceptorContext = {
   url: string
 }
 
-type ErrorInterceptor = (
+export type ErrorInterceptor = (
   error: unknown,
   retry: () => Promise<unknown>,
   options: NitroFetchOptions<'json'>,

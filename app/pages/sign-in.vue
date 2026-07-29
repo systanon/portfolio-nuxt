@@ -53,6 +53,7 @@ definePageMeta({
 })
 
 const app = useApp()
+const { signIn } = useAuth()
 
 const { openGoogleAuth } = useGoogleAuth()
 
@@ -72,7 +73,7 @@ async function submit(): Promise<void> {
   const isValid = await v$.value.$validate()
   if (!isValid) return
 
-  app.signIn({ email: email.value, password: password.value })
+  signIn({ email: email.value, password: password.value })
 }
 </script>
 

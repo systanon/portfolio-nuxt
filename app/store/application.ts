@@ -1,4 +1,3 @@
-import type { Application } from '~/application/application'
 import type { Profile } from '~/types/user.types'
 
 export const useAppStore = defineStore('app', () => {
@@ -8,24 +7,6 @@ export const useAppStore = defineStore('app', () => {
 
   const isLogged = computed(() => profile.value !== null)
 
-  function bindApplicationEvents(application: Application) {
-    application.on('profile:loaded', (data: Profile) => {
-      profile.value = data
-    })
-
-    application.on('profile:error', () => {
-      profile.value = null
-    })
-
-    application.on('auth:logout', () => {
-      profile.value = null
-    })
-
-    application.on('data:loading', (isLoading: boolean) => {
-      loading.value = isLoading
-    })
-  }
-
   function updateField<K extends keyof Profile>(key: K, value: Profile[K]) {
     profile.value![key] = value
   }
@@ -34,6 +15,13 @@ export const useAppStore = defineStore('app', () => {
     profile.value = data
   }
 
+  function clearProfile() {
+    profile.value = null
+  }
+
+  function setLoading(isLoading: boolean) {
+    loading.value = isLoading
+  }
   return {
     profile,
     loading,
@@ -41,6 +29,7 @@ export const useAppStore = defineStore('app', () => {
     isLogged,
     updateField,
     setProfile,
-    bindApplicationEvents,
+    setLoading,
+    clearProfile,
   }
 })

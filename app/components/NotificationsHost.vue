@@ -16,11 +16,12 @@
 </template>
 
 <script lang="ts" setup>
-const notificationService = useNotification()
+const { notifications, remove } = useNotification()
+
 const handleClose = (id: string) => {
-  notificationService.remove(id)
+  remove(id)
 }
-const items = computed(() => [...notificationService.notifications.values()])
+const items = computed(() => [...notifications.values()])
 </script>
 
 <style scoped lang="scss">

@@ -5,8 +5,7 @@ import type { CreateTodoDTO, Todo, UpdateTodoDTO } from '~/types/todo'
 import { PAGINATION_CONFIG } from '~/constants/pagination'
 
 export const useTodoStore = defineStore('todos', () => {
-  const app = useApp()
-  const wsClient = useWsClient()
+  const { $api } = useNuxtApp()
 
   const rows: Ref<Todo[]> = ref([])
   const currentTodo: Ref<Todo | null> = ref(null)
@@ -32,7 +31,7 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   async function getAll(params?: GetAllParams) {
-    const res = await app.getAllTodos(params)
+    const res = await $api.todo.getAll(params)
 
     if (res instanceof AppError) {
       rows.value = []
@@ -83,7 +82,7 @@ export const useTodoStore = defineStore('todos', () => {
   }
 
   async function create(payload: CreateTodoDTO): Promise<AppError | void> {
-    const res = await app.createTodo(payload)
+    const res = await $api.todo.create(payload)
     if (res instanceof AppError) {
       return res
     }
@@ -93,21 +92,21 @@ export const useTodoStore = defineStore('todos', () => {
     _id: number,
     payload: UpdateTodoDTO,
   ): Promise<AppError | void> {
-    const res = await app.updateTodo(_id, payload)
+    const res = await $api.todo.update(_id, payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
   async function remove(id: number): Promise<AppError | void> {
-    const res = await app.deleteTodo(id)
+    const res = await $api.todo.delete(id)
     if (res instanceof AppError) {
       return res
     }
   }
 
   function initWS() {
-    unsubscribe = wsClient.subscribe('todos', messageHandler)
+    unsubscribe = $api.ws.subscribe('todos', messageHandler)
   }
 
   function destroyWS() {
