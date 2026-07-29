@@ -3,8 +3,12 @@ import { TodoService } from '~/application/services/todo.service'
 import { UserService } from '~/application/services/user.service'
 import { AuthService } from '~/application/services/auth.service'
 import { WSService } from '~/application/services/ws.service'
+import { StatisticService } from '~/application/services/statistic.service'
 import { TokenManager } from '~/application/token.manager'
 import { AuthApplication } from '~/application/auth.application'
+import { TodoApplication } from '~/application/todo.application'
+import { NotesApplication } from '~/application/notes.application'
+import { StatisticApplication } from '~/application/statistic.application'
 import { API_URL } from '~/constants/apiUrl'
 import {
   createAuthHeaderInterceptor,
@@ -19,8 +23,9 @@ type ApiProvide = {
     api: {
       auth: AuthApplication
       user: UserService
-      todo: TodoService
-      notes: NotesService
+      todo: TodoApplication
+      notes: NotesApplication
+      statistic: StatisticApplication
       ws: WSService
       sync: SyncModule | SyncModuleMock
     }
@@ -33,7 +38,7 @@ export default defineNuxtPlugin({
 
     const sync = createSyncModule()
 
-    const { $httpClient } = useNuxtApp()
+    const { $httpClient, $notification } = useNuxtApp()
     const config = useRuntimeConfig()
     const accessToken = useCookie('access_token')
     const authService = new AuthService($httpClient)
@@ -43,6 +48,19 @@ export default defineNuxtPlugin({
       authService,
       userService,
       tokenManager,
+      $notification,
+    )
+    const todoApplication = new TodoApplication(
+      new TodoService($httpClient),
+      $notification,
+    )
+    const notesApplication = new NotesApplication(
+      new NotesService($httpClient),
+      $notification,
+    )
+    const statisticApplication = new StatisticApplication(
+      new StatisticService($httpClient),
+      $notification,
     )
 
     const authHeaderInterceptor = createAuthHeaderInterceptor(accessToken)
@@ -57,8 +75,9 @@ export default defineNuxtPlugin({
         api: {
           auth: authApplication,
           user: userService,
-          todo: new TodoService($httpClient),
-          notes: new NotesService($httpClient),
+          todo: todoApplication,
+          notes: notesApplication,
+          statistic: statisticApplication,
           ws: new WSService(config.public.wsURL),
           sync,
         },

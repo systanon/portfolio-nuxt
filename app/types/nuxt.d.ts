@@ -1,12 +1,14 @@
 import type { Application } from '~/application/application'
 import type { NotificationModule } from '~/application/modules/notification/notification.module'
 import type { HTTPClient } from '~/lib/http.client'
-import type { AuthService } from '~/application/services/auth.service'
 import type { UserService } from '~/application/services/user.service'
-import type { TodoService } from '~/application/services/todo.service'
-import type { NotesService } from '~/application/services/note.service'
 import type { WSService } from '~/application/services/ws.service'
 import type { AuthApplication } from '~/application/auth.application'
+import type { TodoApplication } from '~/application/todo.application'
+import type { NotesApplication } from '~/application/notes.application'
+import type { StatisticApplication } from '~/application/statistic.application'
+import type { SyncModule } from '~/application/modules/sync/sync.module'
+import type { SyncModuleMock } from '~/application/modules/sync/sync.mock'
 
 declare module '#app' {
   interface NuxtApp {
@@ -16,8 +18,9 @@ declare module '#app' {
     $api: {
       auth: AuthApplication
       user: UserService
-      todo: TodoService
-      notes: NotesService
+      todo: TodoApplication
+      notes: NotesApplication
+      statistic: StatisticApplication
       ws: WSService
       sync: SyncModule | SyncModuleMock
     }
