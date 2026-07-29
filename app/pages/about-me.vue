@@ -39,7 +39,7 @@ definePageMeta({
   accessMode: 'public',
 })
 
-const application = useApp()
+const { $api } = useNuxtApp()
 
 const cvModalRef = ref<IModalOpen | null>(null)
 const cvFormRef = ref()
@@ -48,7 +48,7 @@ const submitForm = async () => {
   const data = await cvFormRef.value?.validateAndGet()
   if (!data) return
 
-  const res = await application.saveStatistic(data)
+  const res = await $api.statistic.save(data)
   if (!(res instanceof AppError)) {
     cvModalRef.value?.confirm(true)
   }
