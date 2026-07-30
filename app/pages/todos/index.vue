@@ -22,8 +22,8 @@
     </section>
     <UiButtonIcon
       class="page-todo__create"
-      iconName="plus"
-      iconColor="tertiary"
+      icon-name="plus"
+      icon-color="tertiary"
       @click="openCreateForm"
     >
       <template #prepend>
@@ -66,8 +66,8 @@
       </div>
     </template>
     <template #actions="{ close, confirm }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="confirm" label="Delete todo" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Delete todo" @click="confirm" />
     </template>
   </UiModal>
   <UiModal ref="editModalRef" title="Update Todo">
@@ -77,8 +77,8 @@
       :description="editingTodo?.description"
     />
     <template #actions="{ close }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="updateTodo" label="Update todo" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Update todo" @click="updateTodo" />
     </template>
   </UiModal>
 
@@ -86,8 +86,8 @@
     <ItemForm ref="createFormRef" />
 
     <template #actions="{ close }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="createTodo" label="Create todo" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Create todo" @click="createTodo" />
     </template>
   </UiModal>
 </template>

@@ -1,10 +1,6 @@
-import EventEmitter from 'eventemitter3'
 import { Logger } from '~/lib/logger'
 
-export class Application<
-  EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
-  EventContext extends any = any,
-> {
+export class Application {
   private logger = new Logger('Application')
   public resolveProfileLoading: (() => void) | null = null
   public profileLoading: Promise<void> = Promise.resolve()

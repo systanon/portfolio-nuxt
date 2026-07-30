@@ -9,13 +9,13 @@
 
     <section class="home-page__tech">
       <h2 class="home-page__tech-title">My common stack</h2>
-      <CardListPulse :techList="techList" />
+      <CardListPulse :tech-list="techList" />
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { type Tech } from '~/components/animation/CardListPulse.vue'
+import type { Tech } from '~/components/animation/CardListPulse.vue'
 
 definePageMeta({
   accessMode: 'public',

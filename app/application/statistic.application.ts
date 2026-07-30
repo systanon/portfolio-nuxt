@@ -12,7 +12,7 @@ export class StatisticApplication {
     this.notifier = notifier
   }
 
-  async save(dto: StatisticDTO): Promise<void | AppError> {
+  async save(dto: StatisticDTO): Promise<undefined | AppError> {
     const res = await this.statisticService.save(dto)
     if (res instanceof AppError) {
       this.notifier.notify('error', res.message)

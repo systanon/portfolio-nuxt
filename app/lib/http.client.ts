@@ -33,7 +33,7 @@ export type ErrorInterceptor = (
   retry: () => Promise<unknown>,
   options: NitroFetchOptions<'json'>,
   context: ErrorInterceptorContext,
-) => Promise<boolean | void> | boolean | void
+) => Promise<boolean | undefined> | boolean | undefined
 
 const MAX_ERROR_PIPELINE_RETRIES = 5
 

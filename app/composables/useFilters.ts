@@ -8,9 +8,12 @@ export function useFilters(debounceDelay: number = 550) {
       ? route.query.q
       : ''
 
-  const initCompleted = VALID_COMPLETED.includes(route.query.completed as any)
-    ? (route.query.completed as string)
-    : 'all'
+  const completedQuery = route.query.completed
+  const initCompleted =
+    typeof completedQuery === 'string' &&
+    (VALID_COMPLETED as readonly string[]).includes(completedQuery)
+      ? completedQuery
+      : 'all'
 
   const initSortOrder =
     typeof route.query.sortOrder === 'string' &&

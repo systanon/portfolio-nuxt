@@ -11,14 +11,14 @@
         :class="{ 'ui-input__field--error': $v?.$error }"
         class="ui-input__field"
         @blur="emit('blur')"
-      />
+      >
 
       <UiButtonIcon
         v-if="iconName"
         class="ui-input__icon"
-        :iconName="iconName"
+        :icon-name="iconName"
+        :with-border="false"
         @click="$emit('iconClick')"
-        :withBorder="false"
       />
     </template>
   </BaseField>
@@ -42,8 +42,7 @@ defineOptions({ name: 'UiInput' })
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
-  (e: 'iconClick'): void
-  (e: 'blur'): void
+  (e: 'iconClick' | 'blur'): void
 }>()
 
 const { modelValueProxy, $v } = useField(props, emit)

@@ -110,7 +110,7 @@ export class WSClient implements WSClientLike {
           if (!called.has(h)) h(payload)
         })
       }
-    } catch (e) {
+    } catch {
       this.logger.error('Ignored non-JSON or invalid message', message.data)
     }
   }

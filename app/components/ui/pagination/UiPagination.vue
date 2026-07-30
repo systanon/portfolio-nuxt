@@ -2,30 +2,30 @@
   <section v-if="pages > 1" class="ui-pagination">
     <div v-if="isMobile || isTablet" class="ui-pagination__mobile">
       <UiButtonIcon
-        @click="$emit('prevPage')"
         :disabled="page <= 1"
-        iconName="left-arrow"
-        :withBorder="false"
+        icon-name="left-arrow"
+        :with-border="false"
         class="ui-pagination__mobile-arrow"
+        @click="$emit('prevPage')"
       />
 
       <span class="ui-pagination__mobile-info"> {{ page }} / {{ pages }} </span>
 
       <UiButtonIcon
-        @click="$emit('nextPage')"
         :disabled="page >= pages"
-        iconName="right-arrow"
-        :withBorder="false"
+        icon-name="right-arrow"
+        :with-border="false"
         class="ui-pagination__mobile-arrow"
+        @click="$emit('nextPage')"
       />
     </div>
     <div v-else class="ui-pagination__desktop">
       <UiButtonIcon
-        @click="$emit('firstPage')"
         :disabled="page <= 1"
-        iconName="left-arrow"
-        :withBorder="false"
+        icon-name="left-arrow"
+        :with-border="false"
         class="ui-pagination__desktop-arrows arrow-left"
+        @click="$emit('firstPage')"
       />
 
       <UiButton
@@ -47,8 +47,8 @@
         :key="_page"
         class="ui-pagination__desktop-buttons"
         :active="page === _page"
-        @click="$emit('btnPage', _page)"
         :label="_page"
+        @click="$emit('btnPage', _page)"
       />
 
       <span
@@ -66,11 +66,11 @@
       />
 
       <UiButtonIcon
-        @click="$emit('latestPage')"
         :disabled="page >= pages"
-        :withBorder="false"
+        :with-border="false"
         class="ui-pagination__desktop-arrows arrow-right"
-        iconName="right-arrow"
+        icon-name="right-arrow"
+        @click="$emit('latestPage')"
       />
     </div>
   </section>

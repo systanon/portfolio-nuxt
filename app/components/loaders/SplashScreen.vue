@@ -1,5 +1,5 @@
 <template>
-  <div class="splash-screen" ref="splashRef">
+  <div ref="splashRef" class="splash-screen">
     <Universe />
   </div>
 </template>

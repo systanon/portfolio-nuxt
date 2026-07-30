@@ -36,7 +36,7 @@ export function usePaginatedRoute(pages: Ref<number>) {
     const extraKeys = Object.keys(extra) as Array<keyof LocationQueryRaw>
     extraKeys.forEach((key) => {
       if (extra[key] !== undefined) raw[key] = extra[key]
-      else delete raw[key]
+      else Reflect.deleteProperty(raw, key)
     })
 
     router.replace({ query: raw })

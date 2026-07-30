@@ -3,10 +3,10 @@ import {
   isFetchError,
   type ErrorInterceptor,
   type ErrorInterceptorContext,
+  type RequestInterceptor,
   type RetryableOptions,
 } from '~/lib/http.client'
 import { AppSuccess } from '~/types/app.types'
-import type { RequestInterceptor } from '~/lib/http.client'
 import type { AuthApplication } from '../auth.application'
 
 export const createAuthHeaderInterceptor = (
@@ -44,7 +44,7 @@ export const createAuthRefreshInterceptor = (
     retry,
     options: RetryableOptions,
     { url }: ErrorInterceptorContext,
-  ): Promise<void | boolean> => {
+  ): Promise<undefined | boolean> => {
     if (excludeUrls.some((excludeUrl) => url.includes(excludeUrl))) return
 
     const status = isFetchError(error) ? error.response.status : undefined

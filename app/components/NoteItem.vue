@@ -7,9 +7,9 @@
     <div ref="menuRef" :class="['note-item__menu', { _open: menuOpen }]">
       <UiButtonIcon
         :class="['note-item__menu-btn', { _open: menuOpen }]"
-        iconName="arrow-up-left"
-        :withBorder="false"
-        iconColor="tertiary"
+        icon-name="arrow-up-left"
+        :with-border="false"
+        icon-color="tertiary"
         :aria-expanded="menuOpen"
         aria-haspopup="true"
         :aria-controls="menuActionsId"
@@ -25,16 +25,16 @@
       >
         <UiButtonIcon
           class="note-item__menu-item"
-          iconName="edit"
-          :withBorder="false"
-          iconColor="tertiary"
+          icon-name="edit"
+          :with-border="false"
+          icon-color="tertiary"
           @click="emit('edit', note)"
         />
         <UiButtonIcon
           class="note-item__menu-item"
-          iconName="trash"
-          :withBorder="false"
-          iconColor="tertiary"
+          icon-name="trash"
+          :with-border="false"
+          icon-color="tertiary"
           @click="emit('delete', note)"
         />
       </div>
@@ -50,8 +50,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'edit', note: Note): void
-  (e: 'delete', note: Note): void
+  (e: 'edit' | 'delete', note: Note): void
 }>()
 
 const menuActionsId = useId()

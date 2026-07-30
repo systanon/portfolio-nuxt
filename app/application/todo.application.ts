@@ -1,5 +1,5 @@
 import { AppError } from '~/types/app-errors'
-import { AppSuccess, type GetAllParams, type PaginateResult } from '~/types/app.types'
+import type { AppSuccess, GetAllParams, PaginateResult } from '~/types/app.types'
 import type {
   CreateTodoDTO,
   CreateTodoResponse,
@@ -46,19 +46,19 @@ export class TodoApplication {
     return res
   }
 
-  async replace(id: ID, dto: ReplaceTodoDTO): Promise<void | AppError> {
+  async replace(id: ID, dto: ReplaceTodoDTO): Promise<undefined | AppError> {
     const res = await this.todoService.replace(id, dto)
     if (res instanceof AppError) this.notifyError(res)
     return res
   }
 
-  async update(id: ID, dto: UpdateTodoDTO): Promise<void | AppError> {
+  async update(id: ID, dto: UpdateTodoDTO): Promise<undefined | AppError> {
     const res = await this.todoService.update(id, dto)
     if (res instanceof AppError) this.notifyError(res)
     return res
   }
 
-  async delete(id: ID): Promise<void | AppError> {
+  async delete(id: ID): Promise<undefined | AppError> {
     const res = await this.todoService.delete(id)
     if (res instanceof AppError) this.notifyError(res)
     return res

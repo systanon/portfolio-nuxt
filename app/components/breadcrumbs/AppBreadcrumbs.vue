@@ -1,15 +1,15 @@
 <template>
-  <ul class="app-breadcrumbs" v-if="breadcrumbs.length > 1">
+  <ul v-if="breadcrumbs.length > 1" class="app-breadcrumbs">
     <li
-      class="app-breadcrumbs__item"
-      v-for="({ disabled, label, id, path, name }, index) in breadcrumbs"
+      v-for="({ disabled, label, id, path }, index) in breadcrumbs"
       :key="id"
+      class="app-breadcrumbs__item"
     >
       <AppLink
         :to="path"
         :disabled="disabled"
         inactive-class="link"
-        exactActiveClass="link--active"
+        exact-active-class="link--active"
         @navigate="(navigate: () => void) => navigate()"
       >
         {{ resolveLabel(label) }}

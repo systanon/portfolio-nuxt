@@ -81,7 +81,7 @@ export const useTodoStore = defineStore('todos', () => {
     pages.value = Math.ceil(total.value / currentPerPage)
   }
 
-  async function create(payload: CreateTodoDTO): Promise<AppError | void> {
+  async function create(payload: CreateTodoDTO): Promise<AppError | undefined> {
     const res = await $api.todo.create(payload)
     if (res instanceof AppError) {
       return res
@@ -91,14 +91,14 @@ export const useTodoStore = defineStore('todos', () => {
   async function update(
     _id: number,
     payload: UpdateTodoDTO,
-  ): Promise<AppError | void> {
+  ): Promise<AppError | undefined> {
     const res = await $api.todo.update(_id, payload)
     if (res instanceof AppError) {
       return res
     }
   }
 
-  async function remove(id: number): Promise<AppError | void> {
+  async function remove(id: number): Promise<AppError | undefined> {
     const res = await $api.todo.delete(id)
     if (res instanceof AppError) {
       return res

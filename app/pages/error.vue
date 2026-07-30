@@ -10,8 +10,8 @@
     </p>
 
     <div class="error-page__actions">
-      <UiButton @click="goHome" label="Go To Home" />
-      <UiButton @click="openGoogleAuth" label="Try Again" />
+      <UiButton label="Go To Home" @click="goHome" />
+      <UiButton label="Try Again" @click="openGoogleAuth" />
     </div>
   </div>
 </template>

@@ -10,9 +10,9 @@
 
     <p v-show="validation?.$error" class="base-field__error">
       <span
-        class="base-field__error-text"
         v-for="(error, index) in errorMessages"
         :key="error + index"
+        class="base-field__error-text"
       >
         {{ error }}
       </span>
@@ -29,7 +29,7 @@ interface Props {
   validation?: BaseValidation
 }
 
-defineOptions({ inheritAttrs: false, name: 'BaseField' })
+defineOptions({ name: 'BaseField', inheritAttrs: false })
 
 const id = useId()
 

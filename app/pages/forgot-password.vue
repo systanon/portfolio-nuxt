@@ -34,7 +34,7 @@
 import useVuelidate from '@vuelidate/core'
 import { AppRateLimitError } from '~/types/app-errors'
 
-const application = useApp()
+const { forgotPassword } = useAuth()
 const email = ref<string>('')
 
 const { emailRules } = useValidationRules()
@@ -56,7 +56,7 @@ const submitHandler = async () => {
     email: email.value,
   }
 
-  const res = await application.forgotPassword(payload)
+  const res = await forgotPassword(payload)
   if (res instanceof AppRateLimitError) {
     await startRateLimit(res.retryAfter)
   }

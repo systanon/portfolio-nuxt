@@ -10,14 +10,14 @@
         <div ref="dialogRef" class="ui-modal__dialog" @click.stop>
           <template v-if="title">
             <h2>{{ title }}</h2>
-            <hr />
+            <hr >
           </template>
-          <slot></slot>
-          <hr />
+          <slot/>
+          <hr >
           <div class="ui-modal__actions">
             <slot name="actions" :close="close" :confirm="confirm">
-              <UiButton @click="close" label="Cancel" />
-              <UiButton @click="confirm(true)" label="Ok" />
+              <UiButton label="Cancel" @click="close" />
+              <UiButton label="Ok" @click="confirm(true)" />
             </slot>
           </div>
         </div>
@@ -32,7 +32,7 @@ import UiButton from '~/components/ui/buttons/UiButton.vue'
 import { useEscapeKey } from '~/composables/useEscapeKey'
 import { createModalManager } from '~/animations/'
 
-export type ModalOpen<T = any> = () => Promise<null | T>
+export type ModalOpen<T = unknown> = () => Promise<null | T>
 export interface IModalOpen<T = boolean> {
   open: ModalOpen<T>
   confirm: (result: T | null) => void
@@ -44,6 +44,7 @@ const props = withDefaults(
     id?: number
   }>(),
   {
+    title: '',
     id: Date.now(),
   },
 )
@@ -53,9 +54,9 @@ const dialogRef = ref<HTMLElement | null>(null)
 
 const isOpen = ref(false)
 
-let resolver: ((...args: any[]) => void) | null = null
+let resolver: ((...args: unknown[]) => void) | null = null
 
-const open = async (): Promise<any> => {
+const open = async (): Promise<unknown> => {
   isOpen.value = true
   await nextTick()
 
@@ -69,7 +70,7 @@ const open = async (): Promise<any> => {
   })
 }
 
-const confirm = async (...params: any[]) => {
+const confirm = async (...params: unknown[]) => {
   if (resolver) resolver(...params)
 
   await createModalManager.close(props.id, () => (isOpen.value = false))

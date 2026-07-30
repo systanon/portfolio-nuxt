@@ -6,7 +6,7 @@
         :key="path"
         :to="path"
         inactive-class="link"
-        exactActiveClass="link--active"
+        exact-active-class="link--active"
         @navigate="onLinkNavigate"
       >
         {{ text }}
@@ -19,7 +19,7 @@
         :key="path"
         :to="path"
         inactive-class="link"
-        exactActiveClass="link--active"
+        exact-active-class="link--active"
         @navigate="onLinkNavigate"
       >
         {{ text }}

@@ -18,14 +18,14 @@ definePageMeta({
   name: 'TodoDetail',
 })
 const route = useRoute()
-const app = useApp()
+const { $api } = useNuxtApp()
 
 const todoStore = useTodoStore()
 
 const id = computed(() => Number(route.params.id))
 
 const { data: todo } = await useAsyncData(`todo-${id.value}`, async () => {
-  const res = await app.getOneTodo(id.value)
+  const res = await $api.todo.getOne(id.value)
 
   if (res instanceof AppSuccess) {
     todoStore.setCurrentTodo(res.data)

@@ -1,5 +1,5 @@
 <template>
-  <div :class="['progress-bar', { _progress: progress }]" ref="progressBar">
+  <div ref="progressBar" :class="['progress-bar', { _progress: progress }]">
     <slot />
   </div>
 </template>

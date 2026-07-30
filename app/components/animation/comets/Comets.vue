@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { type Comet } from '~/animations/cometEngine'
+import type { Comet } from '~/animations/cometEngine'
 import { cometsEngine } from '~/animations'
 
 const comets = ref<Comet[]>([])

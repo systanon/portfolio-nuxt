@@ -5,7 +5,7 @@ export function splash(gsap: typeof GSAPType) {
 
     const hideSplash = (
       container: HTMLElement | null,
-      cb?: any,
+      cb?: () => void,
     ): Promise<void> => {
       if (!container) return Promise.resolve()
       return new Promise((resolve) => {

@@ -4,13 +4,13 @@
       <label class="ui-checkbox">
         <input
           v-bind="$attrs"
+          :id="id"
           type="checkbox"
           class="ui-checkbox__input"
-          :id="id"
           :checked="modelValue"
           :disabled="disabled"
           @change="onChange"
-        />
+        >
         <span class="ui-checkbox__text">
           <slot>{{ label }}</slot>
         </span>
@@ -31,8 +31,7 @@ interface Props {
 
 defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'change', value: boolean): void
+  (e: 'update:modelValue' | 'change', value: boolean): void
 }>()
 
 function onChange(event: Event) {

@@ -2,7 +2,7 @@
   <section class="page-profile">
     <h2 class="page-profile__title title">Profile</h2>
     <div class="page-profile__avatar avatar">
-      <img :src="avatar" alt="avatar" class="page-profile__avatar-image" />
+      <img :src="avatar" alt="avatar" class="page-profile__avatar-image" >
     </div>
 
     <div class="page-profile__fields fields">
@@ -15,14 +15,14 @@
           <h3>{{ labels[key] }}</h3>
         </div>
         <UiInput
+          :id="key"
           v-model="field.value"
           :placeholder="labels[key]"
           :type="'text'"
           :validation="v$[key]"
-          :id="key"
-          :iconName="isEditingMap[key] ? 'close-square' : 'edit'"
+          :icon-name="isEditingMap[key] ? 'close-square' : 'edit'"
           :disabled="!isEditingMap[key]"
-          @iconClick="isEditingMap[key] ? cancelEdit(key) : toggleEdit(key)"
+          @icon-click="isEditingMap[key] ? cancelEdit(key) : toggleEdit(key)"
         />
         <div class="page-profile__fields-actions">
           <UiButtonIcon
@@ -31,9 +31,9 @@
               v$[key].$error ||
               field.value === profile![key]
             "
+            :with-border="false"
+            icon-name="save"
             @click="submitField(key)"
-            :withBorder="false"
-            iconName="save"
           />
         </div>
       </div>
@@ -50,8 +50,8 @@
       </div>
     </template>
     <template #actions="{ close, confirm }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="() => confirm(true)" label="Delete account" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Delete account" @click="() => confirm(true)" />
     </template>
   </UiModal>
   <UiModal ref="signOutModalRef" title="Sign out" class="profile__modal">
@@ -61,8 +61,8 @@
       </div>
     </template>
     <template #actions="{ close, confirm }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="() => confirm(true)" label="Sign out" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Sign out" @click="() => confirm(true)" />
     </template>
   </UiModal>
 </template>
@@ -159,7 +159,7 @@ function toggleEdit(key: FieldKey) {
 }
 
 function cancelEdit(key: FieldKey) {
-  delete localProfile[key]
+  Reflect.deleteProperty(localProfile, key)
   isEditingMap[key] = false
   v$.value[key].$reset()
 }
@@ -180,7 +180,7 @@ async function submitField(key: FieldKey) {
 
     if (res instanceof AppSuccess) {
       appStore.updateField(key, newValue!)
-      delete localProfile[key]
+      Reflect.deleteProperty(localProfile, key)
     }
   }
 

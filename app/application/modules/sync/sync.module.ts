@@ -17,9 +17,12 @@ type SyncState = Reactive<{
   master: boolean
 }>
 
+type SyncHandler = (data: never) => void | Promise<void>
+type SyncProcedure = (...args: unknown[]) => unknown
+
 export class SyncModule<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
-  EventContext extends any = any,
+  EventContext = unknown,
 > implements ISyncModule {
   private state: SyncState = reactive({
     clientID: null,
@@ -32,10 +35,12 @@ export class SyncModule<
   private callCount = 0
   private syncWorker: SharedWorker
   private config: SyncModuleConfig
-  private handlers: Record<string, (data: any) => void | Promise<void>> = {}
-  private procedures: Map<string, (...args: any[]) => any> = new Map()
-  private callStack: Map<string, { resolve: Function; reject: Function }> =
-    new Map()
+  private handlers: Record<string, SyncHandler> = {}
+  private procedures: Map<string, SyncProcedure> = new Map()
+  private callStack: Map<
+    string,
+    { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }
+  > = new Map()
   private logger = new Logger('SyncModule')
   constructor(
     syncWorker: SharedWorker,
@@ -56,7 +61,7 @@ export class SyncModule<
       [SyncEvent.DISCONNECT]: ({ reason }: { reason: string }) => {
         this.logger.warn('Disconnected from SyncWorker', reason)
       },
-    }
+    } as Record<string, SyncHandler>
 
     const port = this.syncWorker.port
     port.addEventListener('message', this.handlePortMessage)
@@ -90,30 +95,30 @@ export class SyncModule<
     return this.ee.off(event, fn, context, once)
   }
 
-  public emit(event: string, ...params: any[]) {
+  public emit(event: string, ...params: unknown[]) {
     if (event === SyncEvent.SYNC) return
     const message = { event, params }
     this.syncWorker.port.postMessage(structuredClone(message))
   }
 
-  public register<T extends (...args: any[]) => any>(
-    procedureName: string,
-    fn: T,
-  ) {
+  public register<T extends SyncProcedure>(procedureName: string, fn: T) {
     this.procedures.set(procedureName, fn)
     return () => this.unregister(procedureName, fn)
   }
 
-  public unregister(procedureName: string, fn: (...args: any[]) => any) {
+  public unregister(procedureName: string, fn: SyncProcedure) {
     const procedure = this.procedures.get(procedureName)
-    procedure === fn && this.procedures.delete(procedureName)
+    if (procedure === fn) this.procedures.delete(procedureName)
   }
 
-  public call(procedureName: string, ...params: any[]): Promise<any> {
+  public call(procedureName: string, ...params: unknown[]): Promise<unknown> {
     if (this.state.master) return Promise.reject('this is master tab')
 
     const requestID = `${this.state.clientID}-${this.callCount++}`
-    const result: { resolve: Function; reject: Function } = {
+    const result: {
+      resolve: (value?: unknown) => void
+      reject: (reason?: unknown) => void
+    } = {
       resolve: () => {},
       reject: () => {},
     }
@@ -247,7 +252,7 @@ export class SyncModule<
     }
   }
 
-  private sync({ type, data }: { type: SyncEvent; data: any }) {
-    this.handlers[type]?.(data)
+  private sync({ type, data }: { type: SyncEvent; data: unknown }) {
+    this.handlers[type]?.(data as never)
   }
 }

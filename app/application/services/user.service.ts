@@ -1,7 +1,7 @@
 import { API_URL } from '~/constants'
 import type { HTTPClient } from '~/lib/http.client'
-import { AppError, type AppSilentError } from '~/types/app-errors'
-import { AppSuccess } from '~/types/app.types'
+import type { AppError, AppSilentError } from '~/types/app-errors'
+import type { AppSuccess } from '~/types/app.types'
 import type { Profile, ProfileDTO } from '~/types/user.types'
 
 export class UserService {
