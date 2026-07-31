@@ -203,7 +203,25 @@ export class SyncModule<
 
   private async handleRPCRequest(request: RpcRequest) {
     const { clientID, requestID, procedureName, params } = request
-    const res = this.procedures.get(procedureName)?.(params)
+    const procedure = this.procedures.get(procedureName)
+
+    if (!procedure) {
+      this.logger.warn(`No procedure registered for "${procedureName}"`)
+      const data = {
+        clientID,
+        requestID,
+        state: 'reject',
+        result: `no procedure registered for "${procedureName}"`,
+      }
+      const message = {
+        event: SyncEvent.SYNC,
+        data: { type: SyncEvent.RPC_RESPONSE, data },
+      }
+      this.syncWorker.port.postMessage(structuredClone(message))
+      return
+    }
+
+    const res = procedure(params)
     let state = 'resolve'
     let result = null
     if (isPromise(res)) {

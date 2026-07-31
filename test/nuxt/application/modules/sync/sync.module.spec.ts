@@ -207,9 +207,8 @@ describe('SyncModule', () => {
       result: 'pong x',
     })
 
-    // Note: handleRPCRequest has no "procedure not found" guard — it still
-    // replies once unregistered, just with an empty result instead of the
-    // procedure's real output.
+    // Once unregistered, an incoming request for that procedure gets an
+    // immediate reject instead of a misleading "resolve" with an empty result.
     unregister()
     posted.length = 0
     dispatch({
@@ -229,11 +228,35 @@ describe('SyncModule', () => {
     expect(secondResponse?.data?.type).toBe(SyncEvent.RPC_RESPONSE)
     expect(secondResponse?.data?.data).toMatchObject({
       requestID: 'req-2',
-      state: 'resolve',
+      state: 'reject',
+      result: 'no procedure registered for "ping"',
     })
-    expect(
-      (secondResponse?.data?.data as { result: unknown } | undefined)
-        ?.result,
-    ).toBeFalsy()
+  })
+
+  it('handleRPCRequest rejects immediately when no procedure was ever registered for the name', async () => {
+    const { worker, dispatch, posted } = createMockSharedWorker()
+    makeSync(worker)
+
+    dispatch({
+      event: SyncEvent.SYNC,
+      data: {
+        type: SyncEvent.RPC_REQUEST,
+        data: {
+          clientID: 5,
+          requestID: 'req-unknown',
+          procedureName: 'doesNotExist',
+          params: [],
+        },
+      },
+    })
+    await new Promise((r) => setTimeout(r, 0))
+
+    const response = posted.at(-1)
+    expect(response?.data?.type).toBe(SyncEvent.RPC_RESPONSE)
+    expect(response?.data?.data).toMatchObject({
+      requestID: 'req-unknown',
+      state: 'reject',
+      result: 'no procedure registered for "doesNotExist"',
+    })
   })
 })
