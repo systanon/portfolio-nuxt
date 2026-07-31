@@ -11,12 +11,18 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test:unit": "TSX_TSCONFIG_PATH=.nuxt/tsconfig.app.json node --import tsx --test test/unit/*.spec.ts",
     "test:ui": "vitest run",
     "test": "pnpm test:unit && pnpm test:ui"
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,ts,vue}": "eslint --fix"
+    "*.{js,mjs,cjs,ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,scss,css,yml,yaml}": "prettier --write"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.3",
@@ -45,6 +51,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
     "nuxt-svg-sprite-icon": "^2.0.4",
+    "prettier": "^3.9.6",
     "sass": "^1.97.3",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",

@@ -7,7 +7,12 @@ export default defineNuxtConfig({
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
   },
-  modules: ['nuxt-svg-sprite-icon', '@pinia/nuxt', '@vueuse/nuxt', '@nuxt/eslint'],
+  modules: [
+    'nuxt-svg-sprite-icon',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    '@nuxt/eslint',
+  ],
   svgSprite: {
     input: '~/assets/icons',
   },
