@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:unit": "node --import tsx --test test/unit/*.spec.ts",
+    "test:unit": "TSX_TSCONFIG_PATH=.nuxt/tsconfig.app.json node --import tsx --test test/unit/*.spec.ts",
     "test:ui": "vitest run",
     "test": "pnpm test:unit && pnpm test:ui"
   },
