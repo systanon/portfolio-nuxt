@@ -26,6 +26,7 @@
         <UiButtonIcon
           class="note-item__menu-item"
           icon-name="edit"
+          aria-label="Edit note"
           :with-border="false"
           icon-color="tertiary"
           @click="emit('edit', note)"
@@ -33,6 +34,7 @@
         <UiButtonIcon
           class="note-item__menu-item"
           icon-name="trash"
+          aria-label="Delete note"
           :with-border="false"
           icon-color="tertiary"
           @click="emit('delete', note)"

@@ -1,14 +1,15 @@
 <template>
   <button
     :disabled="disabled"
+    :aria-label="ariaLabel"
     :class="[
       'ui-button-icon',
       { _bordered: withBorder, '_only-icon': onlyIcon },
     ]"
   >
-    <slot name="prepend"/>
+    <slot name="prepend" />
     <UiIcon :name="iconName" :size="iconSize" :color="iconColor" />
-    <slot name="append"/>
+    <slot name="append" />
   </button>
 </template>
 
@@ -23,6 +24,7 @@ defineSlots<{
 withDefaults(
   defineProps<{
     iconName: string
+    ariaLabel?: string
     disabled?: boolean
     iconSize?: IconSize
     withBorder?: boolean
@@ -30,6 +32,7 @@ withDefaults(
     onlyIcon?: boolean
   }>(),
   {
+    ariaLabel: undefined,
     disabled: false,
     withBorder: true,
     onlyIcon: false,

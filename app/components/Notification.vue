@@ -9,6 +9,7 @@
       <p class="notification__message">{{ payload.message }}</p>
       <UiButtonIcon
         icon-name="close-square"
+        aria-label="Dismiss notification"
         only-icon
         :with-border="false"
         @click="dismiss"
