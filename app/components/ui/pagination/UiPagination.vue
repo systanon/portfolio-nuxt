@@ -80,8 +80,8 @@
 const VISIBLE_PAGES = 7
 
 interface Pagination {
-  page: number
-  pages: number
+  page?: number
+  pages?: number
   range?: number
 }
 
@@ -90,6 +90,12 @@ const props = withDefaults(defineProps<Pagination>(), {
   pages: 1,
   range: 2,
 })
+
+defineEmits<{
+  (e: 'prevPage' | 'nextPage' | 'firstPage' | 'latestPage'): void
+  (e: 'btnPage', page: number): void
+}>()
+
 const { isTablet, isMobile } = useWindowResize()
 
 const visiblePages = computed(() => {
