@@ -18,9 +18,7 @@ $breakpoints: (
     @media screen and (min-width: $value) {
       @content;
     }
-  }
-
-  @else {
+  } @else {
     @warn "Breakpoint '#{$breakpoint}' not found in breakpoints map!";
   }
 }

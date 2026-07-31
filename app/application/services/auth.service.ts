@@ -1,5 +1,5 @@
 import type { HTTPClient } from '~/lib/http.client'
-import type { AppRateLimitError } from '~/types/app-errors';
+import type { AppRateLimitError } from '~/types/app-errors'
 import { AppError } from '~/types/app-errors'
 import type {
   AuthResponse,

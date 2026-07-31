@@ -1,5 +1,9 @@
 import { AppError } from '~/types/app-errors'
-import type { AppSuccess, GetAllParams, PaginateResult } from '~/types/app.types'
+import type {
+  AppSuccess,
+  GetAllParams,
+  PaginateResult,
+} from '~/types/app.types'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 import type { NotesService } from './services/note.service'
 import type { NotificationModule } from './modules/notification/notification.module'

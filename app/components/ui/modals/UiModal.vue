@@ -10,10 +10,10 @@
         <div ref="dialogRef" class="ui-modal__dialog" @click.stop>
           <template v-if="title">
             <h2>{{ title }}</h2>
-            <hr >
+            <hr />
           </template>
-          <slot/>
-          <hr >
+          <slot />
+          <hr />
           <div class="ui-modal__actions">
             <slot name="actions" :close="close" :confirm="confirm">
               <UiButton label="Cancel" @click="close" />

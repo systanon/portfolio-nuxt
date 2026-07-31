@@ -7,7 +7,10 @@ export class StatisticApplication {
   private statisticService: StatisticService
   private notifier: NotificationModule
 
-  constructor(statisticService: StatisticService, notifier: NotificationModule) {
+  constructor(
+    statisticService: StatisticService,
+    notifier: NotificationModule,
+  ) {
     this.statisticService = statisticService
     this.notifier = notifier
   }

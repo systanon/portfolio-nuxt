@@ -1,6 +1,6 @@
 <template>
   <div class="solar-system">
-    <div class="solar-system__sun"/>
+    <div class="solar-system__sun" />
     <div
       v-for="planet in solarSystem"
       :key="planet.name"

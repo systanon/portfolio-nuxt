@@ -32,7 +32,10 @@ describe('NotesApplication', () => {
 
   describe('getAll', () => {
     it('returns AppSuccess without notifying', async () => {
-      const success = new AppSuccess({ data: [], total: 0, pages: 0 }, new Headers())
+      const success = new AppSuccess(
+        { data: [], total: 0, pages: 0 },
+        new Headers(),
+      )
       const service = { getAll: async () => success } as unknown as NotesService
       const app = new NotesApplication(service, notifier)
 

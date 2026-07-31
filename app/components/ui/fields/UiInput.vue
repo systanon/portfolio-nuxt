@@ -11,7 +11,7 @@
         :class="{ 'ui-input__field--error': $v?.$error }"
         class="ui-input__field"
         @blur="emit('blur')"
-      >
+      />
 
       <UiButtonIcon
         v-if="iconName"

@@ -1,6 +1,6 @@
 <template>
   <div ref="root" class="comet">
-    <div ref="tail" class="comet__tail"/>
+    <div ref="tail" class="comet__tail" />
   </div>
 </template>
 
