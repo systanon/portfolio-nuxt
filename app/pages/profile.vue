@@ -21,6 +21,7 @@
           :type="'text'"
           :validation="v$[key]"
           :icon-name="isEditingMap[key] ? 'close-square' : 'edit'"
+          :icon-aria-label="isEditingMap[key] ? 'Cancel edit' : 'Edit field'"
           :disabled="!isEditingMap[key]"
           @icon-click="isEditingMap[key] ? cancelEdit(key) : toggleEdit(key)"
         />
@@ -33,6 +34,7 @@
             "
             :with-border="false"
             icon-name="save"
+            aria-label="Save"
             @click="submitField(key)"
           />
         </div>

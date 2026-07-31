@@ -17,6 +17,7 @@
         v-if="iconName"
         class="ui-input__icon"
         :icon-name="iconName"
+        :aria-label="iconAriaLabel"
         :with-border="false"
         @click="$emit('iconClick')"
       />
@@ -31,6 +32,7 @@ interface Props {
   modelValue: string
   label?: string
   iconName?: string
+  iconAriaLabel?: string
   placeholder?: string
   type?: string
   disabled?: boolean
@@ -39,7 +41,15 @@ interface Props {
 
 defineOptions({ name: 'UiInput' })
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  label: undefined,
+  iconName: undefined,
+  iconAriaLabel: undefined,
+  placeholder: undefined,
+  type: undefined,
+  disabled: undefined,
+  validation: undefined,
+})
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
   (e: 'iconClick' | 'blur'): void

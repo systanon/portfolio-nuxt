@@ -4,6 +4,7 @@
       <UiButtonIcon
         :disabled="page <= 1"
         icon-name="left-arrow"
+        aria-label="Previous page"
         :with-border="false"
         class="ui-pagination__mobile-arrow"
         @click="$emit('prevPage')"
@@ -14,6 +15,7 @@
       <UiButtonIcon
         :disabled="page >= pages"
         icon-name="right-arrow"
+        aria-label="Next page"
         :with-border="false"
         class="ui-pagination__mobile-arrow"
         @click="$emit('nextPage')"
@@ -23,6 +25,7 @@
       <UiButtonIcon
         :disabled="page <= 1"
         icon-name="left-arrow"
+        aria-label="First page"
         :with-border="false"
         class="ui-pagination__desktop-arrows arrow-left"
         @click="$emit('firstPage')"
@@ -70,6 +73,7 @@
         :with-border="false"
         class="ui-pagination__desktop-arrows arrow-right"
         icon-name="right-arrow"
+        aria-label="Last page"
         @click="$emit('latestPage')"
       />
     </div>
