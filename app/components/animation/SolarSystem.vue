@@ -1,19 +1,19 @@
 <template>
   <div class="solar-system">
-    <div class="solar-system__sun"></div>
+    <div class="solar-system__sun"/>
     <div
       v-for="planet in solarSystem"
       :key="planet.name"
+      :ref="setOrbitRef(planet.name)"
       class="solar-system__orbit"
       :style="{
         width: rem(planet.orbitSize),
         height: rem(planet.orbitSize),
       }"
-      :ref="setOrbitRef(planet.name)"
     >
       <div
-        class="solar-system__orbit-planet"
         :ref="setPlanetRef(planet.name)"
+        class="solar-system__orbit-planet"
         :style="{
           width: rem(planet.planetSize),
           height: rem(planet.planetSize),
@@ -28,7 +28,7 @@
             height: rem(planet.rings.height),
             background: planet.rings.gradient,
           }"
-        ></div>
+        />
       </div>
     </div>
   </div>

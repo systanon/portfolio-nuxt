@@ -1,12 +1,12 @@
 <template>
   <div class="card-list">
     <Card
-      ref="items"
       v-for="(tech, index) in techList"
+      ref="items"
       :key="index"
       class="pulse-item"
       :icon-name="tech.icon"
-      :isHover="isLast(index)"
+      :is-hover="isLast(index)"
       :width="tech.width"
       :height="tech.height"
       @click="isLast(index) && router.push('/about-me')"

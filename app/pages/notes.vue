@@ -16,8 +16,8 @@
     </section>
     <UiButtonIcon
       class="page-note__create"
-      iconName="plus"
-      iconColor="tertiary"
+      icon-name="plus"
+      icon-color="tertiary"
       @click="openCreateForm"
     >
       <template #prepend>
@@ -58,8 +58,8 @@
       </div>
     </template>
     <template #actions="{ close, confirm }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="confirm" label="Delete note" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Delete note" @click="confirm" />
     </template>
   </UiModal>
   <UiModal ref="editModalRef" title="Update Note">
@@ -69,16 +69,16 @@
       :description="editingNote?.description"
     />
     <template #actions="{ close }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="submitUpdateNote" label="Update note" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Update note" @click="submitUpdateNote" />
     </template>
   </UiModal>
   <UiModal ref="createModalRef" title="Create Note">
     <ItemForm ref="createFormRef" />
 
     <template #actions="{ close }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="submitCreateNote" label="Create note" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Create note" @click="submitCreateNote" />
     </template>
   </UiModal>
 </template>

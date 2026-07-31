@@ -1,8 +1,8 @@
 <template>
   <NuxtLink
+    v-slot="{ href, navigate, isActive, isExactActive }"
     :to="to"
     custom
-    v-slot="{ href, navigate, isActive, isExactActive }"
   >
     <a
       :href="href"

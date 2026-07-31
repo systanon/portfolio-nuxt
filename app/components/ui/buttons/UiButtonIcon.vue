@@ -6,9 +6,9 @@
       { _bordered: withBorder, '_only-icon': onlyIcon },
     ]"
   >
-    <slot name="prepend"></slot>
+    <slot name="prepend"/>
     <UiIcon :name="iconName" :size="iconSize" :color="iconColor" />
-    <slot name="append"></slot>
+    <slot name="append"/>
   </button>
 </template>
 
@@ -16,8 +16,8 @@
 import type { IconColor, IconSize } from '~/components/ui/icons/UiIcon.vue'
 
 defineSlots<{
-  prepend(): any
-  append(): any
+  prepend(): void
+  append(): void
 }>()
 
 withDefaults(
@@ -33,6 +33,8 @@ withDefaults(
     disabled: false,
     withBorder: true,
     onlyIcon: false,
+    iconSize: 'large',
+    iconColor: 'primary',
   },
 )
 </script>

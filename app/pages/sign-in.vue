@@ -31,8 +31,8 @@
       <UiButtonIcon
         class="page-sign-in__auth"
         type="submit"
-        iconName="google-logo"
-        iconSize="medium"
+        icon-name="google-logo"
+        icon-size="medium"
         @click="openGoogleAuth"
       >
         <template #append>
@@ -52,7 +52,6 @@ definePageMeta({
   accessMode: 'only-for-unauthorized',
 })
 
-const app = useApp()
 const { signIn } = useAuth()
 
 const { openGoogleAuth } = useGoogleAuth()

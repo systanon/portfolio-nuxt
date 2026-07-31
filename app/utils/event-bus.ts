@@ -10,7 +10,7 @@ export interface AppEvents {
 
 export class EventBus<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
-  EventContext extends any = any,
+  EventContext = unknown,
 > {
   private ee: EventEmitter = new EventEmitter()
 

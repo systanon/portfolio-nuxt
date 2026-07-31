@@ -13,7 +13,7 @@ export const useAuth = () => {
   const { $api } = useNuxtApp()
   const { getProfile } = useProfile()
 
-  const signIn = async (dto: SignInDto): Promise<void | AppError> => {
+  const signIn = async (dto: SignInDto): Promise<undefined | AppError> => {
     const res = await $api.auth.signIn(dto)
     if (res instanceof AppSuccess) {
       eventBus.emit('auth:login', res.data)
@@ -25,7 +25,7 @@ export const useAuth = () => {
     }
   }
 
-  const signUp = async (dto: SignUpDto): Promise<void | AppError> => {
+  const signUp = async (dto: SignUpDto): Promise<undefined | AppError> => {
     const res = await $api.auth.signUp(dto)
     if (res instanceof AppError) {
       return res
@@ -34,7 +34,7 @@ export const useAuth = () => {
 
   const forgotPassword = async (
     dto: ForgotPasswordDto,
-  ): Promise<void | AppRateLimitError> => {
+  ): Promise<undefined | AppRateLimitError> => {
     const res = await $api.auth.forgotPassword(dto)
     if (res instanceof AppRateLimitError) {
       return res
@@ -43,14 +43,14 @@ export const useAuth = () => {
 
   const resendConfirmEmail = async (
     dto: ResendConfirmEmailDto,
-  ): Promise<void | AppRateLimitError> => {
+  ): Promise<undefined | AppRateLimitError> => {
     const res = await $api.auth.resendConfirmEmail(dto)
     if (res instanceof AppRateLimitError) {
       return res
     }
   }
 
-  const logout = async (): Promise<void | AppError> => {
+  const logout = async (): Promise<undefined | AppError> => {
     const res = await $api.auth.logout()
     if (res instanceof AppError) {
       return res

@@ -1,7 +1,7 @@
 <template>
   <div :class="['todo-item', { _checked: todo.completed }]">
     <div class="todo-item__checked">
-      <UiCheckbox :modelValue="todo.completed" @change="onToggleComplete" />
+      <UiCheckbox :model-value="todo.completed" @change="onToggleComplete" />
     </div>
     <div class="todo-item__info">
       <h2 class="todo-item__title">
@@ -15,26 +15,26 @@
     <div ref="menuRef" class="todo-item__menu">
       <UiButtonIcon
         class="todo-item__menu-open"
-        iconName="arrow-up-left"
-        :withBorder="false"
+        icon-name="arrow-up-left"
+        :with-border="false"
+        icon-color="tertiary"
         @click="toggleMenu"
-        iconColor="tertiary"
       />
       <div v-if="menuOpen" class="todo-item__menu-actions">
         <UiButtonIcon
           class="todo-item__menu-item"
           style="--i: 2; --icon-hover-primary: var(--icon-hover-secondary)"
-          iconName="edit"
-          :withBorder="false"
-          iconColor="tertiary"
+          icon-name="edit"
+          :with-border="false"
+          icon-color="tertiary"
           @click="$emit('edit', todo)"
         />
         <UiButtonIcon
           class="todo-item__menu-item"
           style="--i: 1; --icon-hover-primary: var(--icon-hover-secondary)"
-          iconName="trash"
-          :withBorder="false"
-          iconColor="tertiary"
+          icon-name="trash"
+          :with-border="false"
+          icon-color="tertiary"
           @click="$emit('delete', todo)"
         />
       </div>
@@ -53,8 +53,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'toggle', data: { id: number; payload: { completed: boolean } }): void
   (e: 'detail', id: number): void
-  (e: 'edit', todo: Todo): void
-  (e: 'delete', todo: Todo): void
+  (e: 'edit' | 'delete', todo: Todo): void
 }>()
 
 const menuOpen: Ref<boolean> = ref(false)

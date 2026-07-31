@@ -4,11 +4,11 @@
     :class="['ui-button', { _active: active }]"
     :type="type"
   >
-    <slot name="prepend"></slot>
+    <slot name="prepend"/>
     <slot name="default">
       {{ label }}
     </slot>
-    <slot name="append"></slot>
+    <slot name="append"/>
   </button>
 </template>
 

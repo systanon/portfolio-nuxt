@@ -41,8 +41,8 @@
       <UiButtonIcon
         class="page-sign-up__auth"
         type="submit"
-        iconName="google-logo"
-        iconSize="medium"
+        icon-name="google-logo"
+        icon-size="medium"
         @click="openGoogleAuth"
       >
         <template #append>
@@ -61,7 +61,7 @@ definePageMeta({
   accessMode: 'only-for-unauthorized',
 })
 
-const app = useApp()
+const { signUp } = useAuth()
 const { openGoogleAuth } = useGoogleAuth()
 
 const email = ref<string>('')
@@ -87,7 +87,7 @@ const submitHandler = async () => {
     password: password.value,
   }
 
-  app.signUp(payload)
+  signUp(payload)
 }
 </script>
 

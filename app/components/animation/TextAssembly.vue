@@ -1,5 +1,5 @@
 <template>
-  <span ref="charList" v-for="(char, i) in chars" :key="i" class="char">
+  <span v-for="(char, i) in chars" ref="charList" :key="i" class="char">
     {{ char === ' ' ? '\u00A0' : char }}
   </span>
 </template>

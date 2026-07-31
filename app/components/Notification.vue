@@ -9,9 +9,9 @@
       <p class="notification__message">{{ payload.message }}</p>
       <UiButtonIcon
         icon-name="close-square"
-        @click="dismiss"
         only-icon
         :with-border="false"
+        @click="dismiss"
       />
     </div>
     <ProgressBar

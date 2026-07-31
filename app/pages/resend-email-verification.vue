@@ -24,7 +24,7 @@
 import useVuelidate from '@vuelidate/core'
 import { AppRateLimitError } from '~/types/app-errors'
 
-const application = useApp()
+const { resendConfirmEmail } = useAuth()
 
 const { isBlocked, showProgressBar, time, startRateLimit, progressBarRef } =
   useRateLimit()
@@ -47,7 +47,7 @@ const submitHandler = async () => {
     email: email.value,
   }
 
-  const res = await application.resendConfirmEmail(payload)
+  const res = await resendConfirmEmail(payload)
   if (res instanceof AppRateLimitError) {
     await startRateLimit(res.retryAfter)
   }

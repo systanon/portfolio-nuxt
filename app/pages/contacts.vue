@@ -9,9 +9,9 @@
 
       <ul class="contacts-page__list">
         <li
-          class="contacts-page__list-item"
           v-for="({ label, text, href, external }, index) of socialLinks"
           :key="index"
+          class="contacts-page__list-item"
         >
           <span class="contacts-page__list-item-label">{{ label }}:</span>
           <a

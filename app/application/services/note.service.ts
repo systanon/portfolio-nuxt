@@ -1,6 +1,5 @@
 import { API_URL } from '~/constants'
 import type { HTTPClient } from '~/lib/http.client'
-import type { WSClientLike, WSHandler } from '~/lib/ws.client'
 import { AppError } from '~/types/app-errors'
 import {
   AppSuccess,

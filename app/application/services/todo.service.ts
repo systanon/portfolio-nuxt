@@ -1,4 +1,4 @@
-import { HTTPClient } from '~/lib/http.client'
+import type { HTTPClient } from '~/lib/http.client'
 import type {
   CreateTodoDTO,
   Todo,
@@ -15,7 +15,6 @@ import {
 } from '~/types/app.types'
 import { getTotalPages } from '~/utils/getTotalPages'
 import { API_URL } from '~/constants'
-import type { WSClientLike, WSHandler } from '~/lib/ws.client'
 
 export class TodoService {
   private readonly httpClient: HTTPClient
@@ -55,7 +54,7 @@ export class TodoService {
     return this.httpClient.do<Todo>(url)
   }
 
-  async replace(id: ID, dto: ReplaceTodoDTO): Promise<void | AppError> {
+  async replace(id: ID, dto: ReplaceTodoDTO): Promise<undefined | AppError> {
     const url = `${API_URL.todos}/${id}`
     const body = JSON.stringify(dto)
     const result = await this.httpClient.do<null>(url, {
@@ -67,7 +66,7 @@ export class TodoService {
     }
   }
 
-  async update(id: ID, dto: UpdateTodoDTO): Promise<void | AppError> {
+  async update(id: ID, dto: UpdateTodoDTO): Promise<undefined | AppError> {
     const url = `${API_URL.todos}/${id}`
     const body = JSON.stringify(dto)
     const result = await this.httpClient.do<null>(url, {
@@ -79,7 +78,7 @@ export class TodoService {
     }
   }
 
-  async delete(id: ID): Promise<void | AppError> {
+  async delete(id: ID): Promise<undefined | AppError> {
     const url = `${API_URL.todos}/${id}`
     const result = await this.httpClient.do<null>(url, {
       method: 'DELETE',

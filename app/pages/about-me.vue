@@ -17,7 +17,7 @@
         architecture. For a detailed overview of my experience and technical
         skills, you can download my CV.
       </p>
-      <UiButtonIcon @click="openForm" iconName="download">
+      <UiButtonIcon icon-name="download" @click="openForm">
         <template #prepend> <span>Download CV</span> </template>
       </UiButtonIcon>
     </div>
@@ -26,13 +26,13 @@
   <UiModal ref="cvModalRef" title="Download CV">
     <CvForm ref="cvFormRef" />
     <template #actions="{ close }">
-      <UiButton @click="close" label="Cancel" />
-      <UiButton @click="submitForm" label="Submit" />
+      <UiButton label="Cancel" @click="close" />
+      <UiButton label="Submit" @click="submitForm" />
     </template>
   </UiModal>
 </template>
 <script setup lang="ts">
-import { type IModalOpen } from '~/components/ui/modals/UiModal.vue'
+import type { IModalOpen } from '~/components/ui/modals/UiModal.vue'
 import { AppError } from '~/types/app-errors'
 
 definePageMeta({

@@ -2,13 +2,13 @@
   <BurgerButton ref="burgerRef" @click="toggleNav" />
 
   <aside ref="navRef" class="app-navigation">
-    <nav ref="menuRef" class="app-navigation__menu" v-on-click-outside="close">
+    <nav ref="menuRef" v-on-click-outside="close" class="app-navigation__menu">
       <AppLink
-        v-for="{ path, text, routeName } in menuList"
+        v-for="{ path, text } in menuList"
         :key="path"
         :to="path"
         inactive-class="link"
-        exactActiveClass="link--active"
+        exact-active-class="link--active"
         @navigate="onLinkNavigate"
       >
         {{ text }}

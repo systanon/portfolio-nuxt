@@ -84,6 +84,7 @@ const testPong = (timestamp: number): void => {
         ),
       )
     } catch {
+      // connection already gone — ignore, cleanup happens below
     } finally {
       connection.close()
       connections.delete(connection._id)
@@ -106,7 +107,9 @@ const testConnect = (): void => {
 
 setInterval(testConnect, PING_PONG_INTERVAL)
 
-const handlers: Record<string, (data: any) => void | Promise<void>> = {
+type SyncHandler = (data: never) => void | Promise<void>
+
+const handlers = {
   [SyncEvent.PONG]: ({ id, timestamp }: { id: number; timestamp: number }) => {
     const connection = connections.get(id)
     if (!connection) return
@@ -148,10 +151,10 @@ const handlers: Record<string, (data: any) => void | Promise<void>> = {
     const message = buildMessage(SyncEvent.RPC_RESPONSE, response)
     connection.postMessage(structuredClone(message))
   },
-}
+} as Record<string, SyncHandler>
 
 const sync = ({ type, data }: SyncMessage): void => {
-  handlers[type]?.(data)
+  handlers[type]?.(data as never)
 }
 
 const onMessage =

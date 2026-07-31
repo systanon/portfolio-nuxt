@@ -110,7 +110,7 @@ export class WSService implements WSServiceLike {
           if (!called.has(h)) h(payload)
         })
       }
-    } catch (e) {
+    } catch {
       this.logger.error('Ignored non-JSON or invalid message', message.data)
     }
   }

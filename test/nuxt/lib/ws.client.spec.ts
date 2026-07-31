@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-vi.unmock('~/lib/ws.client')
-
 import { WSClient } from '~/lib/ws.client'
+
+vi.unmock('~/lib/ws.client')
 
 const createdSockets: MockWebSocket[] = []
 
