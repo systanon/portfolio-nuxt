@@ -10,7 +10,7 @@
           :checked="modelValue"
           :disabled="disabled"
           @change="onChange"
-        />
+        >
         <span class="ui-checkbox__text">
           <slot>{{ label }}</slot>
         </span>

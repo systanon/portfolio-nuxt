@@ -2,7 +2,7 @@
   <section class="page-profile">
     <h2 class="page-profile__title title">Profile</h2>
     <div class="page-profile__avatar avatar">
-      <img :src="avatar" alt="avatar" class="page-profile__avatar-image" />
+      <img :src="avatar" alt="avatar" class="page-profile__avatar-image" >
     </div>
 
     <div class="page-profile__fields fields">
