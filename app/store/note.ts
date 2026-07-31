@@ -1,7 +1,7 @@
 import { AppError } from '@/types/app-errors'
 import type { CreateNoteDTO, Note, UpdateNoteDTO } from '~/types/note'
 import type { GetAllParams } from '@/types/app.types'
-import type { WSMessage } from '~/lib/ws.client'
+import type { WSMessage } from '~/application/services/ws.service'
 import { PAGINATION_CONFIG } from '~/constants/pagination'
 
 export const useNoteStore = defineStore('notes', () => {

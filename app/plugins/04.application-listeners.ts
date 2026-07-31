@@ -12,6 +12,7 @@ export default defineNuxtPlugin({
 
     eventBus.on('auth:logout', () => {
       appStore.clearProfile()
+      $api.ws.unauth()
       checkAccessCurrentRoute(router, false)
     })
 
@@ -27,6 +28,7 @@ export default defineNuxtPlugin({
 
     $api.sync.on('sync:logout', () => {
       appStore.clearProfile()
+      $api.ws.unauth()
       checkAccessCurrentRoute(router, false)
     })
   },
