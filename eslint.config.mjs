@@ -32,4 +32,13 @@ export default withNuxt(
       'vue/multi-word-component-names': 'off',
     },
   },
+  {
+    // This file *is* the console wrapper (log/info/trace/warn/error all
+    // route through it), so the project-wide "warn/error only" restriction
+    // doesn't apply here.
+    files: ['app/lib/logger.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 )

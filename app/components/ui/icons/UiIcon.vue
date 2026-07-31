@@ -30,8 +30,11 @@ type UiIcon = {
 }
 
 const props = withDefaults(defineProps<UiIcon>(), {
+  href: undefined,
   size: 'large',
   name: 'default',
+  width: undefined,
+  height: undefined,
   color: 'primary',
 })
 const localHref = computed(() => props.href || `#${props.name}`)

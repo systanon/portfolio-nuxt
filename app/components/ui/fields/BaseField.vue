@@ -33,10 +33,13 @@ defineOptions({ name: 'BaseField', inheritAttrs: false })
 
 const id = useId()
 
-const { validation } = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  label: undefined,
+  validation: undefined,
+})
 
 const errorMessages = computed(
-  () => validation?.$errors?.map((err) => unref(err.$message)) ?? [],
+  () => props.validation?.$errors?.map((err) => unref(err.$message)) ?? [],
 )
 </script>
 
