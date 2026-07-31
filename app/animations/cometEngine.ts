@@ -103,7 +103,11 @@ export class CometsEngine {
     if (!element) return
 
     const { root, tail } = element
-    const { x, y } = this.calculateTarget(comet.startX, comet.startY, comet.angle)
+    const { x, y } = this.calculateTarget(
+      comet.startX,
+      comet.startY,
+      comet.angle,
+    )
 
     this.gsap.set(root, {
       x: comet.startX,
@@ -144,19 +148,19 @@ export class CometsEngine {
   }
 
   private calculateTarget(
-  startX: number,
-  startY: number,
-  angle: number,
-  minDistance = 800,
-  maxDistance = 1000,
-) {
-  const distance = minDistance + Math.random() * (maxDistance - minDistance)
-  const rad = (angle * Math.PI) / 180
-  const x = startX + Math.cos(rad) * distance
-  const y = startY + Math.sin(rad) * distance
+    startX: number,
+    startY: number,
+    angle: number,
+    minDistance = 800,
+    maxDistance = 1000,
+  ) {
+    const distance = minDistance + Math.random() * (maxDistance - minDistance)
+    const rad = (angle * Math.PI) / 180
+    const x = startX + Math.cos(rad) * distance
+    const y = startY + Math.sin(rad) * distance
 
-  return { x, y }
-}
+    return { x, y }
+  }
 
   public unregisterCometElement(id: number) {
     this.cometIndex.delete(id)

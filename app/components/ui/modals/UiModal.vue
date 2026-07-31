@@ -12,7 +12,7 @@
             <h2>{{ title }}</h2>
             <hr >
           </template>
-          <slot/>
+          <slot />
           <hr >
           <div class="ui-modal__actions">
             <slot name="actions" :close="close" :confirm="confirm">

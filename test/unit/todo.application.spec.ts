@@ -6,7 +6,11 @@ import { NotificationModule } from '../../app/application/modules/notification/n
 import { AppError } from '../../app/types/app-errors'
 import { AppSuccess } from '../../app/types/app.types'
 import type { TodoService } from '../../app/application/services/todo.service'
-import type { CreateTodoDTO, ReplaceTodoDTO, UpdateTodoDTO } from '../../app/types/todo'
+import type {
+  CreateTodoDTO,
+  ReplaceTodoDTO,
+  UpdateTodoDTO,
+} from '../../app/types/todo'
 
 describe('TodoApplication', () => {
   let notifier: NotificationModule
@@ -112,10 +116,16 @@ describe('TodoApplication', () => {
   })
 
   describe('replace', () => {
-    const dto: ReplaceTodoDTO = { title: 't', description: 'd', completed: false }
+    const dto: ReplaceTodoDTO = {
+      title: 't',
+      description: 'd',
+      completed: false,
+    }
 
     it('returns undefined without notifying on success', async () => {
-      const service = { replace: async () => undefined } as unknown as TodoService
+      const service = {
+        replace: async () => undefined,
+      } as unknown as TodoService
       const app = new TodoApplication(service, notifier)
 
       const result = await app.replace(1, dto)
@@ -140,7 +150,9 @@ describe('TodoApplication', () => {
     const dto: UpdateTodoDTO = { completed: true }
 
     it('returns undefined without notifying on success', async () => {
-      const service = { update: async () => undefined } as unknown as TodoService
+      const service = {
+        update: async () => undefined,
+      } as unknown as TodoService
       const app = new TodoApplication(service, notifier)
 
       const result = await app.update(1, dto)
@@ -163,7 +175,9 @@ describe('TodoApplication', () => {
 
   describe('delete', () => {
     it('returns undefined without notifying on success', async () => {
-      const service = { delete: async () => undefined } as unknown as TodoService
+      const service = {
+        delete: async () => undefined,
+      } as unknown as TodoService
       const app = new TodoApplication(service, notifier)
 
       const result = await app.delete(1)

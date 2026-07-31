@@ -530,4 +530,3 @@ describe('UiSelect', () => {
     expect(wrapper.findAll('li.ui-select__list-item')).toHaveLength(0)
   })
 })
-

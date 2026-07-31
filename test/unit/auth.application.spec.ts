@@ -5,7 +5,11 @@ import { ref } from 'vue'
 import { AuthApplication } from '../../app/application/auth.application'
 import { TokenManager } from '../../app/application/token.manager'
 import { NotificationModule } from '../../app/application/modules/notification/notification.module'
-import { AppError, AppSilentError, AppRateLimitError } from '../../app/types/app-errors'
+import {
+  AppError,
+  AppSilentError,
+  AppRateLimitError,
+} from '../../app/types/app-errors'
 import { AppSuccess } from '../../app/types/app.types'
 import type { AuthService } from '../../app/application/services/auth.service'
 import type { UserService } from '../../app/application/services/user.service'
@@ -40,7 +44,12 @@ describe('AuthApplication', () => {
         },
       } as unknown as UserService
       const tokenManager = createTokenManager()
-      const app = new AuthApplication(authService, userService, tokenManager, notifier)
+      const app = new AuthApplication(
+        authService,
+        userService,
+        tokenManager,
+        notifier,
+      )
 
       const result = await app.signIn({ email: 'a@a.com', password: 'pw' })
 
@@ -54,8 +63,14 @@ describe('AuthApplication', () => {
     })
 
     it('sets the token and returns the profile without notifying on success', async () => {
-      const authResponse = new AppSuccess({ access_token: 'tok-123' }, new Headers())
-      const profileResponse = new AppSuccess({ id: 1 } as Profile, new Headers())
+      const authResponse = new AppSuccess(
+        { access_token: 'tok-123' },
+        new Headers(),
+      )
+      const profileResponse = new AppSuccess(
+        { id: 1 } as Profile,
+        new Headers(),
+      )
       const authService = {
         authorization: async () => authResponse,
       } as unknown as AuthService
@@ -63,7 +78,12 @@ describe('AuthApplication', () => {
         getProfile: async () => profileResponse,
       } as unknown as UserService
       const tokenManager = createTokenManager()
-      const app = new AuthApplication(authService, userService, tokenManager, notifier)
+      const app = new AuthApplication(
+        authService,
+        userService,
+        tokenManager,
+        notifier,
+      )
 
       const result = await app.signIn({ email: 'a@a.com', password: 'pw' })
 
@@ -73,7 +93,10 @@ describe('AuthApplication', () => {
     })
 
     it('notifies "info" (not "error") when the token is set but the profile fetch fails silently', async () => {
-      const authResponse = new AppSuccess({ access_token: 'tok-456' }, new Headers())
+      const authResponse = new AppSuccess(
+        { access_token: 'tok-456' },
+        new Headers(),
+      )
       const silent = new AppSilentError('session expired')
       const authService = {
         authorization: async () => authResponse,
@@ -82,7 +105,12 @@ describe('AuthApplication', () => {
         getProfile: async () => silent,
       } as unknown as UserService
       const tokenManager = createTokenManager()
-      const app = new AuthApplication(authService, userService, tokenManager, notifier)
+      const app = new AuthApplication(
+        authService,
+        userService,
+        tokenManager,
+        notifier,
+      )
 
       const result = await app.signIn({ email: 'a@a.com', password: 'pw' })
 
@@ -97,7 +125,9 @@ describe('AuthApplication', () => {
   describe('signUp', () => {
     it('does not notify on success', async () => {
       const success = new AppSuccess(undefined, new Headers())
-      const authService = { registration: async () => success } as unknown as AuthService
+      const authService = {
+        registration: async () => success,
+      } as unknown as AuthService
       const app = new AuthApplication(
         authService,
         {} as UserService,
@@ -113,7 +143,9 @@ describe('AuthApplication', () => {
 
     it('notifies "error" on failure', async () => {
       const err = new AppError('email taken')
-      const authService = { registration: async () => err } as unknown as AuthService
+      const authService = {
+        registration: async () => err,
+      } as unknown as AuthService
       const app = new AuthApplication(
         authService,
         {} as UserService,
@@ -131,7 +163,9 @@ describe('AuthApplication', () => {
   describe('confirmEmail', () => {
     it('does not notify on success', async () => {
       const success = new AppSuccess({ access_token: 'tok' }, new Headers())
-      const authService = { confirmEmail: async () => success } as unknown as AuthService
+      const authService = {
+        confirmEmail: async () => success,
+      } as unknown as AuthService
       const app = new AuthApplication(
         authService,
         {} as UserService,
@@ -147,7 +181,9 @@ describe('AuthApplication', () => {
 
     it('notifies "error" on failure', async () => {
       const err = new AppError('invalid token')
-      const authService = { confirmEmail: async () => err } as unknown as AuthService
+      const authService = {
+        confirmEmail: async () => err,
+      } as unknown as AuthService
       const app = new AuthApplication(
         authService,
         {} as UserService,
@@ -280,8 +316,13 @@ describe('AuthApplication', () => {
 
   describe('refresh', () => {
     it('updates the token and does not notify on success', async () => {
-      const success = new AppSuccess({ access_token: 'fresh-tok' }, new Headers())
-      const authService = { refresh: async () => success } as unknown as AuthService
+      const success = new AppSuccess(
+        { access_token: 'fresh-tok' },
+        new Headers(),
+      )
+      const authService = {
+        refresh: async () => success,
+      } as unknown as AuthService
       const tokenManager = createTokenManager()
       const app = new AuthApplication(
         authService,
@@ -320,7 +361,9 @@ describe('AuthApplication', () => {
   describe('logout', () => {
     it('clears the token and does not notify on success', async () => {
       const success = new AppSuccess(undefined, new Headers())
-      const authService = { logout: async () => success } as unknown as AuthService
+      const authService = {
+        logout: async () => success,
+      } as unknown as AuthService
       const tokenManager = createTokenManager()
       tokenManager.setToken('existing-tok')
       const app = new AuthApplication(

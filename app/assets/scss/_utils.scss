@@ -1,5 +1,5 @@
 @use './vars' as *;
-@use "sass:math";
+@use 'sass:math';
 
 @function rem($px) {
   @return math.div($px, $font-size-base) * 1rem;

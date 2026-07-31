@@ -1,0 +1,6 @@
+.nuxt
+.output
+node_modules
+notes
+pnpm-lock.yaml
+app/assets/sprite/gen

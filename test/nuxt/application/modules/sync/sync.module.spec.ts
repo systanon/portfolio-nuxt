@@ -48,9 +48,9 @@ function makeSync(
 }
 
 afterEach(() => {
-  created.splice(0).forEach((s) =>
-    (s as unknown as { destroy(): void }).destroy(),
-  )
+  created
+    .splice(0)
+    .forEach((s) => (s as unknown as { destroy(): void }).destroy())
 })
 
 describe('SyncModule', () => {
