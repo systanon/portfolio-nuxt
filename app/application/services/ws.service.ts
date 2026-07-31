@@ -38,6 +38,11 @@ export class WSService implements WSServiceLike {
   connect() {
     if (this.isDestroyed) return
 
+    if (!this.url) {
+      this.logger.warn('No WebSocket URL configured, skipping connect')
+      return
+    }
+
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer)
       this.reconnectTimer = null
