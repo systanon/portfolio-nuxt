@@ -24,6 +24,11 @@
 import useVuelidate from '@vuelidate/core'
 import { AppRateLimitError } from '~/types/app-errors'
 
+useSeoMeta({
+  title: 'Resend Verification Email',
+  robots: 'noindex, nofollow',
+})
+
 const { resendConfirmEmail } = useAuth()
 
 const { isBlocked, showProgressBar, time, startRateLimit, progressBarRef } =

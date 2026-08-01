@@ -17,6 +17,12 @@ import { useTodoStore } from '~/store/todo'
 definePageMeta({
   name: 'TodoDetail',
 })
+
+useSeoMeta({
+  title: 'Todo Details',
+  robots: 'noindex, nofollow',
+})
+
 const route = useRoute()
 const { $api } = useNuxtApp()
 

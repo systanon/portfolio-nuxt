@@ -32,6 +32,12 @@ import { socialLinks } from '~/config/social-links'
 definePageMeta({
   accessMode: 'public',
 })
+
+useSeoMeta({
+  title: 'Contacts',
+  description:
+    'Get in touch with Serhii Tustanovskyi for project collaboration, freelance work, or questions — email, LinkedIn, Telegram, WhatsApp and GitHub.',
+})
 </script>
 
 <style scoped lang="scss">

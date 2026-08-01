@@ -17,6 +17,11 @@
 </template>
 
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Authorization Error',
+  robots: 'noindex, nofollow',
+})
+
 const route = useRoute()
 const { openGoogleAuth } = useGoogleAuth()
 const errorCode = ref<number | null>(null)

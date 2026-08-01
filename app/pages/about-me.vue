@@ -39,6 +39,12 @@ definePageMeta({
   accessMode: 'public',
 })
 
+useSeoMeta({
+  title: 'About Me',
+  description:
+    'Serhii Tustanovskyi — Front-End Developer with 5+ years of experience building complex web applications with Vue.js and TypeScript. Download my CV.',
+})
+
 const { $api } = useNuxtApp()
 
 const cvModalRef = ref<IModalOpen | null>(null)

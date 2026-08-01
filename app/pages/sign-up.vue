@@ -61,6 +61,11 @@ definePageMeta({
   accessMode: 'only-for-unauthorized',
 })
 
+useSeoMeta({
+  title: 'Sign Up',
+  robots: 'noindex, nofollow',
+})
+
 const { signUp } = useAuth()
 const { openGoogleAuth } = useGoogleAuth()
 

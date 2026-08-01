@@ -4,7 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
     head: {
+      htmlAttrs: { lang: 'en' },
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
     },
   },
   modules: [
@@ -36,6 +40,7 @@ export default defineNuxtConfig({
       wsURL: process.env.WS_API,
       apiURL: process.env.GO_BACKEND_URL,
       googleAuthURL: process.env.GOOGLE_AUTH_URL,
+      siteUrl: process.env.SITE_URL || 'https://tustanovskyi.com',
     },
   },
 
