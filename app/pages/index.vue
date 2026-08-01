@@ -21,6 +21,13 @@ definePageMeta({
   accessMode: 'public',
 })
 
+useHead({ titleTemplate: '%s' })
+useSeoMeta({
+  title: 'Serhii Tustanovskyi — Frontend Developer (Vue.js)',
+  description:
+    'Frontend Developer specializing in Vue.js, TypeScript and Nuxt, with hands-on experience in Golang and REST APIs. See my stack and get in touch.',
+})
+
 const techList: Tech[] = [
   {
     icon: 'vue-logo',

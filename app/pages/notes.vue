@@ -96,6 +96,11 @@ definePageMeta({
   accessMode: 'private',
 })
 
+useSeoMeta({
+  title: 'Notes',
+  robots: 'noindex, nofollow',
+})
+
 const createFormRef = ref()
 const editFormRef = ref()
 const editingNote = ref<Note | undefined>(undefined)

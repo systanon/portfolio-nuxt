@@ -102,6 +102,11 @@ import { todoCompletedFilters, createdFilters } from '~/constants/filters'
 definePageMeta({
   name: 'TodoList',
 })
+
+useSeoMeta({
+  title: 'Todos',
+  robots: 'noindex, nofollow',
+})
 const createFormRef = ref()
 const editFormRef = ref()
 const editingTodo = ref<Todo | undefined>(undefined)

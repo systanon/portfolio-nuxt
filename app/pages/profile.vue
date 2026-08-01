@@ -82,6 +82,11 @@ definePageMeta({
   accessMode: 'private',
 })
 
+useSeoMeta({
+  title: 'Profile',
+  robots: 'noindex, nofollow',
+})
+
 type FieldKey = keyof ProfileUpdate
 
 const appStore = useAppStore()

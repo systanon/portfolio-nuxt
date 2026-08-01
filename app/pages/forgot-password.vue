@@ -34,6 +34,11 @@
 import useVuelidate from '@vuelidate/core'
 import { AppRateLimitError } from '~/types/app-errors'
 
+useSeoMeta({
+  title: 'Forgot Password',
+  robots: 'noindex, nofollow',
+})
+
 const { forgotPassword } = useAuth()
 const email = ref<string>('')
 
