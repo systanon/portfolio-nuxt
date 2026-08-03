@@ -7,10 +7,13 @@ import { AppSuccess } from '~/types/app.types'
 export default defineNuxtPlugin({
   name: 'profile-server',
   async setup() {
+    const reqHeaders = useRequestHeaders()
+
+    if (!reqHeaders.cookie) return
+
     const { $httpClient } = useNuxtApp()
     const { getProfile } = useProfile()
     const appStore = useAppStore()
-    const reqHeaders = useRequestHeaders()
 
     const cookieInterceptor = createCookieForwardingInterceptor(
       reqHeaders.cookie,
