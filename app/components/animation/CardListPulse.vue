@@ -3,7 +3,7 @@
     <Card
       v-for="(tech, index) in techList"
       ref="items"
-      :key="index"
+      :key="tech.icon"
       class="pulse-item"
       :icon-name="tech.icon"
       :is-hover="isLast(index)"

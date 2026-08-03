@@ -1,5 +1,12 @@
 <template>
-  <div :class="['card-component', { _hoverable: isHover }]">
+  <div
+    ref="rootRef"
+    :class="['card-component', { _hoverable: isHover }]"
+    :role="isHover ? 'button' : undefined"
+    :tabindex="isHover ? 0 : undefined"
+    @keydown.enter="onActivate"
+    @keydown.space.prevent="onActivate"
+  >
     <UiIcon
       :name="iconName"
       color="secondary"
@@ -10,12 +17,20 @@
   </div>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue'
+
 defineProps<{
   iconName: string
   width: number
   height: number
   isHover?: boolean
 }>()
+
+const rootRef = ref<HTMLElement | null>(null)
+
+function onActivate() {
+  rootRef.value?.click()
+}
 </script>
 
 <style lang="scss" scoped>
