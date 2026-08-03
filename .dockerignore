@@ -1,0 +1,12 @@
+node_modules
+.git
+.nuxt
+.data
+.nitro
+.cache
+test
+notes
+*.md
+.env
+.env.*
+!.env.example

@@ -79,6 +79,34 @@ pnpm dev
 | `pnpm test:unit`               | Node test runner — application layer unit tests        |
 | `pnpm test:ui`                 | Vitest — component and integration tests               |
 
+## Deployment (CI/CD)
+
+This automates what was previously a manual `pnpm build` + `scp` to the VPS. `.github/workflows/deploy.yml` runs on every push to `master` (or manually via "Run workflow"):
+
+1. Install, lint, test
+2. `pnpm build` → produces `.output/`
+3. `scp` `.output/`, `Dockerfile`, `deploy.sh` to `VPS_DEPLOY_PATH` on the VPS over SSH
+4. SSH into the VPS and run `deploy.sh`, which rebuilds the `nuxt-ssr-app` Docker image, restarts the `nuxt_app` container (env vars from `nuxt.env`, already on the VPS — not touched by CI) and reconnects it to the `go-backend_default` Docker network
+
+`nuxt.env` lives only on the VPS (next to `Dockerfile`/`deploy.sh` in `VPS_DEPLOY_PATH`) and is never committed or uploaded by CI. Public runtime config (`WS_API`, `API_BASE`, `GOOGLE_AUTH_URL`, `SITE_URL`) is read from it when the container starts. `GO_BACKEND_URL` is the one exception — `routeRules['/api/**']` in `nuxt.config.ts` reads it directly at build time, so it must also be set as a **repository variable** for the build step to match production.
+
+**Required in the GitHub repo settings (Settings → Secrets and variables → Actions):**
+
+| Name              | Type     | Value                                                   |
+| ----------------- | -------- | ------------------------------------------------------- |
+| `VPS_HOST`        | Secret   | VPS IP or hostname                                      |
+| `VPS_USER`        | Secret   | SSH user on the VPS (e.g. `root`)                       |
+| `VPS_SSH_KEY`     | Secret   | Private key with access to the VPS                      |
+| `VPS_SSH_PORT`    | Secret   | SSH port, if not `22` (optional)                        |
+| `VPS_DEPLOY_PATH` | Secret   | Directory on the VPS with `nuxt.env` (`/usr/local/ssr`) |
+| `GO_BACKEND_URL`  | Variable | `https://tustanovskyi.com`                              |
+
+`VPS_SSH_KEY` can be the same key you already use for manual `scp` deploys (`~/.ssh/id_newkey_contabo_v2`) — paste its private key contents into the secret. If you'd rather not give CI the same key you use interactively, generate a deploy-only pair instead and add its public half to `authorized_keys` on the VPS:
+
+```bash
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
+```
+
 ## Project structure
 
 ```
