@@ -5,7 +5,7 @@
   "private": true,
   "description": "Personal portfolio site of Serhii Tustanovskyi, built with Nuxt 4, Vue 3 and TypeScript.",
   "author": "Serhii Tustanovskyi",
-  "homepage": "https://tustanovskyi.com",
+  "homepage": "https://app.tustanovskyi.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/systanon/portfolio-nuxt.git"

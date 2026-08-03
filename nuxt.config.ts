@@ -40,7 +40,7 @@ export default defineNuxtConfig({
       wsURL: process.env.WS_API,
       apiURL: process.env.GO_BACKEND_URL,
       googleAuthURL: process.env.GOOGLE_AUTH_URL,
-      siteUrl: process.env.SITE_URL || 'https://tustanovskyi.com',
+      siteUrl: process.env.SITE_URL || 'https://app.tustanovskyi.com',
     },
   },
 

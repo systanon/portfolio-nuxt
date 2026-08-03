@@ -1,6 +1,6 @@
 # Serhii Tustanovskyi — Portfolio
 
-Personal portfolio site, built with Nuxt 4 / Vue 3 / TypeScript. Live at [tustanovskyi.com](https://tustanovskyi.com).
+Personal portfolio site, built with Nuxt 4 / Vue 3 / TypeScript. Live at [app.tustanovskyi.com](https://app.tustanovskyi.com), server-rendered (SSR).
 
 Besides the portfolio pages (home, about, contacts), the app ships a small full-stack demo — Google/email auth, a Todos app and a Notes app with real-time updates and cross-tab sync — as a way to show the stack in practice rather than just describe it.
 
