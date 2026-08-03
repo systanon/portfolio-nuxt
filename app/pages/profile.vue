@@ -77,6 +77,7 @@ import avatarFallback from '~/assets/images/avatar.webp'
 import type { IModalOpen } from '~/components/ui/modals/UiModal.vue'
 import { useAppStore } from '~/store/application'
 import { AppSuccess } from '~/types/app.types'
+import { notifyOAuthOpener } from '~/utils/notifyOAuthOpener'
 
 definePageMeta({
   accessMode: 'private',
@@ -91,9 +92,18 @@ type FieldKey = keyof ProfileUpdate
 
 const appStore = useAppStore()
 
+const { $api } = useNuxtApp()
 const { logout } = useAuth()
 const { updateProfile } = useProfile()
 const { profile } = storeToRefs(appStore)
+
+onMounted(() => {
+  notifyOAuthOpener(
+    window,
+    (event, ...args) => $api.sync.emit(event, ...args),
+    profile.value,
+  )
+})
 
 const avatar = computed(() => profile.value?.avatar || avatarFallback)
 
