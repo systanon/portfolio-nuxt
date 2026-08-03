@@ -101,7 +101,7 @@ onMounted(() => {
   notifyOAuthOpener(
     window,
     (event, ...args) => $api.sync.emit(event, ...args),
-    profile.value,
+    profile.value ? toRaw(profile.value) : profile.value,
   )
 })
 
