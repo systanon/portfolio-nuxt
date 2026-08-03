@@ -47,7 +47,7 @@ Requires Node `>=22.22.2` and pnpm `>=10.0.0`.
 pnpm install
 ```
 
-Create a `.env` file (see `.env` in the repo for the full list) with at least:
+Create a `.env` file (see `.env.example` for the full list, including the production/VPS variant) with at least:
 
 ```bash
 API_BASE=/api/v1
@@ -88,7 +88,20 @@ This automates what was previously a manual `pnpm build` + `scp` to the VPS. `.g
 3. `scp` `.output/`, `Dockerfile`, `deploy.sh` to `VPS_DEPLOY_PATH` on the VPS over SSH
 4. SSH into the VPS and run `deploy.sh`, which rebuilds the `nuxt-ssr-app` Docker image, restarts the `nuxt_app` container (env vars from `nuxt.env`, already on the VPS — not touched by CI) and reconnects it to the `go-backend_default` Docker network
 
-`nuxt.env` lives only on the VPS (next to `Dockerfile`/`deploy.sh` in `VPS_DEPLOY_PATH`) and is never committed or uploaded by CI. Public runtime config (`WS_API`, `API_BASE`, `GOOGLE_AUTH_URL`, `SITE_URL`) is read from it when the container starts. `GO_BACKEND_URL` is the one exception — `routeRules['/api/**']` in `nuxt.config.ts` reads it directly at build time, so it must also be set as a **repository variable** for the build step to match production.
+`nuxt.env` lives only on the VPS (next to `Dockerfile`/`deploy.sh` in `VPS_DEPLOY_PATH`) and is never committed or uploaded by CI.
+
+**Runtime vs. build-time config matters here.** `nuxt.config.ts`'s `runtimeConfig` defaults are read via `process.env.X` — but that code only runs at `pnpm build` time, on whichever machine does the build. Nitro separately supports overriding `runtimeConfig` at container **startup**, but only via env vars prefixed `NUXT_`/`NUXT_PUBLIC_` (matching the key path, e.g. `runtimeConfig.public.googleAuthURL` → `NUXT_PUBLIC_GOOGLE_AUTH_URL`). Plain names like `GOOGLE_AUTH_URL` do **not** override anything at runtime — they only affect what gets baked in if they happen to be set correctly wherever the build ran. `nuxt.env` on the VPS must use the prefixed names so production always reflects `nuxt.env`, regardless of what the build machine's environment looked like:
+
+```bash
+NUXT_API_INTERNAL=http://go_app:3000/v1
+NUXT_PUBLIC_API_BASE=/api/v1
+NUXT_PUBLIC_WS_URL=wss://tustanovskyi.com/v1/ws
+NUXT_PUBLIC_API_URL=https://tustanovskyi.com
+NUXT_PUBLIC_GOOGLE_AUTH_URL=https://app.tustanovskyi.com/v1/auth/google
+NUXT_PUBLIC_SITE_URL=https://app.tustanovskyi.com
+```
+
+`GO_BACKEND_URL` is the one value that can't work this way — `routeRules['/api/**']` in `nuxt.config.ts` is resolved into static Nitro route rules at build time, with no runtime-override mechanism, so it must be set correctly wherever `pnpm build` runs. In CI that's the `GO_BACKEND_URL` **repository variable**; for a manual local build, export it in the shell first.
 
 **Required in the GitHub repo settings (Settings → Secrets and variables → Actions):**
 
