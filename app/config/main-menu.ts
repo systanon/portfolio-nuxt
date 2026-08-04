@@ -44,8 +44,8 @@ export const mainMenu: NavigationMenu = [
   },
   {
     path: '/notes',
-    text: 'Notations',
-    i18n_key: 'notations',
+    text: 'Notes',
+    i18n_key: 'notes',
     routeName: 'Notes',
     icon: '',
     showMode: 'authorized',
