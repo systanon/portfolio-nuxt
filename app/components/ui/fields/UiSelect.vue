@@ -365,7 +365,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   }
 
   &._disabled {
-    opacity: var(--disabled-opacity);
+    opacity: $disabled-opacity;
     pointer-events: none;
   }
 }

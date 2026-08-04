@@ -31,5 +31,5 @@ const ready = ref(false)
 </script>
 
 <style lang="scss">
-@use '~/assets/scss/_theme.scss';
+@use '~/assets/scss/main.scss';
 </style>
