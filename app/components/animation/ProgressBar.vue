@@ -16,7 +16,7 @@ export interface IProgressBar {
   reset: () => void
   pause: () => void
   resume: () => void
-  seek: () => void
+  seek: (progress: number) => void
   getTween: () => gsap.core.Tween
 }
 
