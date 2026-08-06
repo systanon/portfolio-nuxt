@@ -32,7 +32,7 @@ useSeoMeta({
 const { resendConfirmEmail } = useAuth()
 
 const { isBlocked, showProgressBar, time, startRateLimit, progressBarRef } =
-  useRateLimit()
+  useRateLimit('resend-email-verification')
 
 const email = ref<string>('')
 const { emailRules } = useValidationRules()

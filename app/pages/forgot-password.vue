@@ -44,7 +44,7 @@ const email = ref<string>('')
 
 const { emailRules } = useValidationRules()
 const { isBlocked, showProgressBar, time, startRateLimit, progressBarRef } =
-  useRateLimit()
+  useRateLimit('forgot-password')
 
 const rules = {
   email: emailRules,

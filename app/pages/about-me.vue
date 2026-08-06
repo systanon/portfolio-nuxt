@@ -25,15 +25,18 @@
 
   <UiModal ref="cvModalRef" title="Download CV">
     <CvForm ref="cvFormRef" />
+    <ProgressBar v-if="showProgressBar" ref="progressBarRef" :progress="false">
+      <span>{{ time }}</span>
+    </ProgressBar>
     <template #actions="{ close }">
       <UiButton label="Cancel" @click="close" />
-      <UiButton label="Submit" @click="submitForm" />
+      <UiButton label="Submit" :disabled="isBlocked" @click="submitForm" />
     </template>
   </UiModal>
 </template>
 <script setup lang="ts">
 import type { IModalOpen } from '~/components/ui/modals/UiModal.vue'
-import { AppError } from '~/types/app-errors'
+import { AppError, AppRateLimitError } from '~/types/app-errors'
 
 definePageMeta({
   accessMode: 'public',
@@ -50,11 +53,18 @@ const { $api } = useNuxtApp()
 const cvModalRef = ref<IModalOpen | null>(null)
 const cvFormRef = ref()
 
+const { isBlocked, showProgressBar, time, startRateLimit, progressBarRef } =
+  useRateLimit('cv-download')
+
 const submitForm = async () => {
   const data = await cvFormRef.value?.validateAndGet()
   if (!data) return
 
   const res = await $api.statistic.save(data)
+  if (res instanceof AppRateLimitError) {
+    await startRateLimit(res.retryAfter)
+    return
+  }
   if (!(res instanceof AppError)) {
     cvModalRef.value?.confirm(true)
   }

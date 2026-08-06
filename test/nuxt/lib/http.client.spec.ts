@@ -273,5 +273,28 @@ describe('HTTPClient', () => {
       expect(raw).toHaveBeenCalledTimes(2)
       expect(result).toBeInstanceOf(Blob)
     })
+
+    it('maps a Blob-encoded RATE_LIMIT error body to AppRateLimitError', async () => {
+      const errorBlob = new Blob(
+        [
+          JSON.stringify({
+            success: false,
+            error: { code: 'RATE_LIMIT', message: 'slow down' },
+          }),
+        ],
+        { type: 'application/json' },
+      )
+      const headers = new Headers({ 'Retry-After': '59' })
+      raw.mockRejectedValueOnce({
+        response: { _data: errorBlob, status: 429, headers },
+      })
+
+      const result = await client.download('/f')
+      expect(result).toBeInstanceOf(AppRateLimitError)
+      if (result instanceof AppRateLimitError) {
+        expect(result.message).toBe('slow down')
+        expect(result.retryAfter).toBe(59)
+      }
+    })
   })
 })

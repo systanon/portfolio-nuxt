@@ -1,5 +1,9 @@
 import type { HTTPClient } from '~/lib/http.client'
-import { AppError } from '~/types/app-errors'
+import type {
+  AppError,
+  AppRateLimitError,
+  AppSilentError,
+} from '~/types/app-errors'
 import { API_URL } from '~/constants/apiUrl'
 import type { StatisticDTO } from '~/types/app.types'
 
@@ -10,7 +14,9 @@ export class StatisticService {
     this.httpClient = httpClient
   }
 
-  async save(dto: StatisticDTO): Promise<undefined | AppError> {
+  async save(
+    dto: StatisticDTO,
+  ): Promise<undefined | AppError | AppRateLimitError | AppSilentError> {
     const blob = await this.httpClient.download(API_URL.statistic, {
       method: 'POST',
       body: dto,
@@ -25,8 +31,8 @@ export class StatisticService {
       a.click()
 
       window.URL.revokeObjectURL(url)
-    } else {
-      return new AppError(blob.message)
+      return
     }
+    return blob
   }
 }

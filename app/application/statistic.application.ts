@@ -1,4 +1,5 @@
 import { AppError } from '~/types/app-errors'
+import type { AppRateLimitError, AppSilentError } from '~/types/app-errors'
 import type { StatisticDTO } from '~/types/app.types'
 import type { StatisticService } from './services/statistic.service'
 import type { NotificationModule } from './modules/notification/notification.module'
@@ -15,7 +16,9 @@ export class StatisticApplication {
     this.notifier = notifier
   }
 
-  async save(dto: StatisticDTO): Promise<undefined | AppError> {
+  async save(
+    dto: StatisticDTO,
+  ): Promise<undefined | AppError | AppRateLimitError | AppSilentError> {
     const res = await this.statisticService.save(dto)
     if (res instanceof AppError) {
       this.notifier.notify('error', res.message)

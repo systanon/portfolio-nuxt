@@ -184,9 +184,9 @@ export class HTTPClient {
     if (i !== -1) list.splice(i, 1)
   }
 
-  private handleError(error: unknown, url: string) {
+  private async handleError(error: unknown, url: string) {
     if (isFetchError(error)) {
-      const data = error.response._data as ErrorResponse | undefined
+      const data = await this.parseErrorData(error.response._data)
       const err = data?.error
 
       if (err?.code === 'RATE_LIMIT') {
@@ -220,5 +220,19 @@ export class HTTPClient {
     }
 
     return new AppError('Unknown error', { cause: error })
+  }
+
+  private async parseErrorData(
+    rawData: unknown,
+  ): Promise<ErrorResponse | undefined> {
+    if (rawData instanceof Blob) {
+      try {
+        const text = await rawData.text()
+        return JSON.parse(text) as ErrorResponse
+      } catch {
+        return undefined
+      }
+    }
+    return rawData as ErrorResponse | undefined
   }
 }
