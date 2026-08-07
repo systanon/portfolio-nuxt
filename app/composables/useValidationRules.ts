@@ -46,7 +46,7 @@ export function useValidationRules() {
 
   const descriptionRules = {
     required: helpers.withMessage('Description is required', required),
-    maxLength: helpers.withMessage('To much characters', maxLength(100)),
+    maxLength: helpers.withMessage('To much characters', maxLength(1000)),
     minLength: helpers.withMessage('Minimum 3 characters', minLength(3)),
     $autoDirty: true,
   }
